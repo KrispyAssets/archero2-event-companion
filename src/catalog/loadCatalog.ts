@@ -112,6 +112,64 @@ function parseToolDefinition(doc: Document): ToolDefinition | null {
   };
 }
 
+function parseEventDocument(doc: Document, relPath?: string): EventCatalogFull {
+  const eventEl = doc.getElementsByTagName("event")[0];
+  if (!eventEl) {
+    throw new Error(`Missing <event> root${relPath ? ` in ${relPath}` : ""}`);
+  }
+
+  const tasksEl = eventEl.getElementsByTagName("tasks")[0];
+  const guideEl = eventEl.getElementsByTagName("guide")[0];
+  const faqEl = eventEl.getElementsByTagName("faq")[0];
+  const toolsEl = eventEl.getElementsByTagName("tools")[0];
+
+  const taskNodes = tasksEl ? Array.from(tasksEl.getElementsByTagName("task")) : [];
+  const tasks: TaskDefinition[] = taskNodes
+    .map((t) => ({
+      taskId: getAttr(t, "task_id"),
+      displayOrder: getAttrInt(t, "display_order"),
+
+      requirementAction: getAttr(t, "requirement_action"),
+      requirementObject: getAttr(t, "requirement_object"),
+      requirementScope: getAttr(t, "requirement_scope"),
+      requirementTargetValue: getAttrInt(t, "requirement_target_value"),
+
+      rewardType: getAttr(t, "reward_type"),
+      rewardAmount: getAttrInt(t, "reward_amount"),
+    }))
+    .sort((a, b) => a.displayOrder - b.displayOrder);
+
+  const guideSections = guideEl ? getDirectChildElements(guideEl, "section").map((section) => parseGuideSection(section)) : [];
+  const faqItems = faqEl ? getDirectChildElements(faqEl, "item").map((item) => parseFaqItem(item)) : [];
+  const toolRefs: ToolRef[] = toolsEl
+    ? getDirectChildElements(toolsEl, "tool_ref").map((toolRef) => ({
+        toolId: getAttr(toolRef, "tool_id"),
+      }))
+    : [];
+
+  const guideSectionCount = guideEl ? guideEl.getElementsByTagName("section").length : 0;
+  const faqCount = faqEl ? faqEl.getElementsByTagName("item").length : 0;
+  const toolCount = toolRefs.length;
+
+  return {
+    eventId: getAttr(eventEl, "event_id"),
+    eventVersion: getAttrInt(eventEl, "event_version"),
+    title: getAttr(eventEl, "title"),
+    subtitle: eventEl.getAttribute("subtitle") ?? undefined,
+    lastVerifiedDate: eventEl.getAttribute("last_verified_date") ?? undefined,
+    sections: {
+      taskCount: tasks.length,
+      guideSectionCount,
+      faqCount,
+      toolCount,
+    },
+    tasks,
+    guideSections,
+    faqItems,
+    toolRefs,
+  };
+}
+
 export async function loadCatalogIndex(): Promise<CatalogIndex> {
   const indexPath = `${import.meta.env.BASE_URL}catalog/catalog_index.xml`;
   const xmlText = await fetchText(indexPath);
@@ -183,62 +241,21 @@ export async function loadEventById(eventPaths: string[], eventId: string): Prom
     const thisId = eventEl.getAttribute("event_id");
     if (thisId !== eventId) continue;
 
-    // ---- parse summary counts
-    const tasksEl = eventEl.getElementsByTagName("tasks")[0];
-    const guideEl = eventEl.getElementsByTagName("guide")[0];
-    const faqEl = eventEl.getElementsByTagName("faq")[0];
-    const toolsEl = eventEl.getElementsByTagName("tools")[0];
-
-    const taskNodes = tasksEl ? Array.from(tasksEl.getElementsByTagName("task")) : [];
-    const tasks: TaskDefinition[] = taskNodes
-      .map((t) => ({
-        taskId: getAttr(t, "task_id"),
-        displayOrder: getAttrInt(t, "display_order"),
-
-        requirementAction: getAttr(t, "requirement_action"),
-        requirementObject: getAttr(t, "requirement_object"),
-        requirementScope: getAttr(t, "requirement_scope"),
-        requirementTargetValue: getAttrInt(t, "requirement_target_value"),
-
-        rewardType: getAttr(t, "reward_type"),
-        rewardAmount: getAttrInt(t, "reward_amount"),
-      }))
-      .sort((a, b) => a.displayOrder - b.displayOrder);
-
-    const guideSections = guideEl ? getDirectChildElements(guideEl, "section").map((section) => parseGuideSection(section)) : [];
-    const faqItems = faqEl ? getDirectChildElements(faqEl, "item").map((item) => parseFaqItem(item)) : [];
-    const toolRefs: ToolRef[] = toolsEl
-      ? getDirectChildElements(toolsEl, "tool_ref").map((toolRef) => ({
-          toolId: getAttr(toolRef, "tool_id"),
-        }))
-      : [];
-
-    const guideSectionCount = guideEl ? guideEl.getElementsByTagName("section").length : 0;
-    const faqCount = faqEl ? faqEl.getElementsByTagName("item").length : 0;
-    const toolCount = toolRefs.length;
-
-    const fullEvent: EventCatalogFull = {
-      eventId: getAttr(eventEl, "event_id"),
-      eventVersion: getAttrInt(eventEl, "event_version"),
-      title: getAttr(eventEl, "title"),
-      subtitle: eventEl.getAttribute("subtitle") ?? undefined,
-      lastVerifiedDate: eventEl.getAttribute("last_verified_date") ?? undefined,
-      sections: {
-        taskCount: tasks.length,
-        guideSectionCount,
-        faqCount,
-        toolCount,
-      },
-      tasks,
-      guideSections,
-      faqItems,
-      toolRefs,
-    };
-
-    return fullEvent;
+    return parseEventDocument(doc, relPath);
   }
 
   return null;
+}
+
+export async function loadAllEventsFull(eventPaths: string[]): Promise<EventCatalogFull[]> {
+  const events: EventCatalogFull[] = [];
+  for (const relPath of eventPaths) {
+    const fullPath = `${import.meta.env.BASE_URL}${relPath}`;
+    const xmlText = await fetchText(fullPath);
+    const doc = parseXmlString(xmlText);
+    events.push(parseEventDocument(doc, relPath));
+  }
+  return events;
 }
 
 export async function loadToolsByIds(toolPaths: string[], toolIds: string[]): Promise<ToolDefinition[]> {
