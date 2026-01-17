@@ -179,6 +179,8 @@ export default function SearchPage() {
   const [state, setState] = useState<SearchState>({ status: "loading" });
   const minQueryLength = 3;
   const hasQuery = query.trim().length >= minQueryLength;
+  const [selectedEventId, setSelectedEventId] = useState("");
+  const [selectedKinds, setSelectedKinds] = useState<Array<SearchItem["kind"]>>(["event", "guide", "faq", "task"]);
 
   useEffect(() => {
     let cancelled = false;
@@ -206,8 +208,32 @@ export default function SearchPage() {
   const filtered = useMemo(() => {
     if (state.status !== "ready") return [];
     if (!hasQuery) return [];
-    return state.items.filter((item) => matchQuery(item, query));
-  }, [state, query, hasQuery]);
+    return state.items.filter((item) => {
+      if (selectedEventId && item.eventId !== selectedEventId) return false;
+      if (!selectedKinds.includes(item.kind)) return false;
+      return matchQuery(item, query);
+    });
+  }, [state, query, hasQuery, selectedEventId, selectedKinds]);
+
+  const eventOptions = useMemo(() => {
+    if (state.status !== "ready") return [];
+    const seen = new Map<string, string>();
+    for (const item of state.items) {
+      if (!seen.has(item.eventId)) {
+        seen.set(item.eventId, item.eventTitle);
+      }
+    }
+    return Array.from(seen.entries()).map(([eventId, eventTitle]) => ({ eventId, eventTitle }));
+  }, [state]);
+
+  function toggleKind(kind: SearchItem["kind"]) {
+    setSelectedKinds((prev) => {
+      if (prev.includes(kind)) {
+        return prev.filter((k) => k !== kind);
+      }
+      return [...prev, kind];
+    });
+  }
 
   return (
     <AppShell>
@@ -226,6 +252,45 @@ export default function SearchPage() {
             placeholder="Search events, guides, FAQs…"
             style={{ maxWidth: 520 }}
           />
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <label style={{ fontSize: 13, color: "#374151" }}>
+              Event filter
+              <select
+                value={selectedEventId}
+                onChange={(e) => setSelectedEventId(e.target.value)}
+                style={{ display: "block", marginTop: 6, maxWidth: 320 }}
+              >
+                <option value="">All events</option>
+                {eventOptions.map((opt) => (
+                  <option key={opt.eventId} value={opt.eventId}>
+                    {opt.eventTitle}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {(["event", "guide", "faq", "task"] as const).map((kind) => {
+                const active = selectedKinds.includes(kind);
+                return (
+                  <button
+                    key={kind}
+                    type="button"
+                    onClick={() => toggleKind(kind)}
+                    style={{
+                      padding: "6px 10px",
+                      borderRadius: 999,
+                      border: active ? "1px solid #111827" : "1px solid #e5e7eb",
+                      background: active ? "#111827" : "#fff",
+                      color: active ? "#fff" : "#374151",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {getKindLabel(kind)}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
           {!hasQuery ? <div style={{ fontSize: 13, color: "#6b7280" }}>Type at least {minQueryLength} characters to search.</div> : null}
 
           {hasQuery ? (
