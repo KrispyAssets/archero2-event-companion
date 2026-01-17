@@ -29,8 +29,31 @@
   />
 </tasks>
 
-  <guide />
-  <faq />
+  <guide>
+    <section section_id="getting_started" title="Getting Started">
+      <p>Welcome to the sample event guide. This section explains the basics.</p>
+      <p>Complete tasks to earn rewards and track your progress in the Tasks tab.</p>
+      <section section_id="daily_routine" title="Daily Routine">
+        <p>Log in daily, check tasks, and claim rewards as you complete them.</p>
+      </section>
+    </section>
+    <section section_id="resource_tips" title="Resource Tips">
+      <p>Save premium currency for the highest value rewards.</p>
+      <p>Prioritize upgrades that improve your main damage dealer first.</p>
+    </section>
+  </guide>
+  <faq>
+    <item faq_id="faq_what_is_event" question="What is this event?">
+      <answer>
+        <p>This is a sample event used to demonstrate the companion app features.</p>
+      </answer>
+    </item>
+    <item faq_id="faq_how_to_track" question="How do I track my progress?">
+      <answer>
+        <p>Use the Tasks tab to update progress and mark tasks as completed or claimed.</p>
+      </answer>
+    </item>
+  </faq>
   <tools>
     <tool_ref tool_id="archero2.tool.sample_priority_list.v1" />
   </tools>

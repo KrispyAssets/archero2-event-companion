@@ -97,6 +97,7 @@ export default function EventDetail() {
   const [activeTabId, setActiveTabId] = useState("tasks");
   const [copiedAnchor, setCopiedAnchor] = useState("");
   const copyTimerRef = useRef<number | null>(null);
+  const scrollRetryRef = useRef<number | null>(null);
 
   const decodedEventId = useMemo(() => {
     try {
@@ -136,8 +137,36 @@ export default function EventDetail() {
   }, [activeAnchor]);
 
   useEffect(() => {
-    setActiveTabId("tasks");
-    setActiveAnchor("");
+    if (eventState.status !== "ready") return;
+    if (!activeAnchor) return;
+    let attempts = 0;
+
+    function tryScroll() {
+      const el = document.getElementById(activeAnchor);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+      attempts += 1;
+      if (attempts < 6) {
+        scrollRetryRef.current = window.requestAnimationFrame(tryScroll);
+      }
+    }
+
+    scrollRetryRef.current = window.requestAnimationFrame(tryScroll);
+
+    return () => {
+      if (scrollRetryRef.current !== null) {
+        window.cancelAnimationFrame(scrollRetryRef.current);
+      }
+    };
+  }, [eventState.status, activeAnchor, activeTabId]);
+
+  useEffect(() => {
+    const hash = window.location.hash.replace(/^#/, "");
+    const nextAnchor = hash ? decodeURIComponent(hash) : "";
+    const nextTab = nextAnchor ? getTabForAnchor(nextAnchor) : null;
+    setActiveTabId(nextTab ?? "tasks");
     setFaqQuery("");
   }, [decodedEventId]);
 
