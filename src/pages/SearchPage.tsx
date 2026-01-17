@@ -178,9 +178,12 @@ export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [state, setState] = useState<SearchState>({ status: "loading" });
   const minQueryLength = 3;
-  const hasQuery = query.trim().length >= minQueryLength;
+  const trimmedQuery = query.trim();
   const [selectedEventId, setSelectedEventId] = useState("");
   const [selectedKinds, setSelectedKinds] = useState<Array<SearchItem["kind"]>>(["event", "guide", "faq", "task"]);
+  const requiresMinLength = !selectedEventId;
+  const hasQuery = requiresMinLength ? trimmedQuery.length >= minQueryLength : trimmedQuery.length > 0;
+  const showAllForEvent = Boolean(selectedEventId) && trimmedQuery.length === 0;
 
   useEffect(() => {
     let cancelled = false;
@@ -207,13 +210,14 @@ export default function SearchPage() {
 
   const filtered = useMemo(() => {
     if (state.status !== "ready") return [];
-    if (!hasQuery) return [];
+    if (!hasQuery && !showAllForEvent) return [];
     return state.items.filter((item) => {
       if (selectedEventId && item.eventId !== selectedEventId) return false;
       if (!selectedKinds.includes(item.kind)) return false;
+      if (showAllForEvent) return true;
       return matchQuery(item, query);
     });
-  }, [state, query, hasQuery, selectedEventId, selectedKinds]);
+  }, [state, query, hasQuery, selectedEventId, selectedKinds, showAllForEvent]);
 
   const eventOptions = useMemo(() => {
     if (state.status !== "ready") return [];
@@ -291,9 +295,13 @@ export default function SearchPage() {
               })}
             </div>
           </div>
-          {!hasQuery ? <div style={{ fontSize: 13, color: "#6b7280" }}>Type at least {minQueryLength} characters to search.</div> : null}
+          {!hasQuery && !showAllForEvent ? (
+            <div style={{ fontSize: 13, color: "#6b7280" }}>
+              {requiresMinLength ? `Type at least ${minQueryLength} characters to search.` : "Type to search this event."}
+            </div>
+          ) : null}
 
-          {hasQuery ? (
+          {hasQuery || showAllForEvent ? (
             <>
               <div style={{ fontSize: 13, color: "#6b7280" }}>{filtered.length} result(s)</div>
 
