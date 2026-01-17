@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool tool_id="archero2.tool.sample_priority_list.v1" tool_type="priority_list" title="Sample Priority List">
+  <description>Example tool data for the Tools tab.</description>
+  <items>
+    <item label="Upgrade main weapon first" note="Focus on your highest rarity main weapon." />
+    <item label="Spend event currency on limited items" note="These are usually the best value." />
+    <item label="Save extra currency for the next reset" />
+  </items>
+</tool>

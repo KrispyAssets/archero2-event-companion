@@ -1,4 +1,14 @@
-import type { CatalogIndex, EventCatalogItemFull, EventCatalogFull, FaqItem, GuideSection, TaskDefinition } from "./types";
+import type {
+  CatalogIndex,
+  EventCatalogItemFull,
+  EventCatalogFull,
+  FaqItem,
+  GuideSection,
+  TaskDefinition,
+  ToolDefinition,
+  ToolPriorityList,
+  ToolRef,
+} from "./types";
 import { parseXmlString, getAttr, getAttrInt } from "./parseXml";
 
 async function fetchText(path: string): Promise<string> {
@@ -48,6 +58,43 @@ function parseFaqItem(itemEl: Element): FaqItem {
     question: getAttr(itemEl, "question"),
     answer,
     tags,
+  };
+}
+
+function parseToolDefinition(doc: Document): ToolDefinition | null {
+  const toolEl = doc.getElementsByTagName("tool")[0];
+  if (!toolEl) return null;
+
+  const toolId = getAttr(toolEl, "tool_id");
+  const toolType = getAttr(toolEl, "tool_type");
+  const title = getAttr(toolEl, "title");
+  const descriptionEl = toolEl.getElementsByTagName("description")[0];
+  const description = descriptionEl ? collectParagraphText(descriptionEl) : undefined;
+
+  if (toolType === "priority_list") {
+    const itemsEl = toolEl.getElementsByTagName("items")[0];
+    const itemEls = itemsEl ? getDirectChildElements(itemsEl, "item") : [];
+    const items = itemEls.map((item) => ({
+      label: getAttr(item, "label"),
+      note: item.getAttribute("note") ?? undefined,
+    }));
+
+    const tool: ToolPriorityList = {
+      toolId,
+      toolType: "priority_list",
+      title,
+      description,
+      items,
+    };
+
+    return tool;
+  }
+
+  return {
+    toolId,
+    toolType,
+    title,
+    description,
   };
 }
 
@@ -146,10 +193,15 @@ export async function loadEventById(eventPaths: string[], eventId: string): Prom
 
     const guideSections = guideEl ? getDirectChildElements(guideEl, "section").map((section) => parseGuideSection(section)) : [];
     const faqItems = faqEl ? getDirectChildElements(faqEl, "item").map((item) => parseFaqItem(item)) : [];
+    const toolRefs: ToolRef[] = toolsEl
+      ? getDirectChildElements(toolsEl, "tool_ref").map((toolRef) => ({
+          toolId: getAttr(toolRef, "tool_id"),
+        }))
+      : [];
 
     const guideSectionCount = guideEl ? guideEl.getElementsByTagName("section").length : 0;
     const faqCount = faqEl ? faqEl.getElementsByTagName("item").length : 0;
-    const toolCount = toolsEl ? toolsEl.getElementsByTagName("tool_ref").length : 0;
+    const toolCount = toolRefs.length;
 
     const fullEvent: EventCatalogFull = {
       eventId: getAttr(eventEl, "event_id"),
@@ -166,10 +218,31 @@ export async function loadEventById(eventPaths: string[], eventId: string): Prom
       tasks,
       guideSections,
       faqItems,
+      toolRefs,
     };
 
     return fullEvent;
   }
 
   return null;
+}
+
+export async function loadToolsByIds(toolPaths: string[], toolIds: string[]): Promise<ToolDefinition[]> {
+  if (!toolIds.length) return [];
+  const wanted = new Set(toolIds);
+  const tools: ToolDefinition[] = [];
+
+  for (const relPath of toolPaths) {
+    if (!wanted.size) break;
+    const fullPath = `${import.meta.env.BASE_URL}${relPath}`;
+    const xmlText = await fetchText(fullPath);
+    const doc = parseXmlString(xmlText);
+    const tool = parseToolDefinition(doc);
+    if (!tool) continue;
+    if (!wanted.has(tool.toolId)) continue;
+    tools.push(tool);
+    wanted.delete(tool.toolId);
+  }
+
+  return tools;
 }

@@ -31,6 +31,8 @@
 
   <guide />
   <faq />
-  <tools />
+  <tools>
+    <tool_ref tool_id="archero2.tool.sample_priority_list.v1" />
+  </tools>
 
 </event>

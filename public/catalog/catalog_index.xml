@@ -5,7 +5,7 @@
     </events>
 
     <tools>
-        <!-- Add tool XML files here -->
+        <tool_ref path="catalog/tools/tool_sample_priority_list_v1.xml" />
     </tools>
 
     <progression_models>

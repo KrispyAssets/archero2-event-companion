@@ -40,6 +40,29 @@ export type FaqItem = {
   tags?: string[];
 };
 
+export type ToolRef = {
+  toolId: string;
+};
+
+export type ToolDefinitionBase = {
+  toolId: string;
+  toolType: string;
+  title: string;
+  description?: string;
+};
+
+export type ToolPriorityListItem = {
+  label: string;
+  note?: string;
+};
+
+export type ToolPriorityList = ToolDefinitionBase & {
+  toolType: "priority_list";
+  items: ToolPriorityListItem[];
+};
+
+export type ToolDefinition = ToolPriorityList | ToolDefinitionBase;
+
 /** Summary (used for Events list) */
 export type EventCatalogItemFull = {
   eventId: string;
@@ -55,4 +78,5 @@ export type EventCatalogFull = EventCatalogItemFull & {
   tasks: TaskDefinition[];
   guideSections: GuideSection[];
   faqItems: FaqItem[];
+  toolRefs: ToolRef[];
 };

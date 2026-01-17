@@ -3,7 +3,9 @@ import { useParams } from "react-router-dom";
 import AppShell from "../ui/AppShell";
 import Tabs from "../ui/Tabs";
 import TasksTracker from "../ui/components/TasksTracker";
+import ToolsHost from "../ui/components/ToolsHost";
 import { useEventCatalog } from "../catalog/useEventCatalog";
+import { useToolsCatalog } from "../catalog/useToolsCatalog";
 import type { FaqItem, GuideSection } from "../catalog/types";
 
 function renderBodyText(body: string) {
@@ -53,6 +55,9 @@ export default function EventDetail() {
   }, [eventId]);
 
   const eventState = useEventCatalog(decodedEventId);
+  const toolState = useToolsCatalog(
+    eventState.status === "ready" ? eventState.event.toolRefs.map((ref) => ref.toolId) : []
+  );
 
   if (eventState.status === "idle" || eventState.status === "loading") {
     return (
@@ -130,7 +135,16 @@ export default function EventDetail() {
       id: "tools",
       label: `Tools (${ev.sections.toolCount})`,
       hidden: ev.sections.toolCount === 0,
-      content: <p>Tools host will be implemented next.</p>,
+      content:
+        toolState.status === "loading" ? (
+          <p>Loading tools…</p>
+        ) : toolState.status === "error" ? (
+          <p style={{ color: "crimson" }}>Tools error: {toolState.error}</p>
+        ) : toolState.status === "ready" && toolState.tools.length ? (
+          <ToolsHost tools={toolState.tools} />
+        ) : (
+          <p>No tools available for this event yet.</p>
+        ),
     },
   ];
 
