@@ -104,11 +104,12 @@ function matchQuery(item: SearchItem, query: string): boolean {
   const normalized = query.trim().toLowerCase();
   if (!normalized) return true;
   const tokens = normalized.split(/\s+/).filter(Boolean);
-  const haystack = item.content.toLowerCase();
+  const haystack = [item.content, item.eventTitle, item.kind, getKindLabel(item.kind)].join(" ").toLowerCase();
   return tokens.every((token) => haystack.includes(token));
 }
 
 function getSnippet(item: SearchItem, query: string): string {
+  if (item.kind === "task") return item.description;
   const source = item.description || item.content;
   const normalized = query.trim().toLowerCase();
   if (!normalized) return source.slice(0, 160);
@@ -238,9 +239,11 @@ export default function SearchPage() {
                   {item.eventTitle} • {getKindLabel(item.kind)}
                 </div>
                 <div style={{ fontWeight: 700, marginTop: 4 }}>{highlightText(item.title, query)}</div>
-                <div style={{ fontSize: 13, color: "#4b5563", marginTop: 6 }}>
-                  {highlightText(getSnippet(item, query), query)}…
-                </div>
+                {getSnippet(item, query) ? (
+                  <div style={{ fontSize: 13, color: "#4b5563", marginTop: 6 }}>
+                    {highlightText(getSnippet(item, query), query)}…
+                  </div>
+                ) : null}
                 <div style={{ marginTop: 8 }}>
                   <Link to={`/event/${encodeURIComponent(item.eventId)}${item.anchor ? `#${encodeURIComponent(item.anchor)}` : ""}`}>
                     {getActionLabel(item.kind)}
