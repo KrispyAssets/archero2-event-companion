@@ -30,16 +30,147 @@
 </tasks>
 
   <guide>
-    <section section_id="getting_started" title="Getting Started">
-      <p>Welcome to the sample event guide. This section explains the basics.</p>
-      <p>Complete tasks to earn rewards and track your progress in the Tasks tab.</p>
-      <section section_id="daily_routine" title="Daily Routine">
-        <p>Log in daily, check tasks, and claim rewards as you complete them.</p>
+    <section section_id="overview" title="Fishing Guide Overview">
+      <p>Reference: https://ksun4176.github.io/archero2-fish-companion/</p>
+      <p>This guide explains how lake pools work, how to plan your lure spend, and how to maximize rewards with two main strategies.</p>
+      <p>Use the sections below for quick tables and step-by-step lake plans.</p>
+    </section>
+
+    <section section_id="rough_weight_estimates" title="Rough Weight Estimates">
+      <p>Lake 1: 90 per lure</p>
+      <p>Lake 2: 150 per lure</p>
+      <p>Lake 3: 200 per lure</p>
+      <p>Final lake: 390 per lure</p>
+    </section>
+
+    <section section_id="lake_weight_tables" title="Lake Weight Tables">
+      <section section_id="lakehouse_table" title="Lakehouse">
+        <p>C1 0.3 | C2 0.6 | C3 0.9 | E1 1.4 | E2 3.0 | L 6.3</p>
+      </section>
+      <section section_id="sunset_coast_table" title="Sunset Coast">
+        <p>C1 0.4 | C2 0.9 | C3 1.4 | E1 2.4 | E2 4.9 | L 9.8</p>
+      </section>
+      <section section_id="oceanic_abyss_table" title="Oceanic Abyss">
+        <p>C1 0.8 | C2 1.2 | C3 2.3 | E1 4.0 | E2 6.3 | L 15.0</p>
+      </section>
+      <section section_id="polar_glacier_table" title="Polar Glacier">
+        <p>C1 1.5 | C2 2.3 | C3 4.8 | E1 7.9 | E2 12.6 | L 27.4</p>
       </section>
     </section>
-    <section section_id="resource_tips" title="Resource Tips">
-      <p>Save premium currency for the highest value rewards.</p>
-      <p>Prioritize upgrades that improve your main damage dealer first.</p>
+
+    <section section_id="what_to_buy" title="What to Buy">
+      <p>Always buy the lures available for silver tickets. They are worth more than they cost every time.</p>
+      <p>Buying etched runes for your main builds is the main reason to play this event. Top etched runes include Arrow of Echoes, Elemental Crit, Meteor Split, and Potion Spring.</p>
+      <p>Buying all the blessed runes is recommended. Progress toward unlocking all etched rune slots is always welcome.</p>
+      <p>Mythic artifacts are a decent option once you have the etched runes you want.</p>
+      <p>Do not buy keys unless you are playing for free. It is better to spend gems on keys directly.</p>
+      <p>It costs roughly 37 keys worth of gems to buy one S tier gear. Not recommended unless it is a personal choice.</p>
+    </section>
+
+    <section section_id="event_task_rewards" title="Event Task Rewards">
+      <p>Login for 1, 2, 3, 4, 5 days: 5 lures per rank.</p>
+      <p>Seal Battle fight 2, 4, 6, 8, 10 times: 5 lures per rank.</p>
+      <p>Claim AFK every 3, 5, 10, 15, 20 times: 3 lures per rank.</p>
+      <p>Use gems: 200, 500, 1000, 3000, 5000 gems: 5 lures per rank.</p>
+      <p>Use keys: 10, 20, 30, 40, 50 keys: 5 lures per rank.</p>
+      <p>Use shovels: 5, 10, 15, 20, 30, 40, 50, 60, 70, 80 shovels: 5 lures per rank.</p>
+      <p>Gold Cave fight 2, 4, 8, 10 times: 5 lures per rank.</p>
+      <p>Kill minions: 500, 1000, 1500, 2000, 3000 minions: 5 lures per rank.</p>
+      <p>Kill bosses: 5, 10, 20, 30 bosses: 3 lures per rank.</p>
+      <p>Arena: fight 5, 10, 15, 20 times: 5 lures per rank.</p>
+    </section>
+
+    <section section_id="rank_rewards" title="Rank Rewards">
+      <p>Your goal is to gain as much weight as possible early while keeping enough lures for later days.</p>
+      <p>Below 50kg: first place gains 100 gems.</p>
+      <p>Between 50kg-230kg: first place gains 200 gems.</p>
+      <p>Between 230kg-500kg: first place gains 300 gems.</p>
+      <p>Between 500kg-1000kg: first place gains 400 gems.</p>
+      <p>Above 1000kg: first place gains 500 gems.</p>
+    </section>
+
+    <section section_id="helpful_info" title="Helpful Side Info">
+      <p>Fish per pool: 1 legendary, 3 big epics, 6 small epics, 5 large rares, 10 medium rares, 15 small rares.</p>
+      <p>On average you gain 390 silver tickets per lure in the final lake.</p>
+      <p>On average you gain 4.7 kg per lure in the final lake.</p>
+      <p>On average you gain 83 tickets per kg in the final lake.</p>
+    </section>
+
+    <section section_id="how_lakes_work" title="How the Lakes Work">
+      <p>Fishing may seem random at first, but it is not. You can predict fish pools and plan your lures.</p>
+      <p>In the first three lakes the fish pool is the same; in the final lake the pool is doubled.</p>
+      <p>Pools contain 40 fish: 1 legendary, 9 epics, and 30 rares.</p>
+      <p>Pools reset only when you catch all fish. Snapping lines does not remove fish from the pool.</p>
+      <p>Moving to a new lake starts a fresh pool in that lake. The previous lake pool stays intact as you left it.</p>
+      <p>Final lake pool doubles to 80 fish: 2 legendaries, 18 epics, 60 rares.</p>
+    </section>
+
+    <section section_id="strategy_options" title="Two Main Strategies">
+      <section section_id="option_1_overview" title="Option 1: Maximize Silver Tickets">
+        <p>Spend many gems to maximize silver tickets.</p>
+        <p>Expect to spend 20-30k gems. Move through lakes using as few lures as possible.</p>
+        <p>Estimated gains: 110k-130k silver tickets and 16 golden tickets or more.</p>
+      </section>
+      <section section_id="option_2_overview" title="Option 2: Maximize Golden Tickets">
+        <p>Spend fewer gems to maximize golden tickets.</p>
+        <p>Expect to spend 5-15k gems. You will gain fewer silver tickets but fewer gems are required to reach 16 golden tickets.</p>
+        <p>Estimated gains: 70k-90k silver tickets and 16 golden tickets.</p>
+      </section>
+    </section>
+
+    <section section_id="lakehouse_plan" title="Lake 1: Lakehouse">
+      <p>You will be fishing for 2 or 3 legendary fish.</p>
+      <p>Fish a full pool of 40 first, then choose one option.</p>
+      <section section_id="lakehouse_option_1" title="Option 1 (Higher Silver Tickets)">
+        <p>Start on 2x. Catch all epics and legendaries; snap lines if only rares are on the line.</p>
+        <p>Goal: catch the 2nd legendary and move to Lake 2 quickly.</p>
+        <p>If you catch the legendary early, catch the remaining fish to reach Lake 2.</p>
+      </section>
+      <section section_id="lakehouse_option_2" title="Option 2 (Higher Golden Tickets)">
+        <p>Gather a second full pool of 40 to push into Lake 2, then go back to Lake 1.</p>
+        <p>Pull on 1x and snap all lines except for the legendary fish.</p>
+        <p>Once you have the 3rd legendary on Lake 1, move to Lake 2.</p>
+        <p>If you are over 75 snapped lines and you have not caught the legendary, switch to Option 1.</p>
+      </section>
+    </section>
+
+    <section section_id="sunset_coast_plan" title="Lake 2: Sunset Coast">
+      <p>You will be getting 3 legendary fish.</p>
+      <p>Fish two full pools of 40. After 80 fish, switch to 2x multiplier.</p>
+      <p>Catch all epics and the legendary; snap all solely rare fish.</p>
+      <p>After catching the legendary, catch all fish until you reach Lake 3.</p>
+      <p>If you are low on line snaps (more than 50 used) after Lake 1, skip this step and catch on 10x until Lake 3.</p>
+    </section>
+
+    <section section_id="oceanic_abyss_plan" title="Lake 3: Oceanic Abyss">
+      <p>You will be getting 3 or 4 legendary fish. Fish two full pools of 40 first, then choose one option.</p>
+      <section section_id="oceanic_option_1" title="Option 1 (Higher Silver Tickets)">
+        <p>Start on 2x multiplier, catch all epics and legendaries, and snap lines if only rares appear.</p>
+        <p>Goal: catch the 3rd legendary and move to the final lake quickly.</p>
+        <p>If you catch the legendary early, catch the remaining fish to reach the final lake.</p>
+      </section>
+      <section section_id="oceanic_option_2" title="Option 2 (Higher Golden Tickets)">
+        <p>Gather a third full pool of 40 to push into the final lake, then go back to Lake 3.</p>
+        <p>Pull on 1x and snap all lines except for the legendary fish.</p>
+        <p>Once you have the 4th legendary fish, move to the final lake.</p>
+      </section>
+    </section>
+
+    <section section_id="polar_glacier_plan" title="Final Lake: Polar Glacier">
+      <p>This lake doubles the pool to 80 fish, creating a copy of every fish.</p>
+      <section section_id="polar_option_1" title="Option 1 (Higher Silver Tickets)">
+        <p>Minimum of 242 lures to reach 16 gold tickets.</p>
+        <p>Pull on 10x until you have spent what you want, tracking every 80 fish.</p>
+        <p>On your last pool of 80, use final line breaks to collect all epics and legendaries.</p>
+      </section>
+      <section section_id="polar_option_2" title="Option 2 (Higher Golden Tickets)">
+        <p>Minimum of 162 lures to reach 16 gold tickets.</p>
+        <p>Pull two full pools of 80, then use all line breaks left to try for the final two legendaries.</p>
+      </section>
+    </section>
+
+    <section section_id="tension_examples" title="Tension Examples (Lake 1)">
+      <p>Example tension patterns for Lake 1 in the current lake.</p>
       <image_row>
         <image
           src="catalog/shared/fishing/images/current_lake_tension/zone_1-1.png"
