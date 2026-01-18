@@ -231,6 +231,15 @@ export default function EventDetail() {
   const tasksSheetStartOffsetRef = useRef(0);
   const tasksSheetDragActiveRef = useRef(false);
   const tasksSheetCloseTimerRef = useRef<number | null>(null);
+  const scrollLockRef = useRef<{
+    bodyOverflow: string;
+    bodyPaddingRight: string;
+    htmlOverflow: string;
+    bodyPosition: string;
+    bodyTop: string;
+    bodyWidth: string;
+    scrollY: number;
+  } | null>(null);
   const touchStartXRef = useRef<number | null>(null);
   const touchDeltaXRef = useRef(0);
   const pinchStartDistanceRef = useRef<number | null>(null);
@@ -392,6 +401,44 @@ export default function EventDetail() {
       setTasksSheetOffset(0);
     });
   }, [tasksOpen]);
+
+  useEffect(() => {
+    const shouldLock = tasksOpen || lightboxIndex !== null;
+    if (!shouldLock) {
+      if (scrollLockRef.current) {
+        const lockedScrollY = scrollLockRef.current.scrollY;
+        document.body.style.overflow = scrollLockRef.current.bodyOverflow;
+        document.body.style.paddingRight = scrollLockRef.current.bodyPaddingRight;
+        document.documentElement.style.overflow = scrollLockRef.current.htmlOverflow;
+        document.body.style.position = scrollLockRef.current.bodyPosition;
+        document.body.style.top = scrollLockRef.current.bodyTop;
+        document.body.style.width = scrollLockRef.current.bodyWidth;
+        scrollLockRef.current = null;
+        window.scrollTo(0, lockedScrollY);
+      }
+      return;
+    }
+
+    if (!scrollLockRef.current) {
+      scrollLockRef.current = {
+        bodyOverflow: document.body.style.overflow,
+        bodyPaddingRight: document.body.style.paddingRight,
+        htmlOverflow: document.documentElement.style.overflow,
+        bodyPosition: document.body.style.position,
+        bodyTop: document.body.style.top,
+        bodyWidth: document.body.style.width,
+        scrollY: window.scrollY,
+      };
+    }
+
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.paddingRight = scrollbarWidth > 0 ? `${scrollbarWidth}px` : "";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollLockRef.current.scrollY}px`;
+    document.body.style.width = "100%";
+  }, [tasksOpen, lightboxIndex]);
 
   function openTasksSheet() {
     const height = Math.round(window.innerHeight * 0.8);
@@ -597,6 +644,8 @@ export default function EventDetail() {
           justify-content: center;
           z-index: 60;
           overflow: hidden;
+          overscroll-behavior: contain;
+          touch-action: none;
         }
         .tasksModal {
           width: 100%;
