@@ -229,6 +229,7 @@ export default function EventDetail() {
   const [tasksSheetDragging, setTasksSheetDragging] = useState(false);
   const tasksSheetStartRef = useRef<number | null>(null);
   const tasksSheetStartOffsetRef = useRef(0);
+  const tasksSheetDragActiveRef = useRef(false);
   const tasksSheetCloseTimerRef = useRef<number | null>(null);
   const touchStartXRef = useRef<number | null>(null);
   const touchDeltaXRef = useRef(0);
@@ -387,12 +388,16 @@ export default function EventDetail() {
 
   useEffect(() => {
     if (!tasksOpen) return;
-    const height = Math.round(window.innerHeight * 0.8);
-    setTasksSheetOffset(height);
     window.requestAnimationFrame(() => {
       setTasksSheetOffset(0);
     });
   }, [tasksOpen]);
+
+  function openTasksSheet() {
+    const height = Math.round(window.innerHeight * 0.8);
+    setTasksSheetOffset(height);
+    setTasksOpen(true);
+  }
 
   async function copyAnchorLink(anchorId: string) {
     const hash = `#${encodeURIComponent(anchorId)}`;
@@ -530,7 +535,7 @@ export default function EventDetail() {
     <AppShell>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
         <h1>{ev.title}</h1>
-        <button type="button" onClick={() => setTasksOpen(true)}>
+        <button type="button" onClick={openTasksSheet}>
           Tasks
         </button>
       </div>
@@ -712,41 +717,51 @@ export default function EventDetail() {
           <div
             className={`tasksModal${tasksSheetDragging ? " dragging" : ""}`}
             style={{ ["--tasks-sheet-offset" as string]: `${tasksSheetOffset}px` }}
-          >
-            <div
-              className="tasksModalHandle"
-              role="button"
-              tabIndex={0}
-              aria-label="Drag to close tasks panel"
-              onPointerDown={(e) => {
-                e.preventDefault();
-                e.currentTarget.setPointerCapture(e.pointerId);
-                tasksSheetStartRef.current = e.clientY;
-                tasksSheetStartOffsetRef.current = tasksSheetOffset;
-                setTasksSheetDragging(true);
-              }}
-              onPointerMove={(e) => {
-                if (!tasksSheetDragging || tasksSheetStartRef.current === null) return;
-                const height = Math.round(window.innerHeight * 0.8);
-                const nextOffset = Math.max(
-                  0,
-                  Math.min(height, tasksSheetStartOffsetRef.current + (e.clientY - tasksSheetStartRef.current))
-                );
-                setTasksSheetOffset(nextOffset);
-              }}
-              onPointerUp={() => {
-                if (!tasksSheetDragging) return;
+            onPointerDown={(e) => {
+              tasksSheetStartRef.current = e.clientY;
+              tasksSheetStartOffsetRef.current = tasksSheetOffset;
+              tasksSheetDragActiveRef.current = false;
+            }}
+            onPointerMove={(e) => {
+              if (tasksSheetStartRef.current === null) return;
+              const height = Math.round(window.innerHeight * 0.8);
+              const nextOffset = Math.max(
+                0,
+                Math.min(height, tasksSheetStartOffsetRef.current + (e.clientY - tasksSheetStartRef.current))
+              );
+              if (!tasksSheetDragActiveRef.current && Math.abs(nextOffset - tasksSheetStartOffsetRef.current) < 8) {
+                return;
+              }
+              tasksSheetDragActiveRef.current = true;
+              setTasksSheetDragging(true);
+              (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
+              e.preventDefault();
+              setTasksSheetOffset(nextOffset);
+            }}
+            onPointerUp={() => {
+              if (tasksSheetDragActiveRef.current) {
                 setTasksSheetDragging(false);
                 if (tasksSheetOffset > Math.round(window.innerHeight * 0.8 * 0.35)) {
                   closeTasksSheet();
                 } else {
                   setTasksSheetOffset(0);
                 }
-              }}
-              onPointerCancel={() => {
-                setTasksSheetDragging(false);
-                setTasksSheetOffset(0);
-              }}
+              }
+              tasksSheetStartRef.current = null;
+              tasksSheetDragActiveRef.current = false;
+            }}
+            onPointerCancel={() => {
+              setTasksSheetDragging(false);
+              setTasksSheetOffset(0);
+              tasksSheetStartRef.current = null;
+              tasksSheetDragActiveRef.current = false;
+            }}
+          >
+            <div
+              className="tasksModalHandle"
+              role="button"
+              tabIndex={0}
+              aria-label="Drag to close tasks panel"
               onKeyDown={(e) => {
                 if (e.key === "Escape") closeTasksSheet();
               }}
