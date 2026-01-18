@@ -84,15 +84,6 @@ function buildFullCounts(data: FishingToolData, lakeId: string): Record<string, 
   }, {} as Record<string, number>);
 }
 
-function buildLakeState(data: FishingToolData, lakeId: string): LakeState {
-  return {
-    remainingByTypeId: buildFullCounts(data, lakeId),
-    poolsCompleted: 0,
-    legendaryCaught: 0,
-    fishCaught: 0,
-  };
-}
-
 function clampNumber(value: number, min = 0, max = Number.MAX_SAFE_INTEGER) {
   if (Number.isNaN(value)) return min;
   return Math.max(min, Math.min(max, value));
@@ -180,9 +171,10 @@ export default function FishingToolView({ tool }: { tool: ToolFishingCalculator 
 
       nextState.lakeStatesBySet[set.setId] = nextLakeStates;
       const storedActiveLake = stored?.activeLakeIdBySet?.[set.setId];
-      nextState.activeLakeIdBySet[set.setId] = set.lakes.some((lake) => lake.lakeId === storedActiveLake)
-        ? storedActiveLake
-        : set.lakes[0]?.lakeId ?? "";
+      nextState.activeLakeIdBySet[set.setId] =
+        storedActiveLake && set.lakes.some((lake) => lake.lakeId === storedActiveLake)
+          ? storedActiveLake
+          : set.lakes[0]?.lakeId ?? "";
       nextState.brokenLinesBySet[set.setId] = stored?.brokenLinesBySet?.[set.setId] ?? 0;
       nextState.historyBySet[set.setId] = stored?.historyBySet?.[set.setId] ?? [];
       nextState.goalTicketsBySet[set.setId] = stored?.goalTicketsBySet?.[set.setId] ?? null;

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import AppShell from "../ui/AppShell";
 import { loadAllEventsFull, loadCatalogIndex } from "../catalog/loadCatalog";
-import type { EventCatalogFull, FaqItem, GuideContentBlock, GuideSection, TaskDefinition } from "../catalog/types";
+import type { EventCatalogFull, GuideContentBlock, GuideSection } from "../catalog/types";
 import { buildTaskGroups, getGroupTitle } from "../catalog/taskGrouping";
 
 type SearchItem = {
@@ -55,14 +55,6 @@ function getGuideSearchText(blocks: GuideContentBlock[]): string {
     }
   }
   return textParts.join(" ").trim();
-}
-
-function formatRequirement(task: TaskDefinition): string {
-  return `${task.requirementAction} ${task.requirementTargetValue} ${task.requirementObject} (${task.requirementScope})`;
-}
-
-function formatReward(task: TaskDefinition): string {
-  return `Reward: ${task.rewardAmount} ${task.rewardType}`;
 }
 
 function buildSearchItems(events: EventCatalogFull[]): SearchItem[] {

@@ -42,10 +42,10 @@ export default function ToolsHost({ tools }: { tools: ToolDefinition[] }) {
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       {tools.map((tool) => {
         if (tool.toolType === "priority_list") {
-          return <PriorityListToolView key={tool.toolId} tool={tool} />;
+          return <PriorityListToolView key={tool.toolId} tool={tool as ToolPriorityList} />;
         }
         if (tool.toolType === "static_text") {
-          return <StaticTextToolView key={tool.toolId} tool={tool} />;
+          return <StaticTextToolView key={tool.toolId} tool={tool as ToolStaticText} />;
         }
         if (tool.toolType === "fishing_calculator") {
           return <FishingToolView key={tool.toolId} tool={tool as ToolFishingCalculator} />;
