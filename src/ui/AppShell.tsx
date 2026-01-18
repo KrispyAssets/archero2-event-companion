@@ -50,6 +50,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               <Link to="/search" className="navLink">
                 Search
               </Link>
+              <Link to="/credits" className="navLink">
+                Credits
+              </Link>
               <Link to="/about" className="navLink">
                 About
               </Link>

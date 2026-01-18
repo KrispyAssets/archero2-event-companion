@@ -248,6 +248,26 @@ button:focus-visible {
   user-select: none;
 }
 
+.linkButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--accent-strong);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.linkButton:hover {
+  background: var(--highlight);
+  text-decoration: none;
+}
+
 *::-webkit-scrollbar {
   width: 10px;
   height: 10px;
