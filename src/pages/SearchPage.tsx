@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import AppShell from "../ui/AppShell";
 import { loadAllEventsFull, loadCatalogIndex } from "../catalog/loadCatalog";
-import type { EventCatalogFull, FaqItem, GuideSection, TaskDefinition } from "../catalog/types";
+import type { EventCatalogFull, FaqItem, GuideContentBlock, GuideSection, TaskDefinition } from "../catalog/types";
 
 type SearchItem = {
   id: string;
@@ -28,6 +28,27 @@ function flattenGuideSections(sections: GuideSection[], out: GuideSection[] = []
     }
   }
   return out;
+}
+
+function getGuideParagraphText(blocks: GuideContentBlock[]): string {
+  return blocks
+    .filter((block) => block.type === "paragraph")
+    .map((block) => block.text)
+    .join(" ")
+    .trim();
+}
+
+function getGuideSearchText(blocks: GuideContentBlock[]): string {
+  const textParts: string[] = [];
+  for (const block of blocks) {
+    if (block.type === "paragraph") {
+      textParts.push(block.text);
+    } else {
+      if (block.alt) textParts.push(block.alt);
+      if (block.caption) textParts.push(block.caption);
+    }
+  }
+  return textParts.join(" ").trim();
 }
 
 function formatRequirement(task: TaskDefinition): string {
@@ -56,14 +77,16 @@ function buildSearchItems(events: EventCatalogFull[]): SearchItem[] {
 
     const guideSections = flattenGuideSections(event.guideSections);
     for (const section of guideSections) {
+      const paragraphText = getGuideParagraphText(section.blocks);
+      const searchText = getGuideSearchText(section.blocks);
       items.push({
         id: `guide:${eventId}:${section.sectionId}`,
         eventId,
         eventTitle: event.title,
         kind: "guide",
         title: section.title,
-        content: [section.title, section.body].join(" ").trim(),
-        description: section.body,
+        content: [section.title, searchText].join(" ").trim(),
+        description: paragraphText,
         anchor: `guide-${section.sectionId}`,
       });
     }

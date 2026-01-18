@@ -26,10 +26,25 @@ export type TaskDefinition = {
   rewardAmount: number;
 };
 
+export type GuideContentBlockParagraph = {
+  type: "paragraph";
+  text: string;
+};
+
+export type GuideContentBlockImage = {
+  type: "image";
+  src: string;
+  alt?: string;
+  caption?: string;
+};
+
+export type GuideContentBlock = GuideContentBlockParagraph | GuideContentBlockImage;
+
 export type GuideSection = {
   sectionId: string;
   title: string;
   body: string;
+  blocks: GuideContentBlock[];
   subsections?: GuideSection[];
 };
 

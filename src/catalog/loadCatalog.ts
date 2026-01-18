@@ -3,6 +3,7 @@ import type {
   EventCatalogItemFull,
   EventCatalogFull,
   FaqItem,
+  GuideContentBlock,
   GuideSection,
   TaskDefinition,
   ToolDefinition,
@@ -39,11 +40,35 @@ function collectParagraphText(el: Element): string {
 
 function parseGuideSection(sectionEl: Element): GuideSection {
   const subsections = getDirectChildElements(sectionEl, "section").map((child) => parseGuideSection(child));
-  const body = collectParagraphText(sectionEl);
+  const blocks: GuideContentBlock[] = [];
+  const paragraphs: string[] = [];
+
+  for (const node of Array.from(sectionEl.childNodes)) {
+    if (node.nodeType !== 1) continue;
+    const el = node as Element;
+    if (el.tagName === "section") continue;
+    if (el.tagName === "p") {
+      const text = (el.textContent ?? "").trim();
+      if (text) {
+        blocks.push({ type: "paragraph", text });
+        paragraphs.push(text);
+      }
+      continue;
+    }
+    if (el.tagName === "image") {
+      const src = getAttr(el, "src");
+      const alt = el.getAttribute("alt") ?? undefined;
+      const caption = el.getAttribute("caption") ?? undefined;
+      blocks.push({ type: "image", src, alt, caption });
+    }
+  }
+
+  const body = paragraphs.join("\n\n");
   return {
     sectionId: getAttr(sectionEl, "section_id"),
     title: getAttr(sectionEl, "title"),
     body,
+    blocks,
     subsections: subsections.length > 0 ? subsections : undefined,
   };
 }

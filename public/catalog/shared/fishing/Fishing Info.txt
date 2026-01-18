@@ -1,0 +1,117 @@
+https://ksun4176.github.io/archero2-fish-companion/
+
+Rough Weight Estimates
+
+lake 1: 90 per lure, lake 2: 150 per lure, lake 3: 200 per lure, Final lake: 390 per lure
+
+Lakehouse
+╔═════╤═════╤═════╤═════╤═════╤═════╗
+║ C1  │ C2  │ C3  │ E1  │ E2  │  L  ║
+╟─────┼─────┼─────┼─────┼─────┼─────╢
+║ 0.3 │ 0.6 │ 0.9 │ 1.4 │ 3.0 │ 6.3 ║
+╚═════╧═════╧═════╧═════╧═════╧═════╝
+
+Sunset Coast
+╔═════╤═════╤═════╤═════╤═════╤═════╗
+║ C1  │ C2  │ C3  │ E1  │ E2  │  L  ║
+╟─────┼─────┼─────┼─────┼─────┼─────╢
+║ 0.4 │ 0.9 │ 1.4 │ 2.4 │ 4.9 │ 9.8 ║
+╚═════╧═════╧═════╧═════╧═════╧═════╝
+
+Oceanic Abyss
+╔═════╤═════╤═════╤═════╤═════╤══════╗
+║ C1  │ C2  │ C3  │ E1  │ E2  │  L   ║
+╟─────┼─────┼─────┼─────┼─────┼──────╢
+║ 0.8 │ 1.2 │ 2.3 │ 4.0 │ 6.3 │ 15.0 ║
+╚═════╧═════╧═════╧═════╧═════╧══════╝
+
+Polar Glacier
+╔═════╤═════╤═════╤═════╤══════╤══════╗
+║ C1  │ C2  │ C3  │ E1  │  E2  │  L   ║
+╟─────┼─────┼─────┼─────┼──────┼──────╢
+║ 1.5 │ 2.3 │ 4.8 │ 7.9 │ 12.6 │ 27.4 ║
+╚═════╧═════╧═════╧═════╧══════╧══════╝
+
+
+:30_Icon_ChapterStars: What to buy :30_Icon_ChapterStars:
+Always buy the lures available for silver tickets. They are worth more than they cost to buy every time.
+Buying etched runes for your main builds is the main reason to play this event. Top etched runes include: Arrow of Echoes, Elemental Crit, Meteor Split, and Potion Spring
+Buying all of the blessed runes are recommended. Progress towards unlocking all etched rune slots is always welcome.
+Mythic artifacts are a decent option, once you’ve gained all etched runes you would like.
+Do not buy keys unless you’re playing for free. It’s better to simply spend the gems on keys directly over spending tickets for keys.
+It costs roughly 37 keys worth of gems to buy one S tier gear. I don’t recommend but it’s personal choice.
+
+Event Task Rewards 📜
+Login for 1,2,3,4,5 days. 5 lures per rank
+Seal Battle fight 2,4,6,8,10 times. 5 lures per rank
+Claim Afk every 3,5,10,15,20 times. 3 lures per rank
+Use Gems use 200,500, 1000,3000,5000 gems. 5 Lures per Rank
+Use Keys use 10,20,30,40,50 keys. 5 Lures per rank
+Use Shovels use 5,10,15,20,30,40,50,60,70,80 shovels. 5 Lures per rank
+Gold Cave fight 2,4,8,10 times. 5 lures per rank
+Kill Minions kill 500,1000,1500,2000,3000 minions. 5 lures per rank
+Kill Bosses kill 5,10,20,30 bosses. 3 lures per rank
+Arena fight 5,10,15,20 times in the arena. 5 lures per rank.
+
+:30_Icon_Rank01: Rank rewards :30_Icon_Rank01:
+Your goal is to gain as much weight as possible in early days, while keeping enough lures to finish out in later days. 
+Below 50kg: first place gains 100 gems
+Between 50kg-230kg:first place gains 200 gems
+Between 230kg-500kg: first place gains 300 gems
+Between 500kg-1000kg: first place gains 400 gems
+Above 1000kg: first place gains 500 gems
+
+:SquirtleHeart: helpful side info :SquirtleHeart:
+The exact number of fish per pool is 1 legendary, 3 big epics, 6 small epics, 5 large rares, 10 medium rares, 15 small rares.
+On average you gain 390 silver tickets per lure, in the final lake.
+On average you gain 4.7 kg per lure, in the final lake.
+On average you gain 83 tickets per kg, in the last lake.
+
+
+Welcome to the complete fishing guide! 🎣
+Fishing may seem random at first, but it isn’t. This guide will help you predict all the fish you get in each lake, and efficiently use your lures to gain maximum rewards every time.
+The basic idea you’ll be using revolves around how the lakes work. In the first 3 lakes the fish are the same, on the last one it is doubled. There are pools of 40 different fishes, these pools only reset when you catch the full pool of fishes.
+The pools include: 1 legendary, 9 epics, and 30 rares. Snapping lines doesn’t take the fish out of the pool, only catching them does
+When you move to a new lake you start in a fresh pool in that new lake, however the pool you were working on in the previous lake remains intact as you left it.
+In the final lake everything previous stated is the same, the only difference is the pool size is exactly doubled: 80 fishes, that include 2 legendaries, 18 epics and 60 rares.
+💎 Option 1 💎
+Spend many gems to maximize silver tickets
+Be prepared to spend 20-30k gems, this is the option for higher gem spending overall. You’ll gain more silver tickets per lure by moving through lakes using as few lures as possible.
+
+Estimated gains 110-130k silver tickets and 16 golden tickets or more.
+:10_CurrencyGold: Option 2 :10_CurrencyGold:
+Spend few gems to maximize golden tickets
+Be prepared to spend between 5-15k gems. You’ll gain less silver tickets, but you’ll also need to spend less gems to gain 16 golden tickets and finish the event. This is great for low spenders/F2P players.
+
+Estimated gains 70-90k silver tickets and 16 golden tickets.
+
+Lake 1: Lakehouse
+In this lake you’ll be fishing for either 2 or 3 legendary fish. Fish a full 40 pool out first, then you have two options from there:
+💎 Option 1: 💎
+Spending more gems overall, highest silver ticket value.
+Start pulling on 2x, catch all the epics and legendary fishes and snap lines if it’s only rares on the line. The goal is to catch the 2nd legendary and move on to lake 2 as quickly as possible. If you catch the legendary early, just catch all the remaining fish to reach Lake 2.
+:10_CurrencyGold: Option 2: :10_CurrencyGold:
+Higher gold ticket value, spend less gems.
+Gather a 2nd full pool of 40 fishes. This will push you into Lake 2, then go back to Lake 1. Pull on 1x and snap all lines except for the legendary fish. Once you have the 3rd legendary on Lake 1, move on to Lake 2.
+If you’re over 75 snapped lines and you haven’t caught the legendary, Switch to option 1. You most likely do not have the snaps left to finish option 2
+ 
+Lake 2: Sunset Coast
+In this lake you’re getting 3 legendary fish; start off by fishing two full pools of 40. After catching 80 total fish, switch to 2x multiplier. Catch all epics and the legendary, snap all solely rare fish. Once you’ve caught the legendary fish, catch all fish until you reach Lake 3.
+
+If you’re low on line snaps (you’ve used more than 50) after lake 1 skip this step, simply catch on 10x until you reach lake 3.
+ 
+Lake 3: Oceanic Abyss
+In this lake you’re getting either 3 or 4 legendary fish. Fish out two full pools of 40 first, then you have two options from there.
+💎 Option 1: 💎
+Spending more gems overall, highest silver ticket value.
+Start pulling on 2x multiplier, catch all the epics and legendary fishes and snap lines if it’s only rares on the line. The goal is to catch the 3rd legendary and move on to the final lake as quickly as possible. If you catch the legendary fish, just catch all the other fishes and get to the final lake.
+:10_CurrencyGold: Option 2: :10_CurrencyGold:
+Higher gold ticket value, spend less gems.
+Gather a third full pool of 40, this will push you into the final lake, go back to Lake 3. Pull on 1x and snap all lines except for the legendary fish. Once you have the 4th legendary fish, move on to the final lake.
+ 
+Final lake: Polar Glacier
+Since this is the last lake, you can get as many resources as the event allows you to. The pool of this lake doubles to 80 fishes, creating a copy of every fish.
+💎 Option 1: 💎
+You will need a minimum of 242 lures to get to 16 gold tickets. Pull on 10x multiplier until you’ve spent all you want, track every 80 fish to be exact. When you’re done on your last pool of 80, use your final line breaks to collect all epics and legendaries from your last pool.
+:10_CurrencyGold: Option 2: :10_CurrencyGold:
+You will need a minimum of 162 lures to gain 16 gold tickets. This whole option was designed around getting 16 gold tickets as quickly as possible. Pull two full pools of 80 fishes, then use all lines breaks left to try and get the final two legendary fishes.

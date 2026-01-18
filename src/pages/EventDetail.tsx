@@ -6,7 +6,7 @@ import TasksTracker from "../ui/components/TasksTracker";
 import ToolsHost from "../ui/components/ToolsHost";
 import { useEventCatalog } from "../catalog/useEventCatalog";
 import { useToolsCatalog } from "../catalog/useToolsCatalog";
-import type { FaqItem, GuideSection } from "../catalog/types";
+import type { FaqItem, GuideContentBlock, GuideSection } from "../catalog/types";
 
 function getGuideAnchorId(sectionId: string): string {
   return `guide-${sectionId}`;
@@ -55,6 +55,37 @@ function renderBodyText(body: string) {
   ));
 }
 
+function resolveImageSrc(src: string): string {
+  if (src.startsWith("http://") || src.startsWith("https://") || src.startsWith("data:")) {
+    return src;
+  }
+  if (src.startsWith("/")) return src;
+  return `${import.meta.env.BASE_URL}${src}`;
+}
+
+function renderGuideBlocks(blocks: GuideContentBlock[]) {
+  if (!blocks.length) return null;
+  return blocks.map((block, index) => {
+    if (block.type === "paragraph") {
+      return (
+        <p key={`p-${index}-${block.text.slice(0, 12)}`} style={{ margin: "8px 0" }}>
+          {block.text}
+        </p>
+      );
+    }
+    return (
+      <figure key={`img-${index}-${block.src}`} style={{ margin: "12px 0" }}>
+        <img
+          src={resolveImageSrc(block.src)}
+          alt={block.alt ?? ""}
+          style={{ maxWidth: "100%", borderRadius: 10, border: "1px solid #e5e7eb", display: "block" }}
+        />
+        {block.caption ? <figcaption style={{ fontSize: 12, color: "#6b7280", marginTop: 6 }}>{block.caption}</figcaption> : null}
+      </figure>
+    );
+  });
+}
+
 function GuideSectionView({
   section,
   copiedAnchor,
@@ -84,7 +115,7 @@ function GuideSectionView({
           <LinkIcon />
         </button>
       </summary>
-      <div style={{ marginTop: 8 }}>{renderBodyText(section.body)}</div>
+      <div style={{ marginTop: 8 }}>{renderGuideBlocks(section.blocks)}</div>
       {section.subsections && section.subsections.length > 0 ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
           {section.subsections.map((child) => (
