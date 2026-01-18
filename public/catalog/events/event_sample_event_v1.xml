@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <event
-  event_id="archero2.event.sample_event.v1"
+  event_id="archero2.event.anglers_bounty.v1"
   event_version="1"
-  title="Sample Event"
-  subtitle="This is a placeholder event for testing."
+  title="Angler's Bounty"
+  subtitle="Fishing event guide, tasks, and strategy reference."
   last_verified_date="2026-01-17">
 
   <tasks>

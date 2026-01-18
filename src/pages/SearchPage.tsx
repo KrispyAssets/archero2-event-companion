@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import AppShell from "../ui/AppShell";
 import { loadAllEventsFull, loadCatalogIndex } from "../catalog/loadCatalog";
 import type { EventCatalogFull, FaqItem, GuideContentBlock, GuideSection, TaskDefinition } from "../catalog/types";
+import { buildTaskGroups, getGroupTitle } from "../catalog/taskGrouping";
 
 type SearchItem = {
   id: string;
@@ -64,55 +65,6 @@ function formatReward(task: TaskDefinition): string {
   return `Reward: ${task.rewardAmount} ${task.rewardType}`;
 }
 
-type TaskGroup = {
-  groupId: string;
-  title: string;
-  tiers: TaskDefinition[];
-};
-
-function formatGroupTitle(action: string, object: string, scope: string): string {
-  const key = `${action}__${object}__${scope}`;
-  const labels: Record<string, string> = {
-    "buy__silver_tickets__total": "Silver Tickets",
-    "buy__pack__total": "Pack",
-    "login__days__total": "Daily Login",
-    "fight__gold_cave__total": "Gold Cave",
-    "kill__minions__total": "Kill Minions",
-    "fight__seal_battle__total": "Seal Battle",
-    "kill__bosses__total": "Kill Bosses",
-    "claim__afk_rewards__total": "Claim AFK Rewards",
-    "fight__arena__total": "Arena",
-    "use__keys__total": "Use Keys",
-    "use__gems__total": "Use Gems",
-    "use__shovels__total": "Use Shovels",
-  };
-  if (labels[key]) return labels[key];
-  const label = `${action} ${object}`.replace(/_/g, " ");
-  const scopeLabel = scope.replace(/_/g, " ");
-  return `${label} (${scopeLabel})`;
-}
-
-function buildTaskGroups(tasks: TaskDefinition[]): TaskGroup[] {
-  const map = new Map<string, TaskGroup>();
-  for (const task of tasks) {
-    const key = `${task.requirementAction}__${task.requirementObject}__${task.requirementScope}`;
-    const existing = map.get(key);
-    if (!existing) {
-      map.set(key, {
-        groupId: key,
-        title: formatGroupTitle(task.requirementAction, task.requirementObject, task.requirementScope),
-        tiers: [task],
-      });
-    } else {
-      existing.tiers.push(task);
-    }
-  }
-  return Array.from(map.values()).map((group) => ({
-    ...group,
-    tiers: group.tiers.sort((a, b) => a.requirementTargetValue - b.requirementTargetValue),
-  }));
-}
-
 function buildSearchItems(events: EventCatalogFull[]): SearchItem[] {
   const items: SearchItem[] = [];
 
@@ -166,7 +118,7 @@ function buildSearchItems(events: EventCatalogFull[]): SearchItem[] {
         eventId,
         eventTitle: event.title,
         kind: "task",
-        title: group.title,
+        title: getGroupTitle(group.tiers[0].requirementAction, group.tiers[0].requirementObject, group.tiers[0].requirementScope),
         content: [group.title, `${rewardTotal} lures total`].join(" ").trim(),
         description: `Total reward: ${rewardTotal} lures`,
         anchor: `task-${group.groupId}`,
