@@ -450,10 +450,19 @@ export default function EventDetail() {
 
   const tabs = [
     {
-      id: "tasks",
-      label: `Tasks (${ev.sections.taskCount})`,
-      hidden: true,
-      content: <TasksTracker eventId={ev.eventId} eventVersion={ev.eventVersion} tasks={ev.tasks} />,
+      id: "tools",
+      label: `Tools (${ev.sections.toolCount})`,
+      hidden: ev.sections.toolCount === 0,
+      content:
+        toolState.status === "loading" ? (
+          <p>Loading tools…</p>
+        ) : toolState.status === "error" ? (
+          <p style={{ color: "crimson" }}>Tools error: {toolState.error}</p>
+        ) : toolState.status === "ready" && toolState.tools.length ? (
+          <ToolsHost tools={toolState.tools} />
+        ) : (
+          <p>No tools available for this event yet.</p>
+        ),
     },
     {
       id: "guide",
@@ -515,19 +524,10 @@ export default function EventDetail() {
       ),
     },
     {
-      id: "tools",
-      label: `Tools (${ev.sections.toolCount})`,
-      hidden: ev.sections.toolCount === 0,
-      content:
-        toolState.status === "loading" ? (
-          <p>Loading tools…</p>
-        ) : toolState.status === "error" ? (
-          <p style={{ color: "crimson" }}>Tools error: {toolState.error}</p>
-        ) : toolState.status === "ready" && toolState.tools.length ? (
-          <ToolsHost tools={toolState.tools} />
-        ) : (
-          <p>No tools available for this event yet.</p>
-        ),
+      id: "tasks",
+      label: `Tasks (${ev.sections.taskCount})`,
+      hidden: true,
+      content: <TasksTracker eventId={ev.eventId} eventVersion={ev.eventVersion} tasks={ev.tasks} />,
     },
   ];
 
