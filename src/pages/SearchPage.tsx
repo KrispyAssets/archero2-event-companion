@@ -71,6 +71,22 @@ type TaskGroup = {
 };
 
 function formatGroupTitle(action: string, object: string, scope: string): string {
+  const key = `${action}__${object}__${scope}`;
+  const labels: Record<string, string> = {
+    "buy__silver_tickets__total": "Silver Tickets",
+    "buy__pack__total": "Pack",
+    "login__days__total": "Daily Login",
+    "fight__gold_cave__total": "Gold Cave",
+    "kill__minions__total": "Kill Minions",
+    "fight__seal_battle__total": "Seal Battle",
+    "kill__bosses__total": "Kill Bosses",
+    "claim__afk_rewards__total": "Claim AFK Rewards",
+    "fight__arena__total": "Arena",
+    "use__keys__total": "Use Keys",
+    "use__gems__total": "Use Gems",
+    "use__shovels__total": "Use Shovels",
+  };
+  if (labels[key]) return labels[key];
   const label = `${action} ${object}`.replace(/_/g, " ");
   const scopeLabel = scope.replace(/_/g, " ");
   return `${label} (${scopeLabel})`;

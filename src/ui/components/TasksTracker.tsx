@@ -9,17 +9,36 @@ type TaskGroup = {
   minDisplayOrder: number;
 };
 
+const GROUP_LABELS: Record<string, string> = {
+  "buy__silver_tickets__total": "Silver Tickets",
+  "buy__pack__total": "Pack",
+  "login__days__total": "Daily Login",
+  "fight__gold_cave__total": "Gold Cave",
+  "kill__minions__total": "Kill Minions",
+  "fight__seal_battle__total": "Seal Battle",
+  "kill__bosses__total": "Kill Bosses",
+  "claim__afk_rewards__total": "Claim AFK Rewards",
+  "fight__arena__total": "Arena",
+  "use__keys__total": "Use Keys",
+  "use__gems__total": "Use Gems",
+  "use__shovels__total": "Use Shovels",
+};
+
 function formatGroupTitle(action: string, object: string, scope: string): string {
+  const key = `${action}__${object}__${scope}`;
+  const override = GROUP_LABELS[key];
+  if (override) return override;
   const label = `${action} ${object}`.replace(/_/g, " ");
   const scopeLabel = scope.replace(/_/g, " ");
   return `${label} (${scopeLabel})`;
 }
 
 function getGroupPlaceholder(action: string, object: string): string {
+  if (action === "buy") return "# Bought";
   if (action === "login" && object === "days") return "# Days";
   if (action === "fight") return "# Done";
   if (action === "kill") return "# Killed";
-  if (action === "claim" && object === "afk") return "# Collected";
+  if (action === "claim") return "# Collected";
   if (action === "use" && object === "gems") return "# Spent";
   if (action === "use") return "# Used";
   return "# Done";
@@ -183,7 +202,8 @@ export default function TasksTracker(props: { eventId: string; eventVersion: num
                       fontWeight: 600,
                     }}
                   >
-                    {tier.requirementTargetValue} +{tier.rewardAmount}
+                    <span>{tier.requirementTargetValue}</span>
+                    <span style={{ marginLeft: 4, color: "#059669", fontSize: 12 }}>+{tier.rewardAmount}L</span>
                   </button>
                 );
               })}
