@@ -11,7 +11,12 @@ function computeRemaining(tiers: TaskDefinition[], progressValue: number): numbe
   return tiers.reduce((sum, tier) => (progressValue < tier.requirementTargetValue ? sum + tier.rewardAmount : sum), 0);
 }
 
-export default function TasksTracker(props: { eventId: string; eventVersion: number; tasks: TaskDefinition[] }) {
+export default function TasksTracker(props: {
+  eventId: string;
+  eventVersion: number;
+  tasks: TaskDefinition[];
+  scrollContainerRef?: React.Ref<HTMLDivElement>;
+}) {
   const { eventId, eventVersion, tasks } = props;
   const [tick, setTick] = useState(0);
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
@@ -67,7 +72,19 @@ export default function TasksTracker(props: { eventId: string; eventVersion: num
         </div>
       </div>
 
-      <div style={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column", gap: 12, paddingBottom: 12 }}>
+      <div
+        ref={props.scrollContainerRef}
+        style={{
+          flex: 1,
+          overflow: "auto",
+          display: "flex",
+          flexDirection: "column",
+          gap: 12,
+          paddingBottom: 12,
+          overscrollBehavior: "contain",
+          touchAction: "pan-y",
+        }}
+      >
         {groups.map((group) => {
           const state = progressState.tasks[group.groupId] ?? {
             progressValue: 0,

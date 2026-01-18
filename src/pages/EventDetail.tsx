@@ -227,10 +227,12 @@ export default function EventDetail() {
   const [tasksOpen, setTasksOpen] = useState(false);
   const [tasksSheetOffset, setTasksSheetOffset] = useState(0);
   const [tasksSheetDragging, setTasksSheetDragging] = useState(false);
+  const tasksScrollRef = useRef<HTMLDivElement | null>(null);
   const tasksSheetStartRef = useRef<number | null>(null);
   const tasksSheetStartOffsetRef = useRef(0);
   const tasksSheetDragActiveRef = useRef(false);
   const tasksSheetCloseTimerRef = useRef<number | null>(null);
+  const tasksSheetPointerInScrollRef = useRef(false);
   const scrollLockRef = useRef<{
     bodyOverflow: string;
     bodyPaddingRight: string;
@@ -774,27 +776,39 @@ export default function EventDetail() {
               tasksSheetStartRef.current = e.clientY;
               tasksSheetStartOffsetRef.current = tasksSheetOffset;
               tasksSheetDragActiveRef.current = false;
+              tasksSheetPointerInScrollRef.current =
+                tasksScrollRef.current !== null && tasksScrollRef.current.contains(e.target as Node);
             }}
             onPointerMove={(e) => {
               if (tasksSheetStartRef.current === null) return;
+              const deltaY = e.clientY - tasksSheetStartRef.current;
+              const scrollEl = tasksScrollRef.current;
+              const scrollTop = scrollEl ? scrollEl.scrollTop : 0;
+              const inScrollArea = tasksSheetPointerInScrollRef.current;
+              const startThreshold = 1;
+              if (
+                !tasksSheetDragActiveRef.current &&
+                deltaY > 0 &&
+                Math.abs(deltaY) >= startThreshold &&
+                (!inScrollArea || scrollTop <= 0)
+              ) {
+                tasksSheetDragActiveRef.current = true;
+                setTasksSheetDragging(true);
+                (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
+                e.preventDefault();
+              }
+              if (!tasksSheetDragActiveRef.current) return;
               const height = Math.round(window.innerHeight * 0.8);
               const nextOffset = Math.max(
                 0,
                 Math.min(height, tasksSheetStartOffsetRef.current + (e.clientY - tasksSheetStartRef.current))
               );
-              if (!tasksSheetDragActiveRef.current && Math.abs(nextOffset - tasksSheetStartOffsetRef.current) < 8) {
-                return;
-              }
-              tasksSheetDragActiveRef.current = true;
-              setTasksSheetDragging(true);
-              (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
-              e.preventDefault();
               setTasksSheetOffset(nextOffset);
             }}
             onPointerUp={() => {
               if (tasksSheetDragActiveRef.current) {
                 setTasksSheetDragging(false);
-                if (tasksSheetOffset > Math.round(window.innerHeight * 0.8 * 0.35)) {
+                if (tasksSheetOffset > Math.round(window.innerHeight * 0.8 * 0.15)) {
                   closeTasksSheet();
                 } else {
                   setTasksSheetOffset(0);
@@ -802,12 +816,14 @@ export default function EventDetail() {
               }
               tasksSheetStartRef.current = null;
               tasksSheetDragActiveRef.current = false;
+              tasksSheetPointerInScrollRef.current = false;
             }}
             onPointerCancel={() => {
               setTasksSheetDragging(false);
               setTasksSheetOffset(0);
               tasksSheetStartRef.current = null;
               tasksSheetDragActiveRef.current = false;
+              tasksSheetPointerInScrollRef.current = false;
             }}
           >
             <div
@@ -824,7 +840,12 @@ export default function EventDetail() {
               <div style={{ fontWeight: 800, fontSize: 18, textAlign: "center" }}>Task Tracker</div>
               <div />
             </div>
-            <TasksTracker eventId={ev.eventId} eventVersion={ev.eventVersion} tasks={ev.tasks} />
+            <TasksTracker
+              eventId={ev.eventId}
+              eventVersion={ev.eventVersion}
+              tasks={ev.tasks}
+              scrollContainerRef={tasksScrollRef}
+            />
           </div>
         </div>
       ) : null}
