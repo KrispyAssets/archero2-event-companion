@@ -64,6 +64,39 @@ function formatReward(task: TaskDefinition): string {
   return `Reward: ${task.rewardAmount} ${task.rewardType}`;
 }
 
+type TaskGroup = {
+  groupId: string;
+  title: string;
+  tiers: TaskDefinition[];
+};
+
+function formatGroupTitle(action: string, object: string, scope: string): string {
+  const label = `${action} ${object}`.replace(/_/g, " ");
+  const scopeLabel = scope.replace(/_/g, " ");
+  return `${label} (${scopeLabel})`;
+}
+
+function buildTaskGroups(tasks: TaskDefinition[]): TaskGroup[] {
+  const map = new Map<string, TaskGroup>();
+  for (const task of tasks) {
+    const key = `${task.requirementAction}__${task.requirementObject}__${task.requirementScope}`;
+    const existing = map.get(key);
+    if (!existing) {
+      map.set(key, {
+        groupId: key,
+        title: formatGroupTitle(task.requirementAction, task.requirementObject, task.requirementScope),
+        tiers: [task],
+      });
+    } else {
+      existing.tiers.push(task);
+    }
+  }
+  return Array.from(map.values()).map((group) => ({
+    ...group,
+    tiers: group.tiers.sort((a, b) => a.requirementTargetValue - b.requirementTargetValue),
+  }));
+}
+
 function buildSearchItems(events: EventCatalogFull[]): SearchItem[] {
   const items: SearchItem[] = [];
 
@@ -109,18 +142,18 @@ function buildSearchItems(events: EventCatalogFull[]): SearchItem[] {
       });
     }
 
-    for (const task of event.tasks) {
-      const requirement = formatRequirement(task);
-      const reward = formatReward(task);
+    const taskGroups = buildTaskGroups(event.tasks);
+    for (const group of taskGroups) {
+      const rewardTotal = group.tiers.reduce((sum, tier) => sum + tier.rewardAmount, 0);
       items.push({
-        id: `task:${eventId}:${task.taskId}`,
+        id: `task:${eventId}:${group.groupId}`,
         eventId,
         eventTitle: event.title,
         kind: "task",
-        title: requirement,
-        content: [requirement, reward].join(" ").trim(),
-        description: reward,
-        anchor: `task-${task.taskId}`,
+        title: group.title,
+        content: [group.title, `${rewardTotal} lures total`].join(" ").trim(),
+        description: `Total reward: ${rewardTotal} lures`,
+        anchor: `task-${group.groupId}`,
       });
     }
   }

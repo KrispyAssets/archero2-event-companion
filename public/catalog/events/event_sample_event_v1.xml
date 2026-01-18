@@ -7,6 +7,11 @@
   last_verified_date="2026-01-17">
 
   <tasks>
+    <task task_id="buy_silver_tickets_total_tier_1" display_order="50" requirement_action="buy" requirement_object="silver_tickets" requirement_scope="total" requirement_target_value="20" reward_type="lures" reward_amount="20" />
+    <task task_id="buy_silver_tickets_total_tier_2" display_order="60" requirement_action="buy" requirement_object="silver_tickets" requirement_scope="total" requirement_target_value="60" reward_type="lures" reward_amount="40" />
+    <task task_id="buy_silver_tickets_total_tier_3" display_order="70" requirement_action="buy" requirement_object="silver_tickets" requirement_scope="total" requirement_target_value="120" reward_type="lures" reward_amount="60" />
+    <task task_id="buy_silver_tickets_total_tier_4" display_order="80" requirement_action="buy" requirement_object="silver_tickets" requirement_scope="total" requirement_target_value="200" reward_type="lures" reward_amount="80" />
+
     <task task_id="login_days_total_tier_1" display_order="100" requirement_action="login" requirement_object="days" requirement_scope="total" requirement_target_value="1" reward_type="lures" reward_amount="5" />
     <task task_id="login_days_total_tier_2" display_order="110" requirement_action="login" requirement_object="days" requirement_scope="total" requirement_target_value="2" reward_type="lures" reward_amount="5" />
     <task task_id="login_days_total_tier_3" display_order="120" requirement_action="login" requirement_object="days" requirement_scope="total" requirement_target_value="3" reward_type="lures" reward_amount="5" />
