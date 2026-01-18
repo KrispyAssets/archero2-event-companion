@@ -90,7 +90,7 @@ export default function AboutPage() {
           </button>
         </div>
 
-        {status ? <div style={{ fontSize: 13, color: "#374151" }}>{status}</div> : null}
+        {status ? <div style={{ fontSize: 13, color: "var(--text-muted)" }}>{status}</div> : null}
       </section>
     </AppShell>
   );

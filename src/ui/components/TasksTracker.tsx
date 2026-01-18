@@ -87,16 +87,16 @@ export default function TasksTracker(props: { eventId: string; eventVersion: num
             key={group.groupId}
             id={`task-${group.groupId}`}
             style={{
-              border: "1px solid #e5e7eb",
+              border: "1px solid var(--border)",
               borderRadius: 12,
               padding: 12,
-              background: "#fff",
+              background: "var(--surface)",
               scrollMarginTop: 90,
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
               <div style={{ fontWeight: 800 }}>{group.title}</div>
-              <div style={{ fontSize: 13, color: "#374151" }}>
+              <div style={{ fontSize: 13, color: "var(--text-muted)" }}>
                 Earned: <b>{earned}</b> | Remaining: <b>{remaining}</b> lures
               </div>
             </div>
@@ -150,9 +150,9 @@ export default function TasksTracker(props: { eventId: string; eventVersion: num
                       }
                     }}
                     style={{
-                      border: completed ? "1px solid #059669" : "1px solid #e5e7eb",
-                      background: completed ? "#ecfdf5" : "#fff",
-                      color: completed ? "#065f46" : "#111827",
+                      border: completed ? "1px solid var(--success)" : "1px solid var(--border)",
+                      background: completed ? "var(--success-contrast)" : "var(--surface)",
+                      color: completed ? "var(--success)" : "var(--text)",
                       padding: "6px 10px",
                       borderRadius: 10,
                       fontSize: 13,
@@ -160,7 +160,7 @@ export default function TasksTracker(props: { eventId: string; eventVersion: num
                     }}
                   >
                     <span>{tier.requirementTargetValue}</span>
-                    <span style={{ marginLeft: 4, color: "#059669", fontSize: 12 }}>+{tier.rewardAmount}L</span>
+                    <span style={{ marginLeft: 4, color: "var(--success)", fontSize: 12 }}>+{tier.rewardAmount}L</span>
                   </button>
                 );
               })}

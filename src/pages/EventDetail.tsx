@@ -82,19 +82,19 @@ function renderGuideBlocks(blocks: GuideContentBlock[]) {
           <img
             src={resolveImageSrc(block.src)}
             alt={block.alt ?? ""}
-            style={{
-              maxWidth: "100%",
-              maxHeight: 420,
-              width: "100%",
-              objectFit: "contain",
-              borderRadius: 10,
-              border: "1px solid #e5e7eb",
-              display: "block",
-              cursor: "zoom-in",
-            }}
+          style={{
+            maxWidth: "100%",
+            maxHeight: 420,
+            width: "100%",
+            objectFit: "contain",
+            borderRadius: 10,
+            border: "1px solid var(--border)",
+            display: "block",
+            cursor: "zoom-in",
+          }}
             data-zoom-src={resolveImageSrc(block.src)}
           />
-          {block.caption ? <figcaption style={{ fontSize: 12, color: "#6b7280", marginTop: 6 }}>{block.caption}</figcaption> : null}
+        {block.caption ? <figcaption style={{ fontSize: 12, color: "var(--text-subtle)", marginTop: 6 }}>{block.caption}</figcaption> : null}
         </figure>
       );
     }
@@ -122,13 +122,13 @@ function renderGuideBlocks(blocks: GuideContentBlock[]) {
                 maxHeight: 260,
                 objectFit: "contain",
                 borderRadius: 10,
-                border: "1px solid #e5e7eb",
+                border: "1px solid var(--border)",
                 display: "block",
                 cursor: "zoom-in",
               }}
               data-zoom-src={resolveImageSrc(image.src)}
             />
-            {image.caption ? <figcaption style={{ fontSize: 12, color: "#6b7280", marginTop: 6 }}>{image.caption}</figcaption> : null}
+            {image.caption ? <figcaption style={{ fontSize: 12, color: "var(--text-subtle)", marginTop: 6 }}>{image.caption}</figcaption> : null}
           </figure>
         ))}
       </div>
@@ -179,13 +179,13 @@ function GuideSectionView({
 }) {
   const anchorId = getGuideAnchorId(section.sectionId);
   return (
-    <details id={anchorId} style={{ border: "1px solid #e5e7eb", borderRadius: 10, padding: "8px 12px", background: "#fff", scrollMarginTop: 90 }}>
+    <details id={anchorId} style={{ border: "1px solid var(--border)", borderRadius: 10, padding: "8px 12px", background: "var(--surface)", scrollMarginTop: 90 }}>
       <summary className="detailsSummary" style={{ cursor: "pointer", fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
         <span aria-hidden="true" className="detailsChevron">
           ▸
         </span>
         <span style={{ flex: 1 }}>{section.title}</span>
-        <span style={{ fontSize: 12, color: "#6b7280", minWidth: 52, textAlign: "right" }}>{copiedAnchor === anchorId ? "Copied" : ""}</span>
+        <span style={{ fontSize: 12, color: "var(--text-subtle)", minWidth: 52, textAlign: "right" }}>{copiedAnchor === anchorId ? "Copied" : ""}</span>
         <button
           type="button"
           onClick={() => onCopyLink(anchorId)}
@@ -440,7 +440,7 @@ export default function EventDetail() {
     return (
       <AppShell>
         <h1>Event</h1>
-        <p style={{ color: "crimson" }}>Error: {eventState.error}</p>
+        <p style={{ color: "var(--danger)" }}>Error: {eventState.error}</p>
       </AppShell>
     );
   }
@@ -457,7 +457,7 @@ export default function EventDetail() {
         toolState.status === "loading" ? (
           <p>Loading tools…</p>
         ) : toolState.status === "error" ? (
-          <p style={{ color: "crimson" }}>Tools error: {toolState.error}</p>
+          <p style={{ color: "var(--danger)" }}>Tools error: {toolState.error}</p>
         ) : toolState.status === "ready" && toolState.tools.length ? (
           <ToolsHost tools={toolState.tools} />
         ) : (
@@ -489,14 +489,14 @@ export default function EventDetail() {
                 <details
                   key={item.faqId}
                   id={getFaqAnchorId(item.faqId)}
-                  style={{ border: "1px solid #e5e7eb", borderRadius: 10, padding: "8px 12px", background: "#fff", scrollMarginTop: 90 }}
+                  style={{ border: "1px solid var(--border)", borderRadius: 10, padding: "8px 12px", background: "var(--surface)", scrollMarginTop: 90 }}
                 >
                   <summary className="detailsSummary" style={{ cursor: "pointer", fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
                     <span aria-hidden="true" className="detailsChevron">
                       ▸
                     </span>
                     <span style={{ flex: 1 }}>{item.question}</span>
-                    <span style={{ fontSize: 12, color: "#6b7280", minWidth: 52, textAlign: "right" }}>
+                    <span style={{ fontSize: 12, color: "var(--text-subtle)", minWidth: 52, textAlign: "right" }}>
                       {copiedAnchor === getFaqAnchorId(item.faqId) ? "Copied" : ""}
                     </span>
                     <button
@@ -510,7 +510,7 @@ export default function EventDetail() {
                   </summary>
                   <div style={{ marginTop: 8 }}>{renderBodyText(item.answer)}</div>
                   {item.tags && item.tags.length > 0 ? (
-                    <div style={{ marginTop: 8, fontSize: 12, color: "#6b7280" }}>Tags: {item.tags.join(", ")}</div>
+                    <div style={{ marginTop: 8, fontSize: 12, color: "var(--text-subtle)" }}>Tags: {item.tags.join(", ")}</div>
                   ) : null}
                 </details>
               ))}
@@ -559,7 +559,7 @@ export default function EventDetail() {
         .lightboxOverlay {
           position: fixed;
           inset: 0;
-          background: rgba(15, 23, 42, 0.8);
+          background: var(--overlay);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -574,7 +574,7 @@ export default function EventDetail() {
           border-radius: 12px;
           border: 1px solid rgba(255, 255, 255, 0.2);
           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
-          background: #0f172a;
+          background: var(--surface-2);
         }
         .lightboxClose {
           position: fixed;
@@ -591,7 +591,7 @@ export default function EventDetail() {
         .tasksModalOverlay {
           position: fixed;
           inset: 0;
-          background: rgba(15, 23, 42, 0.7);
+          background: var(--overlay);
           display: flex;
           align-items: flex-end;
           justify-content: center;
@@ -602,7 +602,7 @@ export default function EventDetail() {
           width: 100%;
           height: 80vh;
           overflow: auto;
-          background: #fff;
+          background: var(--surface);
           border-radius: 16px 16px 0 0;
           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
           padding: 12px 16px 16px;
@@ -617,7 +617,7 @@ export default function EventDetail() {
           width: 88px;
           height: 10px;
           border-radius: 999px;
-          background: #d1d5db;
+          background: var(--border);
           margin: 4px auto 8px;
         }
         .tasksModalHeader {
@@ -627,8 +627,8 @@ export default function EventDetail() {
           margin-bottom: 12px;
         }
         .tasksModalClose {
-          border: 1px solid #e5e7eb;
-          background: #fff;
+          border: 1px solid var(--border);
+          background: var(--surface);
           border-radius: 999px;
           padding: 6px 10px;
           cursor: pointer;
@@ -696,7 +696,9 @@ export default function EventDetail() {
               style={{ transform: `scale(${lightboxScale})` }}
             />
             {guideImages[lightboxIndex]?.caption ? (
-              <div style={{ color: "#e2e8f0", marginTop: 12, fontSize: 13, textAlign: "center" }}>{guideImages[lightboxIndex]?.caption}</div>
+              <div style={{ color: "var(--text-muted)", marginTop: 12, fontSize: 13, textAlign: "center" }}>
+                {guideImages[lightboxIndex]?.caption}
+              </div>
             ) : null}
           </div>
           <button type="button" className="lightboxClose" onClick={closeLightbox}>

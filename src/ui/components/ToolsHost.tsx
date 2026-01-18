@@ -11,14 +11,14 @@ function renderBodyText(body: string) {
 
 function PriorityListToolView({ tool }: { tool: ToolPriorityList }) {
   return (
-    <div style={{ border: "1px solid #e5e7eb", borderRadius: 12, padding: 12, background: "#fff" }}>
+    <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12, background: "var(--surface)" }}>
       <div style={{ fontWeight: 800 }}>{tool.title}</div>
       {tool.description ? <p style={{ marginTop: 6 }}>{tool.description}</p> : null}
       <ol style={{ paddingLeft: 18, marginTop: 10, marginBottom: 0 }}>
         {tool.items.map((item, index) => (
           <li key={`${tool.toolId}-${index}`} style={{ marginBottom: 8 }}>
             <div style={{ fontWeight: 600 }}>{item.label}</div>
-            {item.note ? <div style={{ fontSize: 13, color: "#4b5563" }}>{item.note}</div> : null}
+            {item.note ? <div style={{ fontSize: 13, color: "var(--text-soft)" }}>{item.note}</div> : null}
           </li>
         ))}
       </ol>
@@ -28,7 +28,7 @@ function PriorityListToolView({ tool }: { tool: ToolPriorityList }) {
 
 function StaticTextToolView({ tool }: { tool: ToolStaticText }) {
   return (
-    <div style={{ border: "1px solid #e5e7eb", borderRadius: 12, padding: 12, background: "#fff" }}>
+    <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12, background: "var(--surface)" }}>
       <div style={{ fontWeight: 800 }}>{tool.title}</div>
       {tool.description ? <p style={{ marginTop: 6 }}>{tool.description}</p> : null}
       <div style={{ marginTop: 8 }}>{renderBodyText(tool.body)}</div>
@@ -48,7 +48,7 @@ export default function ToolsHost({ tools }: { tools: ToolDefinition[] }) {
         }
 
         return (
-          <div key={tool.toolId} style={{ border: "1px solid #e5e7eb", borderRadius: 12, padding: 12, background: "#fff" }}>
+          <div key={tool.toolId} style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12, background: "var(--surface)" }}>
             <div style={{ fontWeight: 800 }}>{tool.title}</div>
             <p style={{ marginTop: 6 }}>Unsupported tool type: {tool.toolType}</p>
           </div>

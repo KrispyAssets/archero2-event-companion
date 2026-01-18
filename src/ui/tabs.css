@@ -6,23 +6,23 @@
 }
 
 .tabButton {
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
+  border: 1px solid var(--border);
+  background: var(--surface);
   padding: 8px 10px;
   border-radius: 10px;
   font-weight: 700;
-  color: #374151;
+  color: var(--text-muted);
   white-space: nowrap;
 }
 
 .tabButton.active {
-  border-color: #111827;
-  color: #111827;
+  border-color: var(--text);
+  color: var(--text);
 }
 
 .tabPanel {
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
+  border: 1px solid var(--border);
+  background: var(--surface);
   border-radius: 12px;
   padding: 12px;
 }

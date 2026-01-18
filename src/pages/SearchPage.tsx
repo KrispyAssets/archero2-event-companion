@@ -168,7 +168,7 @@ function highlightText(text: string, query: string): React.ReactNode {
   return parts.map((part, index) => {
     if (tokenSet.has(part.toLowerCase())) {
       return (
-        <mark key={`${index}-${part}`} style={{ background: "#fde68a" }}>
+        <mark key={`${index}-${part}`} style={{ background: "var(--highlight)" }}>
           {part}
         </mark>
       );
@@ -286,7 +286,7 @@ export default function SearchPage() {
             style={{ maxWidth: 520 }}
           />
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <label style={{ fontSize: 13, color: "#374151" }}>
+            <label style={{ fontSize: 13, color: "var(--text-muted)" }}>
               Event filter
               <select
                 value={selectedEventId}
@@ -312,9 +312,9 @@ export default function SearchPage() {
                     style={{
                       padding: "6px 10px",
                       borderRadius: 999,
-                      border: active ? "1px solid #111827" : "1px solid #e5e7eb",
-                      background: active ? "#111827" : "#fff",
-                      color: active ? "#fff" : "#374151",
+                      border: active ? "1px solid var(--text)" : "1px solid var(--border)",
+                      background: active ? "var(--accent)" : "var(--surface)",
+                      color: active ? "var(--accent-contrast)" : "var(--text-muted)",
                       fontWeight: 600,
                     }}
                   >
@@ -325,27 +325,27 @@ export default function SearchPage() {
             </div>
           </div>
           {!hasQuery && !showAllForEvent ? (
-            <div style={{ fontSize: 13, color: "#6b7280" }}>
+            <div style={{ fontSize: 13, color: "var(--text-subtle)" }}>
               {requiresMinLength ? `Type at least ${minQueryLength} characters to search.` : "Type to search this event."}
             </div>
           ) : null}
 
           {hasQuery || showAllForEvent ? (
             <>
-              <div style={{ fontSize: 13, color: "#6b7280" }}>{filtered.length} result(s)</div>
+              <div style={{ fontSize: 13, color: "var(--text-subtle)" }}>{filtered.length} result(s)</div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {filtered.map((item) => (
-                  <div key={item.id} style={{ border: "1px solid #e5e7eb", borderRadius: 12, padding: 12, background: "#fff" }}>
-                <div style={{ fontSize: 12, textTransform: "uppercase", color: "#6b7280" }}>
-                  {item.eventTitle} • {getKindLabel(item.kind)}
-                </div>
-                <div style={{ fontWeight: 700, marginTop: 4 }}>{highlightText(item.title, query)}</div>
-                {getSnippet(item, query) ? (
-                  <div style={{ fontSize: 13, color: "#4b5563", marginTop: 6 }}>
-                    {highlightText(getSnippet(item, query), query)}…
-                  </div>
-                ) : null}
+                  <div key={item.id} style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12, background: "var(--surface)" }}>
+                    <div style={{ fontSize: 12, textTransform: "uppercase", color: "var(--text-subtle)" }}>
+                      {item.eventTitle} • {getKindLabel(item.kind)}
+                    </div>
+                    <div style={{ fontWeight: 700, marginTop: 4 }}>{highlightText(item.title, query)}</div>
+                    {getSnippet(item, query) ? (
+                      <div style={{ fontSize: 13, color: "var(--text-soft)", marginTop: 6 }}>
+                        {highlightText(getSnippet(item, query), query)}…
+                      </div>
+                    ) : null}
                 <div style={{ marginTop: 8 }}>
                   <Link to={`/event/${encodeURIComponent(item.eventId)}${item.anchor ? `#${encodeURIComponent(item.anchor)}` : ""}`}>
                     {getActionLabel(item.kind)}
