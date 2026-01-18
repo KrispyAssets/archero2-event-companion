@@ -243,6 +243,11 @@ button:focus-visible {
   scrollbar-color: var(--accent-strong) var(--surface-2);
 }
 
+.no-select,
+.no-select * {
+  user-select: none;
+}
+
 *::-webkit-scrollbar {
   width: 10px;
   height: 10px;

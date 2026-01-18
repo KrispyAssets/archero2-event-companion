@@ -614,10 +614,6 @@ export default function EventDetail() {
         }
         .tasksModal.dragging {
           transition: none;
-          user-select: none;
-        }
-        .tasksModal.dragging * {
-          user-select: none;
         }
         .tasksModalHandle {
           width: 88px;
@@ -723,7 +719,7 @@ export default function EventDetail() {
           }}
         >
           <div
-            className={`tasksModal${tasksSheetDragging ? " dragging" : ""}`}
+            className={`tasksModal${tasksSheetDragging ? " dragging no-select" : ""}`}
             style={{ ["--tasks-sheet-offset" as string]: `${tasksSheetOffset}px` }}
             onPointerDown={(e) => {
               tasksSheetStartRef.current = e.clientY;
