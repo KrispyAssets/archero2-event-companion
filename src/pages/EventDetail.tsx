@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import AppShell from "../ui/AppShell";
 import Tabs from "../ui/Tabs";
 import TasksTracker from "../ui/components/TasksTracker";
@@ -363,6 +363,8 @@ function filterFaqItems(items: FaqItem[], query: string): FaqItem[] {
 
 export default function EventDetail() {
   const { eventId } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [faqQuery, setFaqQuery] = useState("");
   const [activeAnchor, setActiveAnchor] = useState("");
   const [activeTabId, setActiveTabId] = useState("tasks");
@@ -384,6 +386,10 @@ export default function EventDetail() {
   const programmaticNavRef = useRef(false);
   const pendingScrollRestoreRef = useRef<number | null>(null);
   const scrollUpdateRef = useRef<number | null>(null);
+  const pendingTabRef = useRef<string | null>(null);
+  const uiRestoredRef = useRef(false);
+  const allowUiSaveRef = useRef(false);
+  const restoredUiRef = useRef(false);
   const scrollLockRef = useRef<{
     bodyOverflow: string;
     bodyPaddingRight: string;
@@ -408,10 +414,70 @@ export default function EventDetail() {
       return eventId ?? "";
     }
   }, [eventId]);
+  const urlTab = useMemo(() => new URLSearchParams(location.search).get("tab") ?? "", [location.search]);
 
   const eventState = useEventCatalog(decodedEventId);
   const toolState = useToolsCatalog(eventState.status === "ready" ? eventState.event.toolRefs.map((ref) => ref.toolId) : []);
   const guideImages = useMemo(() => (eventState.status === "ready" ? collectGuideImages(eventState.event.guideSections) : []), [eventState]);
+
+  useEffect(() => {
+    if (!decodedEventId) return;
+    const key = `archero2_event_ui_${decodedEventId}`;
+    const raw = sessionStorage.getItem(key);
+    if (!raw) {
+      uiRestoredRef.current = true;
+      allowUiSaveRef.current = true;
+      return;
+    }
+    try {
+      const parsed = JSON.parse(raw) as {
+        activeTabId?: string;
+        openDetailsByTab?: Record<string, Record<string, boolean>>;
+        scrollPositions?: Record<string, number>;
+      };
+      const urlTab = new URLSearchParams(window.location.search).get("tab");
+      const hasHash = Boolean(window.location.hash);
+      const savedScrollPositions = parsed.scrollPositions ?? {};
+      if (!hasHash && !urlTab && parsed.activeTabId) {
+        setActiveTabId(parsed.activeTabId);
+        setLastActiveTabByEvent((prev) => ({ ...prev, [decodedEventId]: parsed.activeTabId! }));
+        restoredUiRef.current = true;
+        const saved = savedScrollPositions[`tab:${parsed.activeTabId}`];
+        if (typeof saved === "number") {
+          pendingScrollRestoreRef.current = saved;
+        }
+      }
+      if (parsed.openDetailsByTab) {
+        setOpenDetailsByTab(parsed.openDetailsByTab);
+      }
+      if (parsed.scrollPositions) {
+        scrollPositionsRef.current = new Map(
+          Object.entries(parsed.scrollPositions).map(([key, value]) => [key, Number(value)])
+        );
+      }
+      uiRestoredRef.current = true;
+      window.requestAnimationFrame(() => {
+        allowUiSaveRef.current = true;
+      });
+    } catch {
+      // Ignore stored UI state parse errors.
+      uiRestoredRef.current = true;
+      allowUiSaveRef.current = true;
+    }
+  }, [decodedEventId]);
+
+  useEffect(() => {
+    if (!decodedEventId) return;
+    if (!uiRestoredRef.current) return;
+    if (!allowUiSaveRef.current) return;
+    const key = `archero2_event_ui_${decodedEventId}`;
+    const payload = {
+      activeTabId,
+      openDetailsByTab,
+      scrollPositions: Object.fromEntries(scrollPositionsRef.current),
+    };
+    sessionStorage.setItem(key, JSON.stringify(payload));
+  }, [decodedEventId, activeTabId, openDetailsByTab]);
 
   function setDetailOpen(tabId: string, anchorId: string, isOpen: boolean) {
     setOpenDetailsByTab((prev) => {
@@ -461,6 +527,10 @@ export default function EventDetail() {
 
   useEffect(() => {
     function syncHash() {
+      if (programmaticNavRef.current) {
+        programmaticNavRef.current = false;
+        return;
+      }
       const hash = window.location.hash.replace(/^#/, "");
       let decodedHash = hash;
       try {
@@ -638,9 +708,28 @@ export default function EventDetail() {
     const nextAnchor = hash ? decodeURIComponent(hash) : "";
     const nextTab = nextAnchor ? getTabForAnchor(nextAnchor) : null;
     const storedTab = lastActiveTabByEvent[decodedEventId] ?? null;
-    setActiveTabId(nextTab ?? storedTab ?? "tasks");
+
+    if (pendingTabRef.current && urlTab !== pendingTabRef.current) {
+      return;
+    }
+    if (pendingTabRef.current && urlTab === pendingTabRef.current) {
+      pendingTabRef.current = null;
+    }
+
+    if (urlTab) {
+      setActiveTabId(urlTab);
+      if (!hash) {
+        setActiveAnchor("");
+        const saved = scrollPositionsRef.current.get(`tab:${urlTab}`);
+        if (typeof saved === "number") {
+          pendingScrollRestoreRef.current = saved;
+        }
+      }
+    } else if (!restoredUiRef.current) {
+      setActiveTabId(nextTab ?? storedTab ?? "tasks");
+    }
     setFaqQuery("");
-  }, [decodedEventId, lastActiveTabByEvent]);
+  }, [decodedEventId, lastActiveTabByEvent, urlTab]);
 
   useEffect(() => {
     return () => {
@@ -709,7 +798,9 @@ export default function EventDetail() {
     if (window.location.hash !== hash) {
       storeScrollPosition();
       programmaticNavRef.current = true;
-      window.location.hash = hash;
+      const params = new URLSearchParams(location.search);
+      params.set("tab", getTabForAnchor(anchorId) ?? activeTabId);
+      navigate({ pathname: location.pathname, search: `?${params.toString()}`, hash }, { replace: false });
     }
     const url = `${window.location.origin}${window.location.pathname}${window.location.search}${hash}`;
 
@@ -773,10 +864,9 @@ export default function EventDetail() {
     if (window.location.hash !== hash) {
       storeScrollPosition();
       programmaticNavRef.current = true;
-      const url = new URL(window.location.href);
-      url.hash = hash;
-      url.searchParams.set("tab", getTabForAnchor(anchorId) ?? activeTabId);
-      window.history.pushState({}, "", url.toString());
+      const params = new URLSearchParams(location.search);
+      params.set("tab", getTabForAnchor(anchorId) ?? activeTabId);
+      navigate({ pathname: location.pathname, search: `?${params.toString()}`, hash }, { replace: false });
     } else {
       setActiveAnchor(anchorId);
     }
@@ -787,12 +877,13 @@ export default function EventDetail() {
   function handleTabChange(nextTabId: string) {
     if (nextTabId === activeTabId) return;
     storeScrollPosition();
-    setActiveTabId(nextTabId);
-    const url = new URL(window.location.href);
-    url.hash = "";
-    url.searchParams.set("tab", nextTabId);
     programmaticNavRef.current = true;
-    window.history.pushState({}, "", url.toString());
+    pendingTabRef.current = nextTabId;
+    setActiveTabId(nextTabId);
+    setActiveAnchor("");
+    const params = new URLSearchParams(location.search);
+    params.set("tab", nextTabId);
+    navigate({ pathname: location.pathname, search: `?${params.toString()}`, hash: "" }, { replace: false });
     const saved = scrollPositionsRef.current.get(`tab:${nextTabId}`);
     if (typeof saved === "number") {
       pendingScrollRestoreRef.current = saved;
