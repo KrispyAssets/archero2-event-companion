@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import type { ToolFishingCalculator } from "../../catalog/types";
+import type { TaskDefinition, ToolFishingCalculator } from "../../catalog/types";
+import { buildTaskGroups, computeEarned, computeRemaining } from "../../catalog/taskGrouping";
+import { getEventProgressState } from "../../state/userStateStore";
 
 type FishingToolData = {
   schemaVersion: number;
@@ -61,7 +63,12 @@ type ToolState = {
   lakeStates: Record<string, LakeState>;
   brokenLines: number;
   history: HistoryEntry[];
-  goalTickets: number | null;
+  goalMode: "silver" | "gold" | "both";
+  currentSilverTickets: number | null;
+  targetSilverTickets: number | null;
+  silverEstimateLakeId: string | null;
+  currentGoldTickets: number | null;
+  targetGoldTickets: number | null;
 };
 
 type DataState =
@@ -116,7 +123,37 @@ function getFishTypeLabel(typeId: string, rarity: FishingFishType["rarity"]) {
   return rarity;
 }
 
-export default function FishingToolView({ tool }: { tool: ToolFishingCalculator }) {
+function sumCounts(values: Record<string, number>) {
+  return Object.values(values).reduce((sum, count) => sum + count, 0);
+}
+
+function getAvgTicketsPerFish(
+  data: FishingToolData,
+  lakeId: string
+): number | null {
+  const ticketsPerKg = data.ticketsPerKgByLake?.[lakeId];
+  if (!ticketsPerKg) return null;
+  const fullCounts = buildFullCounts(data, lakeId);
+  const weightsForLake = data.weightsByLake[lakeId] ?? {};
+  const totalWeight = Object.entries(fullCounts).reduce((sum, [typeId, count]) => {
+    return sum + count * (weightsForLake[typeId] ?? 0);
+  }, 0);
+  const fishCount = sumCounts(fullCounts);
+  if (!fishCount) return null;
+  return (totalWeight / fishCount) * ticketsPerKg;
+}
+
+export default function FishingToolView({
+  tool,
+  eventId,
+  eventVersion,
+  tasks,
+}: {
+  tool: ToolFishingCalculator;
+  eventId?: string;
+  eventVersion?: number;
+  tasks?: TaskDefinition[];
+}) {
   const [dataState, setDataState] = useState<DataState>(() => {
     const cached = dataCache.get(tool.dataPath);
     return cached ? { status: "ready", data: cached } : { status: "loading" };
@@ -125,6 +162,7 @@ export default function FishingToolView({ tool }: { tool: ToolFishingCalculator 
     return toolStateCache.get(tool.toolId) ?? null;
   });
   const [breakStep, setBreakStep] = useState(1);
+  const [taskTick, setTaskTick] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -182,7 +220,12 @@ export default function FishingToolView({ tool }: { tool: ToolFishingCalculator 
       lakeStates: {},
       brokenLines: 0,
       history: [],
-      goalTickets: null,
+      goalMode: stored?.goalMode ?? "silver",
+      currentSilverTickets: stored?.currentSilverTickets ?? null,
+      targetSilverTickets: stored?.targetSilverTickets ?? stored?.goalTickets ?? null,
+      silverEstimateLakeId: stored?.silverEstimateLakeId ?? data.lastLakeId ?? baseSet.lakes[0]?.lakeId ?? null,
+      currentGoldTickets: stored?.currentGoldTickets ?? null,
+      targetGoldTickets: stored?.targetGoldTickets ?? null,
     };
 
     const baseSet = data.sets[0];
@@ -216,7 +259,13 @@ export default function FishingToolView({ tool }: { tool: ToolFishingCalculator 
     nextState.lakeStates = nextLakeStates;
     nextState.brokenLines = stored?.brokenLines ?? stored?.brokenLinesBySet?.[legacySetKey] ?? 0;
     nextState.history = stored?.history ?? stored?.historyBySet?.[legacySetKey] ?? [];
-    nextState.goalTickets = stored?.goalTickets ?? stored?.goalTicketsBySet?.[legacySetKey] ?? null;
+    nextState.goalMode = stored?.goalMode ?? "silver";
+    nextState.currentSilverTickets = stored?.currentSilverTickets ?? null;
+    nextState.targetSilverTickets = stored?.targetSilverTickets ?? stored?.goalTickets ?? null;
+    nextState.silverEstimateLakeId =
+      stored?.silverEstimateLakeId ?? data.lastLakeId ?? baseSet.lakes[0]?.lakeId ?? null;
+    nextState.currentGoldTickets = stored?.currentGoldTickets ?? null;
+    nextState.targetGoldTickets = stored?.targetGoldTickets ?? null;
 
     setToolState(nextState);
     toolStateCache.set(tool.toolId, nextState);
@@ -228,6 +277,14 @@ export default function FishingToolView({ tool }: { tool: ToolFishingCalculator 
     localStorage.setItem(storageKey, JSON.stringify(toolState));
     toolStateCache.set(tool.toolId, toolState);
   }, [tool.toolId, toolState]);
+
+  useEffect(() => {
+    function handleStateChange() {
+      setTaskTick((prev) => prev + 1);
+    }
+    window.addEventListener("archero2_user_state", handleStateChange);
+    return () => window.removeEventListener("archero2_user_state", handleStateChange);
+  }, []);
 
   const derived = useMemo(() => {
     if (dataState.status !== "ready" || !toolState) return null;
@@ -242,6 +299,62 @@ export default function FishingToolView({ tool }: { tool: ToolFishingCalculator 
 
     return { data, set, lake, lakeState };
   }, [dataState, toolState]);
+
+  const taskTotals = useMemo(() => {
+    if (!eventId || !eventVersion || !tasks?.length) return null;
+    void taskTick;
+    const progress = getEventProgressState(eventId, eventVersion);
+    const groups = buildTaskGroups(tasks);
+    return groups.reduce(
+      (acc, group) => {
+        const state = progress.tasks[group.groupId] ?? { progressValue: 0, flags: { isCompleted: false, isClaimed: false } };
+        acc.earned += computeEarned(group.tiers, state.progressValue);
+        acc.remaining += computeRemaining(group.tiers, state.progressValue);
+        return acc;
+      },
+      { earned: 0, remaining: 0 }
+    );
+  }, [eventId, eventVersion, tasks, taskTick]);
+
+  const lakeRecommendations = useMemo(() => {
+    if (dataState.status !== "ready" || !toolState) return null;
+    const data = dataState.data;
+    const set = data.sets.find((entry) => entry.setId === toolState.activeSetId);
+    if (!set) return null;
+    const legendaryTypeId = getLegendaryTypeId(data);
+    const goldCurrent = toolState.currentGoldTickets ?? null;
+    const goldTarget = toolState.targetGoldTickets ?? null;
+    const goldRemaining =
+      goldCurrent !== null && goldTarget !== null ? Math.max(0, goldTarget - goldCurrent) : null;
+    if (!goldRemaining) return null;
+    let best: { lakeId: string; expectedOne: number } | null = null;
+    for (const entry of set.lakes) {
+      const estimate = getLegendaryRangeForLake(entry.lakeId, 1, data, toolState.lakeStates, legendaryTypeId);
+      if (!estimate) continue;
+      if (!best || estimate.expectedOne < best.expectedOne) {
+        best = { lakeId: entry.lakeId, expectedOne: estimate.expectedOne };
+      }
+    }
+    return best;
+  }, [dataState, toolState]);
+
+  const goldRange = useMemo(() => {
+    if (dataState.status !== "ready" || !toolState) return null;
+    const data = dataState.data;
+    const legendaryTypeId = getLegendaryTypeId(data);
+    const goldCurrent = toolState.currentGoldTickets ?? null;
+    const goldTarget = toolState.targetGoldTickets ?? null;
+    const goldRemaining =
+      goldCurrent !== null && goldTarget !== null ? Math.max(0, goldTarget - goldCurrent) : null;
+    if (!goldRemaining || !lakeRecommendations) return null;
+    return getLegendaryRangeForLake(
+      lakeRecommendations.lakeId,
+      goldRemaining,
+      data,
+      toolState.lakeStates,
+      legendaryTypeId
+    );
+  }, [dataState, toolState, lakeRecommendations]);
 
   if (dataState.status === "loading") {
     return <p>Loading fishing tool…</p>;
@@ -261,7 +374,7 @@ export default function FishingToolView({ tool }: { tool: ToolFishingCalculator 
   const history = toolState.history ?? [];
   const lastThree = history.slice(-3).reverse();
 
-  const totalFishRemaining = Object.values(lakeState.remainingByTypeId).reduce((sum, count) => sum + count, 0);
+  const totalFishRemaining = sumCounts(lakeState.remainingByTypeId);
   const legendaryRemaining = lakeState.remainingByTypeId[legendaryTypeId] ?? 0;
   const legendaryChance = totalFishRemaining > 0 ? (legendaryRemaining / totalFishRemaining) * 100 : 0;
 
@@ -281,20 +394,53 @@ export default function FishingToolView({ tool }: { tool: ToolFishingCalculator 
     0
   );
 
-  const avgTicketsPerFish = (() => {
-    if (!ticketsPerKg) return null;
-    const fullCounts = buildFullCounts(data, lake.lakeId);
-    const totalWeight = Object.entries(fullCounts).reduce((sum, [typeId, count]) => {
-      return sum + count * (weightsForLake[typeId] ?? 0);
-    }, 0);
-    const fishCount = Object.values(fullCounts).reduce((sum, count) => sum + count, 0);
-    if (!fishCount) return null;
-    return (totalWeight / fishCount) * ticketsPerKg;
-  })();
+  const avgTicketsPerFish = getAvgTicketsPerFish(data, lake.lakeId);
+  const silverEstimateLakeId = toolState.silverEstimateLakeId ?? data.lastLakeId;
+  const avgTicketsPerFishSilver = silverEstimateLakeId ? getAvgTicketsPerFish(data, silverEstimateLakeId) : null;
 
-  const goalTickets = toolState.goalTickets ?? null;
-  const estimatedFishForGoal =
-    goalTickets && avgTicketsPerFish ? Math.ceil(goalTickets / avgTicketsPerFish) : null;
+  const silverCurrent = toolState.currentSilverTickets ?? null;
+  const silverTarget = toolState.targetSilverTickets ?? null;
+  const silverRemaining = silverCurrent !== null && silverTarget !== null ? Math.max(0, silverTarget - silverCurrent) : null;
+  const silverFishNeeded =
+    silverRemaining !== null && avgTicketsPerFishSilver ? Math.ceil(silverRemaining / avgTicketsPerFishSilver) : null;
+  const luresRemainingFromTasks = taskTotals?.remaining ?? null;
+  const luresEarnedFromTasks = taskTotals?.earned ?? null;
+  const silverLureShortfall =
+    silverFishNeeded !== null && luresRemainingFromTasks !== null ? Math.max(0, silverFishNeeded - luresRemainingFromTasks) : null;
+  const silverGemCost = silverLureShortfall !== null ? silverLureShortfall * 150 : null;
+
+  function getLegendaryRangeForLake(
+    lakeId: string,
+    goal: number,
+    data: FishingToolData,
+    lakeStates: Record<string, LakeState>,
+    legendaryTypeId: string
+  ) {
+    if (goal <= 0) return null;
+    const state = lakeStates[lakeId];
+    if (!state) return null;
+    const remainingFish = sumCounts(state.remainingByTypeId);
+    const remainingLegendary = state.remainingByTypeId[legendaryTypeId] ?? 0;
+    const fullCounts = buildFullCounts(data, lakeId);
+    const fullFish = sumCounts(fullCounts);
+    const fullLegendary = fullCounts[legendaryTypeId] ?? 0;
+    if (!fullLegendary) return null;
+    const expectedFull = fullFish / fullLegendary;
+    const bestOne = remainingLegendary > 0 ? 1 : remainingFish + 1;
+    const worstOne = remainingLegendary > 0 ? remainingFish - remainingLegendary + 1 : remainingFish + fullFish;
+    const expectedOne =
+      remainingLegendary > 0 ? (remainingFish + 1) / (remainingLegendary + 1) : remainingFish + expectedFull;
+    return {
+      best: bestOne + (goal - 1),
+      expected: expectedOne + (goal - 1) * expectedFull,
+      worst: worstOne + (goal - 1) * fullFish,
+      expectedOne,
+    };
+  }
+
+  const goldCurrent = toolState.currentGoldTickets ?? null;
+  const goldTarget = toolState.targetGoldTickets ?? null;
+  const goldRemaining = goldCurrent !== null && goldTarget !== null ? Math.max(0, goldTarget - goldCurrent) : null;
 
   function updateToolState(updater: (prev: ToolState) => ToolState) {
     setToolState((prev) => (prev ? updater(prev) : prev));
@@ -470,10 +616,24 @@ export default function FishingToolView({ tool }: { tool: ToolFishingCalculator 
     });
   }
 
-  function setGoalTickets(value: number | null) {
+  function setGoalMode(mode: ToolState["goalMode"]) {
     updateToolState((prev) => ({
       ...prev,
-      goalTickets: value,
+      goalMode: mode,
+    }));
+  }
+
+  function setSilverEstimateLake(lakeId: string) {
+    updateToolState((prev) => ({
+      ...prev,
+      silverEstimateLakeId: lakeId,
+    }));
+  }
+
+  function setTicketValue(key: "currentSilverTickets" | "targetSilverTickets" | "currentGoldTickets" | "targetGoldTickets", value: number | null) {
+    updateToolState((prev) => ({
+      ...prev,
+      [key]: value,
     }));
   }
 
@@ -493,7 +653,6 @@ export default function FishingToolView({ tool }: { tool: ToolFishingCalculator 
         lakeStates: nextLakeStates,
         brokenLines: 0,
         history: [],
-        goalTickets: null,
       };
     });
   }
@@ -604,8 +763,8 @@ export default function FishingToolView({ tool }: { tool: ToolFishingCalculator 
           <div style={{ display: "grid", gap: 6, marginTop: 8, fontSize: 14 }}>
             <div>Fish remaining: {totalFishRemaining}</div>
             <div>Chance next fish is Legendary: {legendaryChance.toFixed(1)}%</div>
-            <div>Average Weight Remaining: {formatNumber(weightRemaining, 1)} kg</div>
-            <div>Average Silver Tickets Remaining: {ticketsPerKg ? formatNumber(ticketsRemaining, 0) : "Add ticket data"}</div>
+            <div>Estimated Weight Remaining: {formatNumber(weightRemaining, 1)} kg</div>
+            <div>Estimated Silver Tickets Remaining: {ticketsPerKg ? formatNumber(ticketsRemaining, 0) : "Add ticket data"}</div>
           </div>
         </div>
 
@@ -679,25 +838,150 @@ export default function FishingToolView({ tool }: { tool: ToolFishingCalculator 
           </div>
 
           <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12 }}>
-            <div style={{ fontWeight: 700, marginBottom: 6 }}>Ticket Goal Estimate</div>
+            <div style={{ fontWeight: 700, marginBottom: 6 }}>Ticket Goals</div>
             <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-              <input
-                type="text"
-                inputMode="numeric"
-                placeholder="Goal tickets"
-                value={goalTickets === null ? "" : goalTickets}
-                onChange={(e) => {
-                  const raw = e.target.value.replace(/[^\d]/g, "");
-                  setGoalTickets(raw ? Number(raw) : null);
-                }}
-                style={{ maxWidth: 140 }}
-              />
-              <div style={{ color: "var(--text-muted)", fontSize: 13 }}>
-                {avgTicketsPerFish && goalTickets
-                  ? `~${formatNumber(estimatedFishForGoal)} fish needed (avg ${avgTicketsPerFish.toFixed(1)} tickets/fish)`
-                  : "Add a goal to estimate fish needed."}
-              </div>
+              <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Goal Type</label>
+              <select value={toolState.goalMode} onChange={(e) => setGoalMode(e.target.value as ToolState["goalMode"])}>
+                <option value="silver">Silver Tickets</option>
+                <option value="gold">Golden Tickets</option>
+                <option value="both">Both</option>
+              </select>
             </div>
+
+            {toolState.goalMode !== "gold" ? (
+              <div style={{ display: "grid", gap: 8, marginTop: 12 }}>
+                <div style={{ fontWeight: 700 }}>Silver Tickets</div>
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                  <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
+                    Current Silver Tickets
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={silverCurrent === null ? "" : silverCurrent}
+                      onChange={(e) => {
+                        const raw = e.target.value.replace(/[^\d]/g, "");
+                        setTicketValue("currentSilverTickets", raw ? Number(raw) : null);
+                      }}
+                      style={{ maxWidth: 160 }}
+                    />
+                  </label>
+                  <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
+                    Silver Tickets Goal
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={silverTarget === null ? "" : silverTarget}
+                      onChange={(e) => {
+                        const raw = e.target.value.replace(/[^\d]/g, "");
+                        setTicketValue("targetSilverTickets", raw ? Number(raw) : null);
+                      }}
+                      style={{ maxWidth: 160 }}
+                    />
+                  </label>
+                </div>
+                <div style={{ fontSize: 13, color: "var(--text-muted)" }}>
+                  {silverRemaining === null
+                    ? "Enter current and goal silver tickets."
+                    : silverRemaining === 0
+                    ? "Goal reached."
+                    : `Using ${set.lakes.find((entry) => entry.lakeId === data.lastLakeId)?.label ?? data.lastLakeId} for estimates.`}
+                </div>
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+                  <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Estimate lake</label>
+                  <select
+                    value={silverEstimateLakeId ?? ""}
+                    onChange={(e) => setSilverEstimateLake(e.target.value)}
+                  >
+                    {set.lakes.map((entry) => (
+                      <option key={entry.lakeId} value={entry.lakeId}>
+                        {entry.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {silverRemaining ? (
+                  <div style={{ display: "grid", gap: 6, fontSize: 13 }}>
+                    <div>
+                      Estimated fish needed:{" "}
+                      <b>{silverFishNeeded !== null ? formatNumber(silverFishNeeded) : "—"}</b>
+                    </div>
+                    <div>
+                      Lures earned from tasks:{" "}
+                      <b>{luresEarnedFromTasks !== null ? formatNumber(luresEarnedFromTasks) : "—"}</b>
+                    </div>
+                    <div>
+                      Lures remaining from tasks:{" "}
+                      <b>{luresRemainingFromTasks !== null ? formatNumber(luresRemainingFromTasks) : "—"}</b>
+                    </div>
+                    <div>
+                      Lure shortfall:{" "}
+                      <b>{silverLureShortfall !== null ? formatNumber(silverLureShortfall) : "—"}</b>
+                    </div>
+                    <div>
+                      Estimated gem cost:{" "}
+                      <b>{silverGemCost !== null ? formatNumber(silverGemCost) : "—"}</b>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+
+            {toolState.goalMode !== "silver" ? (
+              <div style={{ display: "grid", gap: 8, marginTop: 12 }}>
+                <div style={{ fontWeight: 700 }}>Golden Tickets</div>
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                  <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
+                    Current Golden Tickets
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={goldCurrent === null ? "" : goldCurrent}
+                      onChange={(e) => {
+                        const raw = e.target.value.replace(/[^\d]/g, "");
+                        setTicketValue("currentGoldTickets", raw ? Number(raw) : null);
+                      }}
+                      style={{ maxWidth: 160 }}
+                    />
+                  </label>
+                  <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
+                    Golden Tickets Goal
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={goldTarget === null ? "" : goldTarget}
+                      onChange={(e) => {
+                        const raw = e.target.value.replace(/[^\d]/g, "");
+                        setTicketValue("targetGoldTickets", raw ? Number(raw) : null);
+                      }}
+                      style={{ maxWidth: 160 }}
+                    />
+                  </label>
+                </div>
+                <div style={{ fontSize: 13, color: "var(--text-muted)" }}>
+                  {goldRemaining === null
+                    ? "Enter current and goal golden tickets."
+                    : goldRemaining === 0
+                    ? "Goal reached."
+                    : lakeRecommendations
+                    ? `Recommended lake: ${set.lakes.find((entry) => entry.lakeId === lakeRecommendations.lakeId)?.label ?? lakeRecommendations.lakeId}.`
+                    : "Add a goal to see a recommended lake."}
+                </div>
+                {goldRemaining && goldRange ? (
+                  <div style={{ display: "grid", gap: 6, fontSize: 13 }}>
+                    <div>
+                      Estimated fish needed (best / expected / worst):{" "}
+                      <b>
+                        {formatNumber(Math.ceil(goldRange.best))} / {formatNumber(Math.ceil(goldRange.expected))} /{" "}
+                        {formatNumber(Math.ceil(goldRange.worst))}
+                      </b>
+                    </div>
+                    <div style={{ color: "var(--text-muted)" }}>
+                      Based on current pools in the recommended lake.
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
           </div>
 
           <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12 }}>

@@ -1,4 +1,4 @@
-import type { ToolDefinition, ToolFishingCalculator, ToolPriorityList, ToolStaticText } from "../../catalog/types";
+import type { TaskDefinition, ToolDefinition, ToolFishingCalculator, ToolPriorityList, ToolStaticText } from "../../catalog/types";
 import FishingToolView from "./FishingTool";
 
 function renderBodyText(body: string) {
@@ -37,7 +37,17 @@ function StaticTextToolView({ tool }: { tool: ToolStaticText }) {
   );
 }
 
-export default function ToolsHost({ tools }: { tools: ToolDefinition[] }) {
+export default function ToolsHost({
+  tools,
+  eventId,
+  eventVersion,
+  tasks,
+}: {
+  tools: ToolDefinition[];
+  eventId?: string;
+  eventVersion?: number;
+  tasks?: TaskDefinition[];
+}) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       {tools.map((tool) => {
@@ -48,7 +58,15 @@ export default function ToolsHost({ tools }: { tools: ToolDefinition[] }) {
           return <StaticTextToolView key={tool.toolId} tool={tool as ToolStaticText} />;
         }
         if (tool.toolType === "fishing_calculator") {
-          return <FishingToolView key={tool.toolId} tool={tool as ToolFishingCalculator} />;
+          return (
+            <FishingToolView
+              key={tool.toolId}
+              tool={tool as ToolFishingCalculator}
+              eventId={eventId}
+              eventVersion={eventVersion}
+              tasks={tasks}
+            />
+          );
         }
 
         return (

@@ -72,3 +72,11 @@ export function getGroupPlaceholder(action: string, object: string): string {
   if (action === "use") return "# Used";
   return "# Done";
 }
+
+export function computeEarned(tiers: TaskDefinition[], progressValue: number): number {
+  return tiers.reduce((sum, tier) => (progressValue >= tier.requirementTargetValue ? sum + tier.rewardAmount : sum), 0);
+}
+
+export function computeRemaining(tiers: TaskDefinition[], progressValue: number): number {
+  return tiers.reduce((sum, tier) => (progressValue < tier.requirementTargetValue ? sum + tier.rewardAmount : sum), 0);
+}

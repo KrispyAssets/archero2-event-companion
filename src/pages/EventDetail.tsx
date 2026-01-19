@@ -947,7 +947,7 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
         ) : toolState.status === "error" ? (
           <p style={{ color: "var(--danger)" }}>Tools error: {toolState.error}</p>
         ) : toolState.status === "ready" && toolState.tools.length ? (
-          <ToolsHost tools={toolState.tools} />
+          <ToolsHost tools={toolState.tools} eventId={ev.eventId} eventVersion={ev.eventVersion} tasks={ev.tasks} />
         ) : (
           <p>No tools available for this event yet.</p>
         ),

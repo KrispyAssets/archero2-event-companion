@@ -1,15 +1,7 @@
 import { useMemo, useState } from "react";
 import type { TaskDefinition } from "../../catalog/types";
-import { buildTaskGroups, getGroupPlaceholder } from "../../catalog/taskGrouping";
+import { buildTaskGroups, computeEarned, computeRemaining, getGroupPlaceholder } from "../../catalog/taskGrouping";
 import { getEventProgressState, upsertTaskState } from "../../state/userStateStore";
-
-function computeEarned(tiers: TaskDefinition[], progressValue: number): number {
-  return tiers.reduce((sum, tier) => (progressValue >= tier.requirementTargetValue ? sum + tier.rewardAmount : sum), 0);
-}
-
-function computeRemaining(tiers: TaskDefinition[], progressValue: number): number {
-  return tiers.reduce((sum, tier) => (progressValue < tier.requirementTargetValue ? sum + tier.rewardAmount : sum), 0);
-}
 
 export default function TasksTracker(props: {
   eventId: string;

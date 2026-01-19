@@ -46,6 +46,9 @@ function loadRootState(): RootState {
 
 function saveRootState(state: RootState): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("archero2_user_state"));
+  }
 }
 
 function encodeBase64(input: string): string {
