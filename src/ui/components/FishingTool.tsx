@@ -487,12 +487,16 @@ export default function FishingToolView({
     if (!toolState) return null;
     const counts = toolState.purchaseCounts;
     if (!counts) return null;
+    const goldTarget = toolState.targetGoldTickets ?? 0;
+    const etchedCount = counts.etchedRune ?? 0;
+    const etchedViaGold = Math.min(etchedCount, Math.floor(goldTarget / 16));
+    const etchedViaSilver = etchedCount - etchedViaGold;
     let total = 0;
-    if (counts.etchedRune) total += counts.etchedRune * 32400;
+    if (etchedViaSilver) total += etchedViaSilver * 32400;
     if (counts.blessedRune) total += counts.blessedRune * 4050;
     if (counts.artifact) total += counts.artifact * 184000;
     return total || null;
-  }, [toolState?.purchaseCounts]);
+  }, [toolState?.purchaseCounts, toolState?.targetGoldTickets]);
 
   if (dataState.status === "loading") {
     return <p>Loading fishing tool…</p>;
@@ -793,13 +797,6 @@ export default function FishingToolView({
     });
   }
 
-  function setGoalMode(mode: ToolState["goalMode"]) {
-    updateToolState((prev) => ({
-      ...prev,
-      goalMode: mode,
-    }));
-  }
-
   function setGoalPreset(preset: ToolState["goalPreset"]) {
     if (preset === "custom") {
       updateToolState((prev) => ({ ...prev, goalPreset: "custom" }));
@@ -1056,14 +1053,8 @@ export default function FishingToolView({
           </div>
 
           <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12 }}>
-            <div style={{ fontWeight: 700, marginBottom: 6 }}>Ticket Goals</div>
+            <div style={{ fontWeight: 700, marginBottom: 6 }}>Purchase Goals</div>
             <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-              <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Goal Type</label>
-              <select value={toolState.goalMode} onChange={(e) => setGoalMode(e.target.value as ToolState["goalMode"])}>
-                <option value="silver">Silver Tickets</option>
-                <option value="gold">Golden Tickets</option>
-                <option value="both">Both</option>
-              </select>
               <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Preset</label>
               <select value={toolState.goalPreset} onChange={(e) => setGoalPreset(e.target.value as ToolState["goalPreset"])}>
                 <option value="silver-heavy">Silver-heavy (120k + 16 gold)</option>
@@ -1072,287 +1063,287 @@ export default function FishingToolView({
               </select>
             </div>
 
-            {toolState.goalMode !== "gold" ? (
-              <div style={{ display: "grid", gap: 10, marginTop: 12, padding: 10, borderRadius: 10, background: "var(--surface-2)", border: "1px solid var(--border)" }}>
-                <div style={{ fontWeight: 700 }}>Silver Tickets</div>
-                <div style={{ display: "grid", gap: 8 }}>
-                  <div style={{ fontSize: 12, color: "var(--text-muted)", fontWeight: 600 }}>Purchase targets</div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-                    <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
-                      Etched Rune (32,400)
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        placeholder="Qty"
-                        value={toolState.purchaseCounts.etchedRune === null ? "" : toolState.purchaseCounts.etchedRune}
-                        onChange={(e) => {
-                          const raw = e.target.value.replace(/[^\d]/g, "");
-                          setPurchaseCount("etchedRune", raw ? Number(raw) : null);
-                        }}
-                        style={{ maxWidth: 120 }}
-                      />
-                    </label>
-                    <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
-                      Blessed Rune (4,050)
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        placeholder="Qty"
-                        value={toolState.purchaseCounts.blessedRune === null ? "" : toolState.purchaseCounts.blessedRune}
-                        onChange={(e) => {
-                          const raw = e.target.value.replace(/[^\d]/g, "");
-                          setPurchaseCount("blessedRune", raw ? Number(raw) : null);
-                        }}
-                        style={{ maxWidth: 120 }}
-                      />
-                    </label>
-                    <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
-                      Artifact (184,000)
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        placeholder="Qty"
-                        value={toolState.purchaseCounts.artifact === null ? "" : toolState.purchaseCounts.artifact}
-                        onChange={(e) => {
-                          const raw = e.target.value.replace(/[^\d]/g, "");
-                          setPurchaseCount("artifact", raw ? Number(raw) : null);
-                        }}
-                        style={{ maxWidth: 120 }}
-                      />
-                    </label>
+            <div style={{ display: "grid", gap: 10, marginTop: 12, padding: 10, borderRadius: 10, background: "var(--surface-2)", border: "1px solid var(--border)" }}>
+              <div style={{ fontWeight: 700 }}>Purchase Goals</div>
+              <div style={{ fontSize: 12, color: "var(--text-muted)" }}>
+                Etched runes can be purchased with 16 gold or 32,400 silver each.
+              </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+                <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
+                  Etched Rune (32,400)
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="Qty"
+                    value={toolState.purchaseCounts.etchedRune === null ? "" : toolState.purchaseCounts.etchedRune}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/[^\d]/g, "");
+                      setPurchaseCount("etchedRune", raw ? Number(raw) : null);
+                    }}
+                    style={{ maxWidth: 120 }}
+                  />
+                </label>
+                <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
+                  Blessed Rune (4,050)
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="Qty"
+                    value={toolState.purchaseCounts.blessedRune === null ? "" : toolState.purchaseCounts.blessedRune}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/[^\d]/g, "");
+                      setPurchaseCount("blessedRune", raw ? Number(raw) : null);
+                    }}
+                    style={{ maxWidth: 120 }}
+                  />
+                </label>
+                <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
+                  Artifact (184,000)
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="Qty"
+                    value={toolState.purchaseCounts.artifact === null ? "" : toolState.purchaseCounts.artifact}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/[^\d]/g, "");
+                      setPurchaseCount("artifact", raw ? Number(raw) : null);
+                    }}
+                    style={{ maxWidth: 120 }}
+                  />
+                </label>
+              </div>
+              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10, fontSize: 12 }}>
+                <span>Suggested silver target: <b>{suggestedSilverTarget ? formatNumber(suggestedSilverTarget) : "—"}</b></span>
+                {suggestedSilverTarget ? (
+                  <button
+                    type="button"
+                    className="ghost"
+                        onClick={() => setTargetTicketValue("targetSilverTickets", suggestedSilverTarget)}
+                  >
+                    Use Suggested
+                  </button>
+                ) : null}
+              </div>
+            </div>
+
+            <div style={{ display: "grid", gap: 10, marginTop: 12, padding: 10, borderRadius: 10, background: "var(--surface-2)", border: "1px solid var(--border)" }}>
+              <div style={{ fontWeight: 700 }}>Silver Tickets</div>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
+                  Current Silver Tickets
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="Current"
+                    value={silverCurrent === null ? "" : silverCurrent}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/[^\d]/g, "");
+                      setTicketValue("currentSilverTickets", raw ? Number(raw) : null);
+                    }}
+                    style={{ maxWidth: 160 }}
+                  />
+                </label>
+                <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
+                  Silver Tickets Goal
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="Target"
+                    value={silverTarget === null ? "" : silverTarget}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/[^\d]/g, "");
+                      setTargetTicketValue("targetSilverTickets", raw ? Number(raw) : null);
+                    }}
+                    style={{ maxWidth: 160 }}
+                  />
+                </label>
+              </div>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
+                  Current Lures
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="On hand"
+                    value={currentLures === null ? "" : currentLures}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/[^\d]/g, "");
+                      setResourceValue("currentLures", raw ? Number(raw) : null);
+                    }}
+                    style={{ maxWidth: 160 }}
+                  />
+                </label>
+                <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
+                  Lures Bought
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="Purchased"
+                    value={purchasedLures === null ? "" : purchasedLures}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/[^\d]/g, "");
+                      setResourceValue("purchasedLures", raw ? Number(raw) : null);
+                    }}
+                    style={{ maxWidth: 160 }}
+                  />
+                </label>
+                <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
+                  Current Gems
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="Gems"
+                    value={currentGems === null ? "" : currentGems}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/[^\d]/g, "");
+                      setResourceValue("currentGems", raw ? Number(raw) : null);
+                    }}
+                    style={{ maxWidth: 160 }}
+                  />
+                </label>
+              </div>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+                <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Estimate lake</label>
+                <select
+                  value={silverEstimateLakeId ?? ""}
+                  onChange={(e) => setSilverEstimateLake(e.target.value)}
+                >
+                  {set.lakes.map((entry) => (
+                    <option key={entry.lakeId} value={entry.lakeId}>
+                      {entry.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div style={{ fontSize: 13, color: "var(--text-muted)" }}>
+                {silverRemaining === null
+                  ? "Enter current and goal silver tickets."
+                  : silverRemaining === 0
+                  ? "Goal reached."
+                  : `Using ${set.lakes.find((entry) => entry.lakeId === silverEstimateLakeId)?.label ?? silverEstimateLakeId} for estimates.`}
+              </div>
+              {silverRemaining ? (
+                <div style={{ display: "grid", gap: 6, fontSize: 13 }}>
+                  <div>
+                    Estimated fish needed:{" "}
+                    <b>{silverFishNeeded !== null ? formatNumber(silverFishNeeded) : "—"}</b>
                   </div>
-                  {suggestedSilverTarget ? (
-                    <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10, fontSize: 12 }}>
-                      <span>Suggested target: <b>{formatNumber(suggestedSilverTarget)}</b></span>
-                      <button
-                        type="button"
-                        className="ghost"
-                        onClick={() => setTicketValue("targetSilverTickets", suggestedSilverTarget)}
-                      >
-                        Use Suggested
-                      </button>
+                  <div>
+                    Lures earned from tasks:{" "}
+                    <b>{luresEarnedFromTasks !== null ? formatNumber(luresEarnedFromTasks) : "—"}</b>
+                  </div>
+                  <div>
+                    Lures remaining from tasks:{" "}
+                    <b>{luresRemainingFromTasks !== null ? formatNumber(luresRemainingFromTasks) : "—"}</b>
+                  </div>
+                  <div>
+                    Lures available (now + tasks + bought):{" "}
+                    <b>{totalAvailableLures !== null ? formatNumber(totalAvailableLures) : "—"}</b>
+                  </div>
+                  <div>
+                    Max possible lures (incl. gems):{" "}
+                    <b>{maxPossibleLures !== null ? formatNumber(maxPossibleLures) : "—"}</b>
+                  </div>
+                  <div>
+                    Lure shortfall:{" "}
+                    <b>{silverLureShortfall !== null ? formatNumber(silverLureShortfall) : "—"}</b>
+                  </div>
+                  <div>
+                    Estimated gem cost:{" "}
+                    <b>{silverGemCost !== null ? formatNumber(silverGemCost) : "—"}</b>
+                  </div>
+                  {currentGems !== null && silverGemCost !== null && currentGems < silverGemCost ? (
+                    <div style={{ color: "var(--danger)" }}>
+                      Not enough gems for the silver goal with current lures.
                     </div>
                   ) : null}
                 </div>
-                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                  <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
-                    Current Silver Tickets
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="Current"
-                      value={silverCurrent === null ? "" : silverCurrent}
-                      onChange={(e) => {
-                        const raw = e.target.value.replace(/[^\d]/g, "");
-                        setTicketValue("currentSilverTickets", raw ? Number(raw) : null);
-                      }}
-                      style={{ maxWidth: 160 }}
-                    />
-                  </label>
-                  <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
-                    Silver Tickets Goal
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="Target"
-                      value={silverTarget === null ? "" : silverTarget}
-                      onChange={(e) => {
-                        const raw = e.target.value.replace(/[^\d]/g, "");
-                        setTargetTicketValue("targetSilverTickets", raw ? Number(raw) : null);
-                      }}
-                      style={{ maxWidth: 160 }}
-                    />
-                  </label>
-                </div>
-                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                  <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
-                    Current Lures
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="On hand"
-                      value={currentLures === null ? "" : currentLures}
-                      onChange={(e) => {
-                        const raw = e.target.value.replace(/[^\d]/g, "");
-                        setResourceValue("currentLures", raw ? Number(raw) : null);
-                      }}
-                      style={{ maxWidth: 160 }}
-                    />
-                  </label>
-                  <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
-                    Lures Bought
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="Purchased"
-                      value={purchasedLures === null ? "" : purchasedLures}
-                      onChange={(e) => {
-                        const raw = e.target.value.replace(/[^\d]/g, "");
-                        setResourceValue("purchasedLures", raw ? Number(raw) : null);
-                      }}
-                      style={{ maxWidth: 160 }}
-                    />
-                  </label>
-                  <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
-                    Current Gems
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="Gems"
-                      value={currentGems === null ? "" : currentGems}
-                      onChange={(e) => {
-                        const raw = e.target.value.replace(/[^\d]/g, "");
-                        setResourceValue("currentGems", raw ? Number(raw) : null);
-                      }}
-                      style={{ maxWidth: 160 }}
-                    />
-                  </label>
-                </div>
-                <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
-                  <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Estimate lake</label>
-                  <select
-                    value={silverEstimateLakeId ?? ""}
-                    onChange={(e) => setSilverEstimateLake(e.target.value)}
-                  >
-                    {set.lakes.map((entry) => (
-                      <option key={entry.lakeId} value={entry.lakeId}>
-                        {entry.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div style={{ fontSize: 13, color: "var(--text-muted)" }}>
-                  {silverRemaining === null
-                    ? "Enter current and goal silver tickets."
-                    : silverRemaining === 0
-                    ? "Goal reached."
-                    : `Using ${set.lakes.find((entry) => entry.lakeId === silverEstimateLakeId)?.label ?? silverEstimateLakeId} for estimates.`}
-                </div>
-                {silverRemaining ? (
-                  <div style={{ display: "grid", gap: 6, fontSize: 13 }}>
-                    <div>
-                      Estimated fish needed:{" "}
-                      <b>{silverFishNeeded !== null ? formatNumber(silverFishNeeded) : "—"}</b>
-                    </div>
-                    <div>
-                      Lures earned from tasks:{" "}
-                      <b>{luresEarnedFromTasks !== null ? formatNumber(luresEarnedFromTasks) : "—"}</b>
-                    </div>
-                    <div>
-                      Lures remaining from tasks:{" "}
-                      <b>{luresRemainingFromTasks !== null ? formatNumber(luresRemainingFromTasks) : "—"}</b>
-                    </div>
-                    <div>
-                      Lures available (now + tasks + bought):{" "}
-                      <b>{totalAvailableLures !== null ? formatNumber(totalAvailableLures) : "—"}</b>
-                    </div>
-                    <div>
-                      Max possible lures (incl. gems):{" "}
-                      <b>{maxPossibleLures !== null ? formatNumber(maxPossibleLures) : "—"}</b>
-                    </div>
-                    <div>
-                      Lure shortfall:{" "}
-                      <b>{silverLureShortfall !== null ? formatNumber(silverLureShortfall) : "—"}</b>
-                    </div>
-                    <div>
-                      Estimated gem cost:{" "}
-                      <b>{silverGemCost !== null ? formatNumber(silverGemCost) : "—"}</b>
-                    </div>
-                    {currentGems !== null && silverGemCost !== null && currentGems < silverGemCost ? (
-                      <div style={{ color: "var(--danger)" }}>
-                        Not enough gems for the silver goal with current lures.
-                      </div>
-                    ) : null}
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
+              ) : null}
+            </div>
 
-            {toolState.goalMode !== "silver" ? (
-              <div style={{ display: "grid", gap: 10, marginTop: 12, padding: 10, borderRadius: 10, background: "var(--surface-2)", border: "1px solid var(--border)" }}>
-                <div style={{ fontWeight: 700 }}>Golden Tickets</div>
-                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                  <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
-                    Current Golden Tickets
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="Current"
-                      value={goldCurrent === null ? "" : goldCurrent}
-                      onChange={(e) => {
-                        const raw = e.target.value.replace(/[^\d]/g, "");
-                        setTicketValue("currentGoldTickets", raw ? Number(raw) : null);
-                      }}
-                      style={{ maxWidth: 160 }}
-                    />
-                  </label>
-                  <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
-                    Golden Tickets Goal
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="Target"
-                      value={goldTarget === null ? "" : goldTarget}
-                      onChange={(e) => {
-                        const raw = e.target.value.replace(/[^\d]/g, "");
-                        setTargetTicketValue("targetGoldTickets", raw ? Number(raw) : null);
-                      }}
-                      style={{ maxWidth: 160 }}
-                    />
-                  </label>
-                </div>
-                <div style={{ fontSize: 13, color: "var(--text-muted)" }}>
-                  {goldRemaining === null
-                    ? "Enter current and goal golden tickets."
-                    : goldRemaining === 0
-                    ? "Goal reached."
-                    : lakeRecommendations?.quickPick && lakeRecommendations.restLakeId
-                    ? `Quick legendary in ${set.lakes.find((entry) => entry.lakeId === lakeRecommendations.lakeId)?.label ?? lakeRecommendations.lakeId}, then switch to ${set.lakes.find((entry) => entry.lakeId === lakeRecommendations.restLakeId)?.label ?? lakeRecommendations.restLakeId}.`
-                    : lakeRecommendations
-                    ? `Recommended lake: ${set.lakes.find((entry) => entry.lakeId === lakeRecommendations.lakeId)?.label ?? lakeRecommendations.lakeId}.`
-                    : "Add a goal to see a recommended lake."}
-                </div>
-                {goldRemaining && goldRange ? (
-                  <div style={{ display: "grid", gap: 6, fontSize: 13 }}>
-                    <div>
-                      Estimated fish needed (best / expected / worst):{" "}
-                      <b>
-                        {formatNumber(Math.ceil(goldRange.best))} / {formatNumber(Math.ceil(goldRange.expected))} /{" "}
-                        {formatNumber(Math.ceil(goldRange.worst))}
-                      </b>
-                    </div>
-                    <div>
-                      Estimated gem cost (expected):{" "}
-                      <b>{formatNumber(Math.ceil(goldRange.expected) * 150)}</b>
-                    </div>
-                    <div>
-                      Lures available (now + tasks + bought):{" "}
-                      <b>{totalAvailableLures !== null ? formatNumber(totalAvailableLures) : "—"}</b>
-                    </div>
-                    <div>
-                      Max possible lures (incl. gems):{" "}
-                      <b>{maxPossibleLures !== null ? formatNumber(maxPossibleLures) : "—"}</b>
-                    </div>
-                    <div>
-                      Estimated silver tickets gained (expected):{" "}
-                      <b>
-                        {lakeRecommendations?.avgTicketsPerFish
-                          ? formatNumber(goldRange.expected * lakeRecommendations.avgTicketsPerFish, 0)
-                          : "—"}
-                      </b>
-                    </div>
-                    {currentGems !== null && goldGemCost !== null && currentGems < goldGemCost ? (
-                      <div style={{ color: "var(--danger)" }}>
-                        Not enough gems for the golden goal with current lures.
-                      </div>
-                    ) : null}
-                    <div style={{ color: "var(--text-muted)" }}>
-                      Weighted by silver value (weight {formatNumber(lakeRecommendations?.silverWeight ?? 0, 2)} using baseline {formatNumber(silverGoalBaseline)}). Best-case assumes full pools between legendaries.
-                    </div>
-                  </div>
-                ) : null}
+            <div style={{ display: "grid", gap: 10, marginTop: 12, padding: 10, borderRadius: 10, background: "var(--surface-2)", border: "1px solid var(--border)" }}>
+              <div style={{ fontWeight: 700 }}>Golden Tickets</div>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
+                  Current Golden Tickets
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="Current"
+                    value={goldCurrent === null ? "" : goldCurrent}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/[^\d]/g, "");
+                      setTicketValue("currentGoldTickets", raw ? Number(raw) : null);
+                    }}
+                    style={{ maxWidth: 160 }}
+                  />
+                </label>
+                <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
+                  Golden Tickets Goal
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="Target"
+                    value={goldTarget === null ? "" : goldTarget}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/[^\d]/g, "");
+                      setTargetTicketValue("targetGoldTickets", raw ? Number(raw) : null);
+                    }}
+                    style={{ maxWidth: 160 }}
+                  />
+                </label>
               </div>
-            ) : null}
+              <div style={{ fontSize: 13, color: "var(--text-muted)" }}>
+                {goldRemaining === null
+                  ? "Enter current and goal golden tickets."
+                  : goldRemaining === 0
+                  ? "Goal reached."
+                  : lakeRecommendations?.quickPick && lakeRecommendations.restLakeId
+                  ? `Quick legendary in ${set.lakes.find((entry) => entry.lakeId === lakeRecommendations.lakeId)?.label ?? lakeRecommendations.lakeId}, then switch to ${set.lakes.find((entry) => entry.lakeId === lakeRecommendations.restLakeId)?.label ?? lakeRecommendations.restLakeId}.`
+                  : lakeRecommendations
+                  ? `Recommended lake: ${set.lakes.find((entry) => entry.lakeId === lakeRecommendations.lakeId)?.label ?? lakeRecommendations.lakeId}.`
+                  : "Add a goal to see a recommended lake."}
+              </div>
+              {goldRemaining && goldRange ? (
+                <div style={{ display: "grid", gap: 6, fontSize: 13 }}>
+                  <div>
+                    Estimated fish needed (best / expected / worst):{" "}
+                    <b>
+                      {formatNumber(Math.ceil(goldRange.best))} / {formatNumber(Math.ceil(goldRange.expected))} /{" "}
+                      {formatNumber(Math.ceil(goldRange.worst))}
+                    </b>
+                  </div>
+                  <div>
+                    Estimated gem cost (expected):{" "}
+                    <b>{formatNumber(Math.ceil(goldRange.expected) * 150)}</b>
+                  </div>
+                  <div>
+                    Lures available (now + tasks + bought):{" "}
+                    <b>{totalAvailableLures !== null ? formatNumber(totalAvailableLures) : "—"}</b>
+                  </div>
+                  <div>
+                    Max possible lures (incl. gems):{" "}
+                    <b>{maxPossibleLures !== null ? formatNumber(maxPossibleLures) : "—"}</b>
+                  </div>
+                  <div>
+                    Estimated silver tickets gained (expected):{" "}
+                    <b>
+                      {lakeRecommendations?.avgTicketsPerFish
+                        ? formatNumber(goldRange.expected * lakeRecommendations.avgTicketsPerFish, 0)
+                        : "—"}
+                    </b>
+                  </div>
+                  {currentGems !== null && goldGemCost !== null && currentGems < goldGemCost ? (
+                    <div style={{ color: "var(--danger)" }}>
+                      Not enough gems for the golden goal with current lures.
+                    </div>
+                  ) : null}
+                  <div style={{ color: "var(--text-muted)" }}>
+                    Weighted by silver value (weight {formatNumber(lakeRecommendations?.silverWeight ?? 0, 2)} using baseline {formatNumber(silverGoalBaseline)}). Best-case assumes full pools between legendaries.
+                  </div>
+                </div>
+              ) : null}
+            </div>
           </div>
 
           <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12 }}>
