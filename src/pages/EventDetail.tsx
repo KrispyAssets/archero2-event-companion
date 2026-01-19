@@ -320,6 +320,10 @@ export default function EventDetail() {
   const tasksSheetDragActiveRef = useRef(false);
   const tasksSheetCloseTimerRef = useRef<number | null>(null);
   const tasksSheetPointerInScrollRef = useRef(false);
+  const scrollPositionsRef = useRef<Map<string, number>>(new Map());
+  const programmaticNavRef = useRef(false);
+  const pendingScrollRestoreRef = useRef<number | null>(null);
+  const scrollUpdateRef = useRef<number | null>(null);
   const scrollLockRef = useRef<{
     bodyOverflow: string;
     bodyPaddingRight: string;
@@ -349,20 +353,80 @@ export default function EventDetail() {
   const toolState = useToolsCatalog(eventState.status === "ready" ? eventState.event.toolRefs.map((ref) => ref.toolId) : []);
   const guideImages = useMemo(() => (eventState.status === "ready" ? collectGuideImages(eventState.event.guideSections) : []), [eventState]);
 
+  function getTabFromLocation() {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get("tab");
+    return tab;
+  }
+
+  function storeScrollPosition() {
+    const hash = window.location.hash.replace(/^#/, "");
+    if (hash) {
+      let decodedHash = hash;
+      try {
+        decodedHash = decodeURIComponent(hash);
+      } catch {
+        decodedHash = hash;
+      }
+      scrollPositionsRef.current.set(decodedHash, window.scrollY);
+      return;
+    }
+    scrollPositionsRef.current.set(`tab:${activeTabId}`, window.scrollY);
+  }
+
   useEffect(() => {
     function syncHash() {
       const hash = window.location.hash.replace(/^#/, "");
+      let decodedHash = hash;
       try {
-        setActiveAnchor(decodeURIComponent(hash));
+        decodedHash = decodeURIComponent(hash);
       } catch {
-        setActiveAnchor(hash);
+        decodedHash = hash;
+      }
+      if (!programmaticNavRef.current) {
+        if (decodedHash) {
+          const saved = scrollPositionsRef.current.get(decodedHash);
+          pendingScrollRestoreRef.current = typeof saved === "number" ? saved : null;
+        } else {
+          const tabKey = getTabFromLocation() ?? activeTabId;
+          const saved = scrollPositionsRef.current.get(`tab:${tabKey}`);
+          pendingScrollRestoreRef.current = typeof saved === "number" ? saved : null;
+        }
+      } else {
+        programmaticNavRef.current = false;
+        pendingScrollRestoreRef.current = null;
+      }
+      setActiveAnchor(decodedHash);
+      if (!decodedHash) {
+        const nextTab = getTabFromLocation();
+        if (nextTab) setActiveTabId(nextTab);
       }
     }
 
     syncHash();
     window.addEventListener("hashchange", syncHash);
+    window.addEventListener("popstate", syncHash);
     return () => {
       window.removeEventListener("hashchange", syncHash);
+      window.removeEventListener("popstate", syncHash);
+    };
+  }, [decodedEventId, activeTabId]);
+
+  useEffect(() => {
+    function handleScroll() {
+      if (scrollUpdateRef.current !== null) return;
+      scrollUpdateRef.current = window.requestAnimationFrame(() => {
+        scrollUpdateRef.current = null;
+        storeScrollPosition();
+      });
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (scrollUpdateRef.current !== null) {
+        window.cancelAnimationFrame(scrollUpdateRef.current);
+        scrollUpdateRef.current = null;
+      }
     };
   }, [decodedEventId]);
 
@@ -375,6 +439,12 @@ export default function EventDetail() {
 
   useEffect(() => {
     if (eventState.status !== "ready") return;
+    if (pendingScrollRestoreRef.current !== null) {
+      const y = pendingScrollRestoreRef.current;
+      pendingScrollRestoreRef.current = null;
+      window.scrollTo({ top: y, behavior: "auto" });
+      return;
+    }
     if (!activeAnchor) return;
     if (lastHandledAnchorRef.current === activeAnchor) return;
     lastHandledAnchorRef.current = activeAnchor;
@@ -538,6 +608,8 @@ export default function EventDetail() {
   async function copyAnchorLink(anchorId: string) {
     const hash = `#${encodeURIComponent(anchorId)}`;
     if (window.location.hash !== hash) {
+      storeScrollPosition();
+      programmaticNavRef.current = true;
       window.location.hash = hash;
     }
     const url = `${window.location.origin}${window.location.pathname}${window.location.search}${hash}`;
@@ -600,12 +672,32 @@ export default function EventDetail() {
   function navigateToAnchor(anchorId: string) {
     const hash = `#${encodeURIComponent(anchorId)}`;
     if (window.location.hash !== hash) {
-      window.location.hash = hash;
+      storeScrollPosition();
+      programmaticNavRef.current = true;
+      const url = new URL(window.location.href);
+      url.hash = hash;
+      url.searchParams.set("tab", getTabForAnchor(anchorId) ?? activeTabId);
+      window.history.pushState({}, "", url.toString());
     } else {
       setActiveAnchor(anchorId);
     }
     const nextTab = getTabForAnchor(anchorId);
     if (nextTab) setActiveTabId(nextTab);
+  }
+
+  function handleTabChange(nextTabId: string) {
+    if (nextTabId === activeTabId) return;
+    storeScrollPosition();
+    setActiveTabId(nextTabId);
+    const url = new URL(window.location.href);
+    url.hash = "";
+    url.searchParams.set("tab", nextTabId);
+    programmaticNavRef.current = true;
+    window.history.pushState({}, "", url.toString());
+    const saved = scrollPositionsRef.current.get(`tab:${nextTabId}`);
+    if (typeof saved === "number") {
+      pendingScrollRestoreRef.current = saved;
+    }
   }
 
   const tabs = [
@@ -813,7 +905,7 @@ export default function EventDetail() {
         }
       `}</style>
 
-      <Tabs tabs={tabs} activeId={activeTabId} onActiveIdChange={setActiveTabId} />
+      <Tabs tabs={tabs} activeId={activeTabId} onActiveIdChange={handleTabChange} />
 
       {lightboxIndex !== null ? (
         <>

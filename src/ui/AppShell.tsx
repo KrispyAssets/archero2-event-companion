@@ -41,9 +41,19 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <div className="app">
       <header className="appHeader">
         <div className="appHeaderInner">
-          <Link to="/" className="brand">
-            Archero 2 Event Companion
-          </Link>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ display: "flex", gap: 6 }}>
+              <button type="button" className="secondary" onClick={() => window.history.back()} aria-label="Go back">
+                ←
+              </button>
+              <button type="button" className="secondary" onClick={() => window.history.forward()} aria-label="Go forward">
+                →
+              </button>
+            </div>
+            <Link to="/" className="brand">
+              Archero 2 Event Companion
+            </Link>
+          </div>
 
           <div className="headerRight">
             <nav className="nav">
