@@ -89,35 +89,14 @@
       <p>Use the sections below for quick tables and step-by-step lake plans.</p>
     </section>
 
-    <section section_id="rough_weight_estimates" title="Rough Weight Estimates">
-      <p>Lake 1: 90 per lure</p>
-      <p>Lake 2: 150 per lure</p>
-      <p>Lake 3: 200 per lure</p>
-      <p>Final lake: 390 per lure</p>
-    </section>
-
-    <section section_id="lake_weight_tables" title="Lake Weight Tables">
-      <section section_id="lakehouse_table" title="Lakehouse">
-        <p>C1 0.3 | C2 0.6 | C3 0.9 | E1 1.4 | E2 3.0 | L 6.3</p>
-      </section>
-      <section section_id="sunset_coast_table" title="Sunset Coast">
-        <p>C1 0.4 | C2 0.9 | C3 1.4 | E1 2.4 | E2 4.9 | L 9.8</p>
-      </section>
-      <section section_id="oceanic_abyss_table" title="Oceanic Abyss">
-        <p>C1 0.8 | C2 1.2 | C3 2.3 | E1 4.0 | E2 6.3 | L 15.0</p>
-      </section>
-      <section section_id="polar_glacier_table" title="Polar Glacier">
-        <p>C1 1.5 | C2 2.3 | C3 4.8 | E1 7.9 | E2 12.6 | L 27.4</p>
-      </section>
-    </section>
 
     <section section_id="how_lakes_work" title="How the Lakes Work">
       <p>Fishing may seem random at first, but it is not. You can predict fish pools and plan your lures.</p>
       <p>In the first three lakes the fish pool is the same; in the final lake the pool is doubled.</p>
-      <p>Pools contain 40 fish: 1 legendary, 9 epics, and 30 rares.</p>
+      <p>Pools contain 40 fish: 1 legendary, 3 large epics, 6 small epics, 5 large rares, 10 medium rares, 15 small rares.</p>
+      <p>In the final lake, this doubles to 80 fish: 2 legendaries, 6 large epics, 12 small epics, 10 large rares, 20 medium rares, 30 small rares.</p>
       <p>Pools reset only when you catch all fish. Snapping lines does not remove fish from the pool.</p>
       <p>Moving to a new lake starts a fresh pool in that lake. The previous lake pool stays intact as you left it.</p>
-      <p>Final lake pool doubles to 80 fish: 2 legendaries, 18 epics, 60 rares.</p>
     </section>
 
     <section section_id="strategy_options" title="Two Main Strategies">
@@ -201,6 +180,34 @@
       </image_row>
     </section>
   </guide>
+  <data>
+    <section section_id="lake_averages" title="Lake Averages">
+      <section section_id="avg_tickets" title="Average silver tickets per lure">
+        <p>Lake 1: 90 per lure.</p>
+        <p>Lake 2: 150 per lure.</p>
+        <p>Lake 3: 200 per lure.</p>
+        <p>Final lake: 390 per lure.</p>
+      </section>
+      <section section_id="avg_kg_per_lure" title="Average kg per lure">
+        <p>Lake 1: 0.97 kg per lure.</p>
+        <p>Lake 2: 1.52 kg per lure.</p>
+        <p>Lake 3: 2.34 kg per lure.</p>
+        <p>Final lake: 4.55 kg per lure.</p>
+      </section>
+      <section section_id="avg_tickets_per_kg" title="Average tickets per kg">
+        <p>Lake 1: 93.02 tickets per kg.</p>
+        <p>Lake 2: 98.52 tickets per kg.</p>
+        <p>Lake 3: 85.65 tickets per kg.</p>
+        <p>Final lake: 85.67 tickets per kg.</p>
+      </section>
+      <section section_id="avg_weights" title="Average fish weight by rarity">
+        <p>Lakehouse: Small Rare 0.3 | Medium Rare 0.6 | Large Rare 0.9 | Small Epic 1.4 | Large Epic 3.0 | Legendary 6.3</p>
+        <p>Sunset Coast: Small Rare 0.4 | Medium Rare 0.9 | Large Rare 1.4 | Small Epic 2.4 | Large Epic 4.9 | Legendary 9.8</p>
+        <p>Oceanic Abyss: Small Rare 0.8 | Medium Rare 1.2 | Large Rare 2.3 | Small Epic 4.0 | Large Epic 6.3 | Legendary 15.0</p>
+        <p>Polar Glacier: Small Rare 1.5 | Medium Rare 2.3 | Large Rare 4.8 | Small Epic 7.9 | Large Epic 12.6 | Legendary 27.4</p>
+      </section>
+    </section>
+  </data>
   <faq>
     <item faq_id="faq_what_to_buy" question="What should I buy in the event shop?">
       <answer>
@@ -220,14 +227,6 @@
         <p>Between 230kg-500kg: first place gains 300 gems.</p>
         <p>Between 500kg-1000kg: first place gains 400 gems.</p>
         <p>Above 1000kg: first place gains 500 gems.</p>
-      </answer>
-    </item>
-    <item faq_id="faq_helpful_info" question="Helpful side info">
-      <answer>
-        <p>Fish per pool: 1 legendary, 3 big epics, 6 small epics, 5 large rares, 10 medium rares, 15 small rares.</p>
-        <p>On average you gain 390 silver tickets per lure in the final lake.</p>
-        <p>On average you gain 4.7 kg per lure in the final lake.</p>
-        <p>On average you gain 83 tickets per kg in the final lake.</p>
       </answer>
     </item>
   </faq>

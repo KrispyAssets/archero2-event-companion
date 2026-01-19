@@ -2,6 +2,7 @@ import type {
   CatalogIndex,
   EventCatalogItemFull,
   EventCatalogFull,
+  DataSection,
   FaqItem,
   GuideContentBlock,
   GuideSection,
@@ -170,6 +171,7 @@ function parseEventDocument(doc: Document, relPath?: string): EventCatalogFull {
 
   const tasksEl = eventEl.getElementsByTagName("tasks")[0];
   const guideEl = eventEl.getElementsByTagName("guide")[0];
+  const dataEl = eventEl.getElementsByTagName("data")[0];
   const faqEl = eventEl.getElementsByTagName("faq")[0];
   const toolsEl = eventEl.getElementsByTagName("tools")[0];
 
@@ -190,6 +192,7 @@ function parseEventDocument(doc: Document, relPath?: string): EventCatalogFull {
     .sort((a, b) => a.displayOrder - b.displayOrder);
 
   const guideSections = guideEl ? getDirectChildElements(guideEl, "section").map((section) => parseGuideSection(section)) : [];
+  const dataSections: DataSection[] = dataEl ? getDirectChildElements(dataEl, "section").map((section) => parseGuideSection(section)) : [];
   const faqItems = faqEl ? getDirectChildElements(faqEl, "item").map((item) => parseFaqItem(item)) : [];
   const toolRefs: ToolRef[] = toolsEl
     ? getDirectChildElements(toolsEl, "tool_ref").map((toolRef) => ({
@@ -198,6 +201,7 @@ function parseEventDocument(doc: Document, relPath?: string): EventCatalogFull {
     : [];
 
   const guideSectionCount = guideEl ? guideEl.getElementsByTagName("section").length : 0;
+  const dataSectionCount = dataEl ? dataEl.getElementsByTagName("section").length : 0;
   const faqCount = faqEl ? faqEl.getElementsByTagName("item").length : 0;
   const toolCount = toolRefs.length;
 
@@ -210,11 +214,13 @@ function parseEventDocument(doc: Document, relPath?: string): EventCatalogFull {
     sections: {
       taskCount: tasks.length,
       guideSectionCount,
+      dataSectionCount,
       faqCount,
       toolCount,
     },
     tasks,
     guideSections,
+    dataSections,
     faqItems,
     toolRefs,
   };
@@ -258,11 +264,13 @@ export async function loadEventSummaries(eventPaths: string[]): Promise<EventCat
 
     const tasksEl = eventEl.getElementsByTagName("tasks")[0];
     const guideEl = eventEl.getElementsByTagName("guide")[0];
+    const dataEl = eventEl.getElementsByTagName("data")[0];
     const faqEl = eventEl.getElementsByTagName("faq")[0];
     const toolsEl = eventEl.getElementsByTagName("tools")[0];
 
     const taskCount = tasksEl ? tasksEl.getElementsByTagName("task").length : 0;
     const guideSectionCount = guideEl ? guideEl.getElementsByTagName("section").length : 0;
+    const dataSectionCount = dataEl ? dataEl.getElementsByTagName("section").length : 0;
     const faqCount = faqEl ? faqEl.getElementsByTagName("item").length : 0;
     const toolCount = toolsEl ? toolsEl.getElementsByTagName("tool_ref").length : 0;
 
@@ -272,7 +280,7 @@ export async function loadEventSummaries(eventPaths: string[]): Promise<EventCat
       title: getAttr(eventEl, "title"),
       subtitle: eventEl.getAttribute("subtitle") ?? undefined,
       lastVerifiedDate: eventEl.getAttribute("last_verified_date") ?? undefined,
-      sections: { taskCount, guideSectionCount, faqCount, toolCount },
+      sections: { taskCount, guideSectionCount, dataSectionCount, faqCount, toolCount },
     });
   }
 

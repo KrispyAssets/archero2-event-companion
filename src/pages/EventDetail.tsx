@@ -6,10 +6,14 @@ import TasksTracker from "../ui/components/TasksTracker";
 import ToolsHost from "../ui/components/ToolsHost";
 import { useEventCatalog } from "../catalog/useEventCatalog";
 import { useToolsCatalog } from "../catalog/useToolsCatalog";
-import type { FaqItem, GuideContentBlock, GuideSection } from "../catalog/types";
+import type { DataSection, FaqItem, GuideContentBlock, GuideSection } from "../catalog/types";
 
 function getGuideAnchorId(sectionId: string): string {
   return `guide-${sectionId}`;
+}
+
+function getDataAnchorId(sectionId: string): string {
+  return `data-${sectionId}`;
 }
 
 function getFaqAnchorId(faqId: string): string {
@@ -41,6 +45,7 @@ function LinkIcon() {
 
 function getTabForAnchor(anchorId: string): string | null {
   if (anchorId.startsWith("guide-")) return "guide";
+  if (anchorId.startsWith("data-")) return "data";
   if (anchorId.startsWith("faq-")) return "faq";
   if (anchorId.startsWith("task-")) return "tasks";
   return null;
@@ -200,6 +205,45 @@ function GuideSectionView({
         <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
           {section.subsections.map((child) => (
             <GuideSectionView key={child.sectionId} section={child} copiedAnchor={copiedAnchor} onCopyLink={onCopyLink} />
+          ))}
+        </div>
+      ) : null}
+    </details>
+  );
+}
+
+function DataSectionView({
+  section,
+  copiedAnchor,
+  onCopyLink,
+}: {
+  section: DataSection;
+  copiedAnchor: string;
+  onCopyLink: (anchorId: string) => void;
+}) {
+  const anchorId = getDataAnchorId(section.sectionId);
+  return (
+    <details id={anchorId} style={{ border: "1px solid var(--border)", borderRadius: 10, padding: "8px 12px", background: "var(--surface)", scrollMarginTop: 90 }}>
+      <summary className="detailsSummary" style={{ cursor: "pointer", fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
+        <span aria-hidden="true" className="detailsChevron">
+          ▸
+        </span>
+        <span style={{ flex: 1 }}>{section.title}</span>
+        <span style={{ fontSize: 12, color: "var(--text-subtle)", minWidth: 52, textAlign: "right" }}>{copiedAnchor === anchorId ? "Copied" : ""}</span>
+        <button
+          type="button"
+          onClick={() => onCopyLink(anchorId)}
+          aria-label="Copy link to data section"
+          style={{ background: "transparent", border: "none", padding: 0, display: "flex", alignItems: "center", cursor: "pointer" }}
+        >
+          <LinkIcon />
+        </button>
+      </summary>
+      <div style={{ marginTop: 8 }}>{renderGuideBlocks(section.blocks)}</div>
+      {section.subsections && section.subsections.length > 0 ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
+          {section.subsections.map((child) => (
+            <DataSectionView key={child.sectionId} section={child} copiedAnchor={copiedAnchor} onCopyLink={onCopyLink} />
           ))}
         </div>
       ) : null}
@@ -570,6 +614,20 @@ export default function EventDetail() {
         </div>
       ) : (
         <p>No FAQ entries yet.</p>
+      ),
+    },
+    {
+      id: "data",
+      label: `Data (${ev.sections.dataSectionCount})`,
+      hidden: ev.sections.dataSectionCount === 0,
+      content: ev.dataSections.length ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {ev.dataSections.map((section) => (
+            <DataSectionView key={section.sectionId} section={section} copiedAnchor={copiedAnchor} onCopyLink={copyAnchorLink} />
+          ))}
+        </div>
+      ) : (
+        <p>No data sections yet.</p>
       ),
     },
     {

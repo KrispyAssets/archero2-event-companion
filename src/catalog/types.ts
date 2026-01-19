@@ -10,6 +10,7 @@ export type EventSectionSummary = {
   taskCount: number;
   guideSectionCount: number;
   faqCount: number;
+  dataSectionCount: number;
   toolCount: number;
 };
 
@@ -56,6 +57,8 @@ export type GuideSection = {
   blocks: GuideContentBlock[];
   subsections?: GuideSection[];
 };
+
+export type DataSection = GuideSection;
 
 export type FaqItem = {
   faqId: string;
@@ -112,6 +115,7 @@ export type EventCatalogItemFull = {
 export type EventCatalogFull = EventCatalogItemFull & {
   tasks: TaskDefinition[];
   guideSections: GuideSection[];
+  dataSections: DataSection[];
   faqItems: FaqItem[];
   toolRefs: ToolRef[];
 };
