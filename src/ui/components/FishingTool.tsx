@@ -101,6 +101,7 @@ function getLegendaryTypeId(data: FishingToolData) {
 export default function FishingToolView({ tool }: { tool: ToolFishingCalculator }) {
   const [dataState, setDataState] = useState<DataState>({ status: "loading" });
   const [toolState, setToolState] = useState<ToolState | null>(null);
+  const [breakStep, setBreakStep] = useState(1);
 
   useEffect(() => {
     let cancelled = false;
@@ -284,6 +285,21 @@ export default function FishingToolView({ tool }: { tool: ToolFishingCalculator 
     });
   }
 
+  function resetLakeProgress(lakeId: string) {
+    updateToolState((prev) => {
+      const nextLakeStates = { ...prev.lakeStatesBySet[set.setId] };
+      const existing = nextLakeStates[lakeId];
+      if (!existing) return prev;
+      nextLakeStates[lakeId] = {
+        remainingByTypeId: buildFullCounts(data, lakeId),
+        poolsCompleted: 0,
+        legendaryCaught: 0,
+        fishCaught: 0,
+      };
+      return { ...prev, lakeStatesBySet: { ...prev.lakeStatesBySet, [set.setId]: nextLakeStates } };
+    });
+  }
+
   function catchFish(typeId: string) {
     if (!lakeState.remainingByTypeId[typeId]) return;
     const fish = lake.fish.find((entry) => entry.typeId === typeId);
@@ -422,6 +438,27 @@ export default function FishingToolView({ tool }: { tool: ToolFishingCalculator 
     }));
   }
 
+  function resetAllProgress() {
+    updateToolState((prev) => {
+      const nextLakeStates: Record<string, LakeState> = {};
+      for (const entry of set.lakes) {
+        nextLakeStates[entry.lakeId] = {
+          remainingByTypeId: buildFullCounts(data, entry.lakeId),
+          poolsCompleted: 0,
+          legendaryCaught: 0,
+          fishCaught: 0,
+        };
+      }
+      return {
+        ...prev,
+        lakeStatesBySet: { ...prev.lakeStatesBySet, [set.setId]: nextLakeStates },
+        brokenLinesBySet: { ...prev.brokenLinesBySet, [set.setId]: 0 },
+        historyBySet: { ...prev.historyBySet, [set.setId]: [] },
+        goalTicketsBySet: { ...prev.goalTicketsBySet, [set.setId]: null },
+      };
+    });
+  }
+
   return (
     <div style={{ border: "1px solid var(--border)", borderRadius: 16, padding: 16, background: "var(--surface)" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
@@ -541,11 +578,18 @@ export default function FishingToolView({ tool }: { tool: ToolFishingCalculator 
               <div style={{ fontWeight: 700 }}>
                 {toolState.brokenLinesBySet[set.setId] ?? 0}/{brokenLinesMax}
               </div>
-              <button type="button" className="secondary" onClick={() => updateBrokenLines(1)}>
-                +1 Break
+              <select value={breakStep} onChange={(e) => setBreakStep(Number(e.target.value))}>
+                {[1, 2, 3, 5, 10].map((value) => (
+                  <option key={value} value={value}>
+                    +{value}
+                  </option>
+                ))}
+              </select>
+              <button type="button" className="secondary" onClick={() => updateBrokenLines(breakStep)}>
+                Add Breaks
               </button>
-              <button type="button" className="secondary" onClick={() => updateBrokenLines(-1)}>
-                -1 Break
+              <button type="button" className="secondary" onClick={() => updateBrokenLines(-breakStep)}>
+                Remove Breaks
               </button>
               <button
                 type="button"
@@ -571,11 +615,16 @@ export default function FishingToolView({ tool }: { tool: ToolFishingCalculator 
               {set.lakes.map((entry) => {
                 const entryState = toolState.lakeStatesBySet[set.setId]?.[entry.lakeId];
                 return (
-                  <div key={entry.lakeId} style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-                    <div>{entry.label}</div>
-                    <div style={{ color: "var(--text-muted)", fontSize: 13 }}>
-                      Pools: {entryState?.poolsCompleted ?? 0} • Legendary: {entryState?.legendaryCaught ?? 0}
+                  <div key={entry.lakeId} style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
+                    <div>
+                      <div>{entry.label}</div>
+                      <div style={{ color: "var(--text-muted)", fontSize: 13 }}>
+                        Pools: {entryState?.poolsCompleted ?? 0} • Legendary: {entryState?.legendaryCaught ?? 0}
+                      </div>
                     </div>
+                    <button type="button" className="ghost" onClick={() => resetLakeProgress(entry.lakeId)}>
+                      Reset
+                    </button>
                   </div>
                 );
               })}
@@ -642,6 +691,12 @@ export default function FishingToolView({ tool }: { tool: ToolFishingCalculator 
                   })}
               </div>
             </details>
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <button type="button" className="ghost" onClick={resetAllProgress}>
+              Reset All Progress
+            </button>
           </div>
         </div>
       </div>
