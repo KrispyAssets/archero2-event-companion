@@ -648,6 +648,9 @@ export default function FishingToolView({
       warnThreshold !== null && brokenLinesUsed >= warnThreshold
         ? warnMessageText ?? `You are over ${warnThreshold} snapped lines. Consider switching strategies.`
         : null;
+    const wrongLakeId =
+      step.lakeId && toolState.activeLakeId !== step.lakeId ? toolState.activeLakeId : null;
+    const wrongLakeTargetId = wrongLakeId ? step.lakeId : null;
     const shouldSkip = false;
     let progressLabel = "Awaiting progress";
     let completed = false;
@@ -673,6 +676,8 @@ export default function FishingToolView({
         shouldSkip: true,
         skipThreshold,
         offPathWarning: offPathWarning ?? warnMessage,
+        wrongLakeId,
+        wrongLakeTargetId,
       };
     }
     if (step.goal.type === "manual_confirm") {
@@ -722,6 +727,8 @@ export default function FishingToolView({
       shouldSkip,
       skipThreshold,
       offPathWarning: offPathWarning ?? warnMessage,
+      wrongLakeId,
+      wrongLakeTargetId,
     };
   }, [guidedOption, guidedState, toolState, goldTarget]);
 
@@ -1265,7 +1272,12 @@ export default function FishingToolView({
                           Broken lines are over {guidedStepData.skipThreshold}. This step should be skipped.
                         </div>
                       ) : null}
-                      {guidedStepData.offPathWarning ? (
+                      {guidedStepData.wrongLakeId ? (
+                        <div style={{ color: "var(--danger)", fontSize: 12, marginTop: 6 }}>
+                          You are on {set.lakes.find((entry) => entry.lakeId === guidedStepData.wrongLakeId)?.label ?? guidedStepData.wrongLakeId}.{" "}
+                          Switch to {set.lakes.find((entry) => entry.lakeId === guidedStepData.wrongLakeTargetId)?.label ?? guidedStepData.wrongLakeTargetId} to follow this step.
+                        </div>
+                      ) : guidedStepData.offPathWarning ? (
                         <div style={{ color: "var(--danger)", fontSize: 12, marginTop: 6 }}>
                           {guidedStepData.offPathWarning}
                         </div>
