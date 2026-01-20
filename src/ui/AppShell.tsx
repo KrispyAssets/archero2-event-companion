@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import DropdownButton from "./components/DropdownButton";
 import "./appShell.css";
 
 const THEME_STORAGE_KEY = "archero2_theme";
@@ -135,20 +136,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               </Link>
             </nav>
             <div className="themeControls">
-              <select
-                value={themeId}
-                onChange={(e) => {
-                  setThemeId(e.target.value);
-                  window.setTimeout(() => e.currentTarget.blur(), 0);
-                }}
-                aria-label="Theme"
-              >
-                {THEME_OPTIONS.map((option) => (
-                  <option key={option.id} value={option.id}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+              <DropdownButton
+                valueLabel={THEME_OPTIONS.find((option) => option.id === themeId)?.label ?? "Theme"}
+                options={THEME_OPTIONS.map((option) => ({ value: option.id, label: option.label }))}
+                onSelect={(value) => setThemeId(value)}
+                minWidth={140}
+              />
               <button
                 type="button"
                 onClick={(e) => {

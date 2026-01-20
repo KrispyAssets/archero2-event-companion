@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { TaskDefinition, ToolFishingCalculator, ToolPurchaseGoals } from "../../catalog/types";
 import { buildTaskGroups, computeEarned, computeRemaining } from "../../catalog/taskGrouping";
 import { getEventProgressState } from "../../state/userStateStore";
+import DropdownButton from "./DropdownButton";
 
 type FishingToolData = {
   schemaVersion: number;
@@ -1269,13 +1270,6 @@ export default function FishingToolView({
     });
   }
 
-  function toggleGuidedCollapsed() {
-    updateToolState((prev) => ({
-      ...prev,
-      guidedCollapsed: !prev.guidedCollapsed,
-    }));
-  }
-
   function setGuidedWeight(value: number | null) {
     updateToolState((prev) => ({
       ...prev,
@@ -1341,13 +1335,20 @@ export default function FishingToolView({
           {tool.description ? <p style={{ marginTop: 6 }}>{tool.description}</p> : null}
 
           <div style={{ display: "grid", gap: 10, marginTop: 12 }}>
-        <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12, background: "var(--surface-2)" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-            <div style={{ fontWeight: 700 }}>Guided Route</div>
-            <button type="button" className="ghost" onClick={toggleGuidedCollapsed}>
-              {toolState.guidedCollapsed ? "Expand" : "Collapse"}
-            </button>
-          </div>
+        <details
+          open={!toolState.guidedCollapsed}
+          onToggle={(event) => {
+            const isOpen = (event.currentTarget as HTMLDetailsElement).open;
+            updateToolState((prev) => ({ ...prev, guidedCollapsed: !isOpen }));
+          }}
+          style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12, background: "var(--surface-2)" }}
+        >
+          <summary className="detailsSummary" style={{ cursor: "pointer", fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
+            <span aria-hidden="true" className="detailsChevron">
+              ▸
+            </span>
+            <span style={{ flex: 1 }}>Guided Route</span>
+          </summary>
           {toolState.guidedCollapsed ? null : (
             <div style={{ display: "grid", gap: 10, marginTop: 10 }}>
               {guidedState.status === "idle" ? (
@@ -1360,13 +1361,12 @@ export default function FishingToolView({
                 <>
                   <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
                     <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Option</label>
-                    <select value={guidedOption.optionId} onChange={(e) => setGuidedOption(e.target.value)}>
-                      {guidedState.data.options.map((option) => (
-                        <option key={option.optionId} value={option.optionId}>
-                          {option.title}
-                        </option>
-                      ))}
-                    </select>
+                    <DropdownButton
+                      valueLabel={guidedOption.title}
+                      options={guidedState.data.options.map((option) => ({ value: option.optionId, label: option.title }))}
+                      onSelect={setGuidedOption}
+                      minWidth={200}
+                    />
                     <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Current Weight</label>
                     <input
                       type="text"
@@ -1458,22 +1458,29 @@ export default function FishingToolView({
               )}
             </div>
           )}
-        </div>
+        </details>
         <div style={{ display: "grid", gap: 8 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-muted)" }}>Select a Lake</div>
             <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Set</label>
-              <select className="secondary" value={set.setId} onChange={(e) => setActiveSet(e.target.value)}>
-                {data.sets.map((option) => (
-                  <option key={option.setId} value={option.setId}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+              <DropdownButton
+                valueLabel={set.label}
+                options={data.sets.map((option) => ({ value: option.setId, label: option.label }))}
+                onSelect={setActiveSet}
+                minWidth={96}
+              />
               <div ref={resetMenuRef} style={{ position: "relative" }}>
-                <button type="button" className="secondary" onClick={() => setResetMenuOpen((prev) => !prev)}>
-                  Reset Options
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={() => setResetMenuOpen((prev) => !prev)}
+                  style={{ display: "flex", alignItems: "center", gap: 8 }}
+                >
+                  <span>Reset Options</span>
+                  <span aria-hidden="true" style={{ fontSize: 12, lineHeight: 1 }}>
+                    {resetMenuOpen ? "▲" : "▼"}
+                  </span>
                 </button>
                 {resetMenuOpen ? (
                   <div
@@ -1559,7 +1566,7 @@ export default function FishingToolView({
                     Fish Remaining {remaining} • Legendary {odds.toFixed(1)}%
                   </div>
                   <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>
-                    Pools Cleared {entryState?.poolsCompleted ?? 0} • Legendaries Caught {entryState?.legendaryCaught ?? 0}
+                    Pools Cleared {entryState?.poolsCompleted ?? 0} • Legendaries {entryState?.legendaryCaught ?? 0}
                   </div>
                 </button>
               );
@@ -1634,13 +1641,12 @@ export default function FishingToolView({
               <div style={{ fontWeight: 700 }}>
                 {toolState.brokenLines ?? 0}/{brokenLinesMax}
               </div>
-              <select value={breakStep} onChange={(e) => setBreakStep(Number(e.target.value))}>
-                {[1, 2, 3, 5, 10].map((value) => (
-                  <option key={value} value={value}>
-                    +{value}
-                  </option>
-                ))}
-              </select>
+              <DropdownButton
+                valueLabel={`+${breakStep}`}
+                options={[1, 2, 3, 5, 10].map((value) => ({ value: String(value), label: `+${value}` }))}
+                onSelect={(value) => setBreakStep(Number(value))}
+                minWidth={72}
+              />
               <button
                 type="button"
                 className="secondary"
@@ -1750,11 +1756,22 @@ export default function FishingToolView({
           <div style={{ display: "grid", gap: 12, marginTop: 12 }}>
             <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
               <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Preset</label>
-              <select value={toolState.goalPreset} onChange={(e) => setGoalPreset(e.target.value as ToolState["goalPreset"])}>
-                <option value="silver-heavy">Silver-heavy (120k + 16 gold)</option>
-                <option value="gold-efficient">Gold-efficient (80k + 16 gold)</option>
-                <option value="custom">Custom</option>
-              </select>
+              <DropdownButton
+                valueLabel={
+                  toolState.goalPreset === "silver-heavy"
+                    ? "Silver-heavy (120k + 16 gold)"
+                    : toolState.goalPreset === "gold-efficient"
+                      ? "Gold-efficient (80k + 16 gold)"
+                      : "Custom"
+                }
+                options={[
+                  { value: "silver-heavy", label: "Silver-heavy (120k + 16 gold)" },
+                  { value: "gold-efficient", label: "Gold-efficient (80k + 16 gold)" },
+                  { value: "custom", label: "Custom" },
+                ]}
+                onSelect={(value) => setGoalPreset(value as ToolState["goalPreset"])}
+                minWidth={220}
+              />
             </div>
 
             <div
@@ -2019,13 +2036,12 @@ export default function FishingToolView({
               </div>
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
                 <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Estimate lake</label>
-                <select value={silverEstimateLakeId ?? ""} onChange={(e) => setSilverEstimateLake(e.target.value)}>
-                  {set.lakes.map((entry) => (
-                    <option key={entry.lakeId} value={entry.lakeId}>
-                      {entry.label}
-                    </option>
-                  ))}
-                </select>
+                <DropdownButton
+                  valueLabel={set.lakes.find((entry) => entry.lakeId === (silverEstimateLakeId ?? ""))?.label ?? "Select lake"}
+                  options={set.lakes.map((entry) => ({ value: entry.lakeId, label: entry.label }))}
+                  onSelect={setSilverEstimateLake}
+                  minWidth={160}
+                />
               </div>
             </div>
 

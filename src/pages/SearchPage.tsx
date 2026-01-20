@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import AppShell from "../ui/AppShell";
+import DropdownButton from "../ui/components/DropdownButton";
 import { loadAllEventsFull, loadCatalogIndex } from "../catalog/loadCatalog";
 import type { EventCatalogFull, GuideContentBlock, GuideSection } from "../catalog/types";
 import { buildTaskGroups, getGroupTitle } from "../catalog/taskGrouping";
@@ -278,21 +279,18 @@ export default function SearchPage() {
             style={{ maxWidth: 520 }}
           />
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <label style={{ fontSize: 13, color: "var(--text-muted)" }}>
-              Event filter
-              <select
-                value={selectedEventId}
-                onChange={(e) => setSelectedEventId(e.target.value)}
-                style={{ display: "block", marginTop: 6, maxWidth: 320 }}
-              >
-                <option value="">All events</option>
-                {eventOptions.map((opt) => (
-                  <option key={opt.eventId} value={opt.eventId}>
-                    {opt.eventTitle}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <span style={{ fontSize: 13, color: "var(--text-muted)" }}>Event filter</span>
+              <DropdownButton
+                valueLabel={eventOptions.find((opt) => opt.eventId === selectedEventId)?.eventTitle ?? "All events"}
+                options={[
+                  { value: "", label: "All events" },
+                  ...eventOptions.map((opt) => ({ value: opt.eventId, label: opt.eventTitle })),
+                ]}
+                onSelect={setSelectedEventId}
+                minWidth={220}
+              />
+            </div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               {(["event", "guide", "faq", "task"] as const).map((kind) => {
                 const active = selectedKinds.includes(kind);
