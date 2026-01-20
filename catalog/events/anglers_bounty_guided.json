@@ -1,0 +1,379 @@
+{
+  "schemaVersion": 1,
+  "finalLakeId": "lake_4",
+  "poolSizes": {
+    "default": 40,
+    "lake_4": 80
+  },
+  "options": [
+    {
+      "optionId": "option_1",
+      "title": "1. Maximize Silver Tickets",
+      "summary": "This option is more expensive (20–30k gems) but yields more Silver Tickets.",
+      "disclaimer": "If you have started fishing prior to this without tracking your fishes, this guide might not work correctly for you without spending more gems later on. If you are on an earlier lake, you can likely salvage your run by following the steps on your next lake unlock. Check your legendary tickets at the end of each lake to ensure you are matching the expected legendaries caught at that point, but if you are missing a legendary and haven't tracked anything at this point, DO NOT go back and try to get it as you likely don't know the current fish in the pools.",
+      "steps": [
+        {
+          "stepId": "opt1_l1_track",
+          "lakeId": "lake_1",
+          "goal": { "type": "manual_confirm", "count": 0 },
+          "action": "Make sure to track every fish as you go for accurate guidance."
+        },
+        {
+          "stepId": "opt1_l1_legendary_goal",
+          "lakeId": "lake_1",
+          "goal": { "type": "manual_confirm", "count": 0 },
+          "action": "You will be fishing for 2 Legendary fish."
+        },
+        {
+          "stepId": "opt1_l1_pool_1",
+          "lakeId": "lake_1",
+          "goal": { "type": "pools_cleared", "count": 1 },
+          "action": "Fish a full pool of 40.",
+          "notes": "Run four 10x multipliers to save time."
+        },
+        {
+          "stepId": "opt1_l1_extra_20",
+          "lakeId": "lake_1",
+          "goal": { "type": "remaining_fish_at_most", "count": 20 },
+          "action": "Fish and track 20 more fish.",
+          "notes": "Run lesser multipliers for easier tracking or run two 10x multipliers to save time."
+        },
+        {
+          "stepId": "opt1_l1_weight_65",
+          "lakeId": "lake_1",
+          "goal": { "type": "weight_at_least", "count": 65 },
+          "action": "Change to 1x or 2x multiplier and fish/track until you are at 65+ kg.",
+          "notes": "Set your current weight to 65+ to move to the next step."
+        },
+        {
+          "stepId": "opt1_l1_breaks",
+          "lakeId": "lake_1",
+          "goal": {
+            "type": "legendary_caught",
+            "count": 2,
+            "scope": "lake",
+            "onlyIfLegendaryBelow": 2,
+            "onlyIfLegendaryBelowScope": "lake",
+            "warnIfBrokenLinesOver": 25,
+            "warnMessage": "You are over 25 snapped lines. Consider catching more fish to up your odds."
+          },
+          "action": "Break lines to catch the 2nd Legendary fish.",
+          "notes": "Ideally don't use more than 25 line breaks total; you can catch a few more fish to up your odds if need be."
+        },
+        {
+          "stepId": "opt1_l1_unlock",
+          "lakeId": "lake_1",
+          "goalAll": [
+            { "type": "weight_at_least", "count": 70 },
+            { "type": "legendary_caught", "count": 2, "scope": "lake" }
+          ],
+          "action": "Unlock the second lake. (2 Legendaries total)",
+          "notes": "Set your current weight to 70+ kg to move to the next step."
+        },
+        {
+          "stepId": "opt1_l2_legendary_goal",
+          "lakeId": "lake_2",
+          "goal": { "type": "manual_confirm", "count": 0 },
+          "action": "Head over to Lake 2. You will be fishing for 3 Legendary fish."
+        },
+        {
+          "stepId": "opt1_l2_pools",
+          "lakeId": "lake_2",
+          "goal": { "type": "pools_cleared", "count": 2 },
+          "action": "Fish two full pools of 40 (80 fish).",
+          "notes": "Run eight 10x multipliers to save time."
+        },
+        {
+          "stepId": "opt1_l2_weight_220",
+          "lakeId": "lake_2",
+          "goal": { "type": "weight_at_least", "count": 220 },
+          "action": "Change to 1x or 2x multiplier and fish/track until you are at 220+ kg."
+        },
+        {
+          "stepId": "opt1_l2_breaks",
+          "lakeId": "lake_2",
+          "goal": {
+            "type": "legendary_caught",
+            "count": 3,
+            "scope": "lake",
+            "onlyIfLegendaryBelow": 3,
+            "onlyIfLegendaryBelowScope": "lake",
+            "skipIfBrokenLinesOver": 50,
+            "warnMessage": "You are over 50 snapped lines. Stop snapping lines and fish until the 3rd Legendary fish has been caught."
+          },
+          "action": "Break lines to catch the 3rd Legendary fish.",
+          "notes": "You can catch a few more fish to up your odds if need be."
+        },
+        {
+          "stepId": "opt1_l2_unlock",
+          "lakeId": "lake_2",
+          "goalAll": [
+            { "type": "weight_at_least", "count": 230 },
+            { "type": "legendary_caught", "count": 3, "scope": "lake" }
+          ],
+          "action": "Unlock the third lake. (5 Legendaries total)",
+          "notes": "Set your current weight to 230+ kg to move to the next step."
+        },
+        {
+          "stepId": "opt1_l3_legendary_goal",
+          "lakeId": "lake_3",
+          "goal": { "type": "manual_confirm", "count": 0 },
+          "action": "Head over to Lake 3. You will be fishing for 3 Legendary fish."
+        },
+        {
+          "stepId": "opt1_l3_pools",
+          "lakeId": "lake_3",
+          "goal": { "type": "pools_cleared", "count": 2 },
+          "action": "Fish two full pools of 40 (80 fish).",
+          "notes": "Run eight 10x multipliers to save time."
+        },
+        {
+          "stepId": "opt1_l3_extra_20",
+          "lakeId": "lake_3",
+          "goal": { "type": "remaining_fish_at_most", "count": 20 },
+          "action": "Fish and track 20 more fish.",
+          "notes": "Run lesser multipliers for easier tracking or run two 10x multipliers to save time."
+        },
+        {
+          "stepId": "opt1_l3_weight_480",
+          "lakeId": "lake_3",
+          "goal": { "type": "weight_at_least", "count": 480 },
+          "action": "Change to 1x or 2x multiplier and fish/track until you are at 480+ kg."
+        },
+        {
+          "stepId": "opt1_l3_breaks",
+          "lakeId": "lake_3",
+          "goal": {
+            "type": "legendary_caught",
+            "count": 3,
+            "scope": "lake",
+            "onlyIfLegendaryBelow": 3,
+            "onlyIfLegendaryBelowScope": "lake",
+            "warnIfBrokenLinesOver": 75,
+            "warnMessage": "You are over 75 snapped lines. Consider catching more fish to up your odds."
+          },
+          "action": "Break lines to catch the 3rd Legendary fish.",
+          "notes": "Ideally don't use more than 75 line breaks total; you can catch a few more fish to up your odds if need be."
+        },
+        {
+          "stepId": "opt1_l3_unlock",
+          "lakeId": "lake_3",
+          "goalAll": [
+            { "type": "weight_at_least", "count": 500 },
+            { "type": "legendary_caught", "count": 3, "scope": "lake" }
+          ],
+          "action": "Unlock the fourth lake. (8 Legendaries total)",
+          "notes": "Set your current weight to 500+ kg to move to the next step."
+        },
+        {
+          "stepId": "opt1_l4_legendary_goal",
+          "lakeId": "lake_4",
+          "goal": { "type": "manual_confirm", "count": 0 },
+          "action": "Head over to Lake 4. You will be fishing for 8 Legendary fish.",
+          "notes": "You will need a minimum of 242 lures (3 full pools of 80) + line breaking to reach 16 Golden Tickets."
+        },
+        {
+          "stepId": "opt1_l4_pools",
+          "lakeId": "lake_4",
+          "goal": { "type": "pools_cleared", "count": 3 },
+          "action": "Run 10x multiplier until you've fished 3 full pools (240 fish).",
+          "notes": "Track every 80 fish to be exact."
+        },
+        {
+          "stepId": "opt1_l4_choices",
+          "lakeId": "lake_4",
+          "goal": {
+            "type": "legendary_caught",
+            "count": 8,
+            "scope": "lake",
+            "warnIfBrokenLinesOver": 120,
+            "warnMessage": "You are out of line breaks! Use your remaining lures then buy more if needed to reach 16 Golden Tickets."
+          },
+          "action": "At this point, decide how to finish your last 2 legendaries.",
+          "notes": "If you need more Silver Tickets and have the gems for more lures worst case scenario, you can catch Epics while hunting the legendaries. If you’re low on gems, only catch the legendaries. Keep tracking every fish to ensure accurate progress."
+        },
+        {
+          "stepId": "opt1_l4_finish",
+          "lakeId": "lake_4",
+          "goal": { "type": "manual_confirm", "count": 0 },
+          "action": "Congratulations! You should have at least 16 Golden Tickets and a hefty chunk of Silver Tickets for all of your purchasing needs!",
+          "notes": "If you decide to continue fishing, it is almost always recommended to do it on Polar Glacier as it provides the highest Silver Tickets per lure by far."
+        }
+      ]
+    },
+    {
+      "optionId": "option_2",
+      "title": "2. Maximize Golden Tickets",
+      "summary": "This option is less expensive (5–15k gems) but requires more luck on line breaks.",
+      "disclaimer": "If you have started fishing prior to this without tracking your fishes, this guide might not work correctly for you without spending more gems later on and it's likely better to just do option 1 if you have the gems available. If you are on an earlier lake, you can likely salvage your run by following the steps on your next lake unlock. Check your legendary tickets at the end of each lake to ensure you are matching the expected legendaries caught at that point, but if you are missing a legendary and haven't tracked anything at this point, DO NOT go back and try to get it as you likely don't know the current fish in the pools.",
+      "steps": [
+        {
+          "stepId": "opt2_l1_track",
+          "lakeId": "lake_1",
+          "goal": { "type": "manual_confirm", "count": 0 },
+          "action": "Make sure to track every fish as you go for accurate guidance."
+        },
+        {
+          "stepId": "opt2_l1_legendary_goal",
+          "lakeId": "lake_1",
+          "goal": { "type": "manual_confirm", "count": 0 },
+          "action": "You will be fishing for 3 Legendary fish."
+        },
+        {
+          "stepId": "opt2_l1_pools",
+          "lakeId": "lake_1",
+          "goal": { "type": "pools_cleared", "count": 2 },
+          "action": "Fish two full pools of 40 (80 fish), this will likely push you into Lake 2.",
+          "notes": "Run eight 10x multipliers to save time."
+        },
+        {
+          "stepId": "opt2_l1_backtrack",
+          "lakeId": "lake_1",
+          "goal": { "type": "manual_confirm", "count": 0 },
+          "action": "Go back to Lake 1 if you are on the 2nd Lake.",
+          "notes": "The arrows at the bottom right let you go back and forth."
+        },
+        {
+          "stepId": "opt2_l1_breaks",
+          "lakeId": "lake_1",
+          "goal": {
+            "type": "legendary_caught",
+            "count": 3,
+            "scope": "lake",
+            "warnIfBrokenLinesOver": 75
+          },
+          "action": "Change to 1x multiplier and snap all lines except for the 3rd Legendary fish.",
+          "notes": "If you’re over 75 snapped lines and you haven’t caught the legendary, switch to option 1 if you have the gems. You most likely do not have the snaps left to finish option 2."
+        },
+        {
+          "stepId": "opt2_l1_unlock",
+          "lakeId": "lake_1",
+          "goalAll": [
+            { "type": "weight_at_least", "count": 70 },
+            { "type": "legendary_caught", "count": 3, "scope": "lake" }
+          ],
+          "action": "Lake 1 complete. (3 Legendaries total)",
+          "notes": "Set your current weight to 70+ kg to move to the next step."
+        },
+        {
+          "stepId": "opt2_l2_legendary_goal",
+          "lakeId": "lake_2",
+          "goal": { "type": "manual_confirm", "count": 0 },
+          "action": "Head over to Lake 2. You will be fishing for 3 Legendary fish."
+        },
+        {
+          "stepId": "opt2_l2_pools",
+          "lakeId": "lake_2",
+          "goal": { "type": "pools_cleared", "count": 2 },
+          "action": "Fish two full pools of 40 (80 fish).",
+          "notes": "Run eight 10x multipliers to save time."
+        },
+        {
+          "stepId": "opt2_l2_weight_220",
+          "lakeId": "lake_2",
+          "goal": { "type": "weight_at_least", "count": 220 },
+          "action": "Change to 1x or 2x multiplier and fish/track until you are at 220+ kg."
+        },
+        {
+          "stepId": "opt2_l2_breaks",
+          "lakeId": "lake_2",
+          "goal": {
+            "type": "legendary_caught",
+            "count": 3,
+            "scope": "lake",
+            "onlyIfLegendaryBelow": 3,
+            "onlyIfLegendaryBelowScope": "lake",
+            "skipIfBrokenLinesOver": 50,
+            "warnMessage": "You are over 50 snapped lines. Stop snapping lines and fish until the 3rd Legendary fish has been caught."
+          },
+          "action": "Break lines to catch the 3rd Legendary fish.",
+          "notes": "You can catch a few more fish to up your odds if need be."
+        },
+        {
+          "stepId": "opt2_l2_unlock",
+          "lakeId": "lake_2",
+          "goalAll": [
+            { "type": "weight_at_least", "count": 230 },
+            { "type": "legendary_caught", "count": 3, "scope": "lake" }
+          ],
+          "action": "Lake 2 complete. (6 Legendaries total)",
+          "notes": "Set your current weight to 230+ kg to move to the next step."
+        },
+        {
+          "stepId": "opt2_l3_legendary_goal",
+          "lakeId": "lake_3",
+          "goal": { "type": "manual_confirm", "count": 0 },
+          "action": "Head over to Lake 3. You will be fishing for 4 Legendary fish."
+        },
+        {
+          "stepId": "opt2_l3_pools",
+          "lakeId": "lake_3",
+          "goal": { "type": "pools_cleared", "count": 3 },
+          "action": "Fish three full pools of 40 (120 fish), this will likely push you into Lake 4.",
+          "notes": "Run twelve 10x multipliers to save time."
+        },
+        {
+          "stepId": "opt2_l3_backtrack",
+          "lakeId": "lake_3",
+          "goal": { "type": "manual_confirm", "count": 0 },
+          "action": "Go back to Lake 3 if you are on the 4th Lake.",
+          "notes": "The arrows at the bottom right let you go back and forth."
+        },
+        {
+          "stepId": "opt2_l3_breaks",
+          "lakeId": "lake_3",
+          "goal": {
+            "type": "legendary_caught",
+            "count": 4,
+            "scope": "lake"
+          },
+          "action": "Change to 1x multiplier and snap all lines except for the 4th Legendary fish."
+        },
+        {
+          "stepId": "opt2_l3_unlock",
+          "lakeId": "lake_3",
+          "goalAll": [
+            { "type": "weight_at_least", "count": 500 },
+            { "type": "legendary_caught", "count": 4, "scope": "lake" }
+          ],
+          "action": "Lake 3 complete. (10 Legendaries total)",
+          "notes": "Set your current weight to 500+ kg to move to the next step."
+        },
+        {
+          "stepId": "opt2_l4_legendary_goal",
+          "lakeId": "lake_4",
+          "goal": { "type": "manual_confirm", "count": 0 },
+          "action": "Head over to Lake 4. You will be fishing for 6 Legendary fish.",
+          "notes": "You will need a minimum of 162 lures (2 full pools of 80) + line breaking to reach 16 Golden Tickets."
+        },
+        {
+          "stepId": "opt2_l4_pools",
+          "lakeId": "lake_4",
+          "goal": { "type": "pools_cleared", "count": 2 },
+          "action": "Run 10x multiplier until you've fished 2 full pools (160 fish).",
+          "notes": "Track every 80 fish to be exact."
+        },
+        {
+          "stepId": "opt2_l4_breaks",
+          "lakeId": "lake_4",
+          "goal": {
+            "type": "legendary_caught",
+            "count": 6,
+            "scope": "lake",
+            "warnIfBrokenLinesOver": 120,
+            "warnMessage": "You are out of line breaks! Use your remaining lures then buy more if needed."
+          },
+          "action": "Line break until you catch the last 2 Legendary fish.",
+          "notes": "If you run out of line breaks, you will likely have to spend more gems to continue trying."
+        },
+        {
+          "stepId": "opt2_l4_finish",
+          "lakeId": "lake_4",
+          "goal": { "type": "manual_confirm", "count": 0 },
+          "action": "Congratulations! You should have at least 16 Golden Tickets and a hefty chunk of Silver Tickets for all of your purchasing needs!",
+          "notes": "If you decide to continue fishing, it is almost always recommended to do it on Polar Glacier as it provides the highest Silver Tickets per lure by far."
+        }
+      ]
+    }
+  ]
+}

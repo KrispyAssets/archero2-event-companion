@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog_index catalog_schema_version="1">
     <events>
-        <event_ref path="catalog/events/event_sample_event_v1.xml" />
+        <event_ref path="catalog/events/event_anglers_bounty_v1.xml" />
     </events>
 
     <tools>
         <tool_ref path="catalog/tools/tool_sample_priority_list_v1.xml" />
         <tool_ref path="catalog/tools/tool_fishing_companion_v1.xml" />
+        <tool_ref path="catalog/tools/tool_purchase_goals_v1.xml" />
     </tools>
 
     <progression_models>

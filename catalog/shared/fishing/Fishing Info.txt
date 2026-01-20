@@ -32,6 +32,12 @@ Polar Glacier
 ║ 1.5 │ 2.3 │ 4.8 │ 7.9 │ 12.6 │ 27.4 ║
 ╚═════╧═════╧═════╧═════╧══════╧══════╝
 
+Lake Unlocks
+
+Lake 2: 75kg
+Lake 3: 230kg
+Lake 4: 500kg
+
 
 :30_Icon_ChapterStars: What to buy :30_Icon_ChapterStars:
 Always buy the lures available for silver tickets. They are worth more than they cost to buy every time.
