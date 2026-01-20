@@ -284,10 +284,10 @@
             "onlyIfLegendaryBelow": 3,
             "onlyIfLegendaryBelowScope": "lake",
             "skipIfBrokenLinesOver": 50,
-            "warnMessage": "You are over 50 snapped lines. Fish until Lake 3 is unlocked and 3rd Legendary has been caught."
+            "warnMessage": "You are over 50 snapped lines. Stop snapping lines and fish until the 3rd Legendary fish has been caught."
           },
-          "action": "Snap all lines except for the 3rd Legendary fish.",
-          "notes": "Ideally don't use more than 50 line breaks total; you can catch a few more fish to up your odds if need be."
+          "action": "Break lines to catch the 3rd Legendary fish.",
+          "notes": "You can catch a few more fish to up your odds if need be."
         },
         {
           "stepId": "opt2_l2_unlock",
