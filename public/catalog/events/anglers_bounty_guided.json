@@ -43,7 +43,7 @@
           "lakeId": "lake_1",
           "goal": { "type": "weight_at_least", "count": 65 },
           "action": "Change to 1x or 2x multiplier and fish/track until you are at 65+ kg.",
-          "notes": "Press next when ready or set your current weight to 65+ to move to the next step."
+          "notes": "Set your current weight to 65+ to move to the next step."
         },
         {
           "stepId": "opt1_l1_breaks",
@@ -53,23 +53,28 @@
             "count": 2,
             "scope": "lake",
             "onlyIfLegendaryBelow": 2,
-            "onlyIfLegendaryBelowScope": "lake"
+            "onlyIfLegendaryBelowScope": "lake",
+            "warnIfBrokenLinesOver": 25,
+            "warnMessage": "You are over 25 snapped lines. Consider catching more fish to up your odds."
           },
-          "action": "Break lines to catch the Legendary fish.",
+          "action": "Break lines to catch the 2nd Legendary fish.",
           "notes": "Ideally don't use more than 25 line breaks total; you can catch a few more fish to up your odds if need be."
         },
         {
           "stepId": "opt1_l1_unlock",
           "lakeId": "lake_1",
-          "goal": { "type": "weight_at_least", "count": 70 },
+          "goalAll": [
+            { "type": "weight_at_least", "count": 70 },
+            { "type": "legendary_caught", "count": 2, "scope": "lake" }
+          ],
           "action": "Unlock the second lake. (2 Legendaries total)",
-          "notes": "Press next when ready or set your current weight to 70+ kg to move to the next step."
+          "notes": "Set your current weight to 70+ kg to move to the next step."
         },
         {
           "stepId": "opt1_l2_legendary_goal",
           "lakeId": "lake_2",
           "goal": { "type": "manual_confirm", "count": 0 },
-          "action": "You will be fishing for 3 Legendary fish."
+          "action": "Head over to Lake 2. You will be fishing for 3 Legendary fish."
         },
         {
           "stepId": "opt1_l2_pools",
@@ -93,17 +98,27 @@
             "scope": "lake",
             "onlyIfLegendaryBelow": 3,
             "onlyIfLegendaryBelowScope": "lake",
-            "skipIfBrokenLinesOver": 50
+            "skipIfBrokenLinesOver": 50,
+            "warnMessage": "You are over 50 snapped lines. Stop snapping lines and fish until the 3rd Legendary fish has been caught."
           },
-          "action": "Break lines to catch the Legendary fish.",
-          "notes": "Ideally don't use more than 50 line breaks total; you can catch a few more fish to up your odds if need be. If you are over 50 snaps including Lake 1, skip this step and move onto the next."
+          "action": "Break lines to catch the 3rd Legendary fish.",
+          "notes": "You can catch a few more fish to up your odds if need be."
         },
         {
           "stepId": "opt1_l2_unlock",
           "lakeId": "lake_2",
-          "goal": { "type": "weight_at_least", "count": 230 },
+          "goalAll": [
+            { "type": "weight_at_least", "count": 230 },
+            { "type": "legendary_caught", "count": 3, "scope": "lake" }
+          ],
           "action": "Unlock the third lake. (5 Legendaries total)",
-          "notes": "Press next when ready or set your current weight to 230+ kg to move to the next step."
+          "notes": "Set your current weight to 230+ kg to move to the next step."
+        },
+        {
+          "stepId": "opt1_l3_legendary_goal",
+          "lakeId": "lake_3",
+          "goal": { "type": "manual_confirm", "count": 0 },
+          "action": "Head over to Lake 3. You will be fishing for 3 Legendary fish."
         },
         {
           "stepId": "opt1_l3_pools",
@@ -133,23 +148,29 @@
             "count": 3,
             "scope": "lake",
             "onlyIfLegendaryBelow": 3,
-            "onlyIfLegendaryBelowScope": "lake"
+            "onlyIfLegendaryBelowScope": "lake",
+            "warnIfBrokenLinesOver": 75,
+            "warnMessage": "You are over 75 snapped lines. Consider catching more fish to up your odds."
           },
-          "action": "Break lines to catch the Legendary fish.",
+          "action": "Break lines to catch the 3rd Legendary fish.",
           "notes": "Ideally don't use more than 75 line breaks total; you can catch a few more fish to up your odds if need be."
         },
         {
           "stepId": "opt1_l3_unlock",
           "lakeId": "lake_3",
-          "goal": { "type": "weight_at_least", "count": 500 },
+          "goalAll": [
+            { "type": "weight_at_least", "count": 500 },
+            { "type": "legendary_caught", "count": 3, "scope": "lake" }
+          ],
           "action": "Unlock the fourth lake. (8 Legendaries total)",
-          "notes": "Press next when ready or set your current weight to 500+ kg to move to the next step."
+          "notes": "Set your current weight to 500+ kg to move to the next step."
         },
         {
-          "stepId": "opt1_l4_minimum",
+          "stepId": "opt1_l4_legendary_goal",
           "lakeId": "lake_4",
           "goal": { "type": "manual_confirm", "count": 0 },
-          "action": "You will need a minimum of 242 lures (3 full pools of 80) to get to 16 gold tickets."
+          "action": "Head over to Lake 4. You will be fishing for 8 Legendary fish.",
+          "notes": "You will need a minimum of 242 lures (3 full pools of 80) + line breaking to reach 16 Golden Tickets."
         },
         {
           "stepId": "opt1_l4_pools",
@@ -161,9 +182,15 @@
         {
           "stepId": "opt1_l4_choices",
           "lakeId": "lake_4",
-          "goal": { "type": "legendary_caught", "count": 8, "scope": "lake" },
+          "goal": {
+            "type": "legendary_caught",
+            "count": 8,
+            "scope": "lake",
+            "warnIfBrokenLinesOver": 120,
+            "warnMessage": "You are out of line breaks! Use your remaining lures then buy more if needed to reach 16 Golden Tickets."
+          },
           "action": "At this point, you have two options.",
-          "notes": "Spend more gems for more silver tickets or line break until you catch the last 2 legendaries. If you intend to get more silver tickets line breaking for epics is acceptable as well but ensure you can guarantee your last two legendaries with more lure purchases worst case scenario in that case. Track every fish caught if you are going for more silver tickets as we still need the 2 legendaries for 16 total Golden Tickets."
+          "notes": "Spend more gems for more silver tickets or line break until you catch the last 2 legendaries. If you intend to fish for more silver tickets on a budget, line breaking only the rares is acceptable as well but ensure you can guarantee your last two legendaries worst case scenario. Continue tracking every fish caught to ensure accurate progress."
         },
         {
           "stepId": "opt1_l4_finish",
@@ -221,14 +248,18 @@
         {
           "stepId": "opt2_l1_unlock",
           "lakeId": "lake_1",
-          "goal": { "type": "manual_confirm", "count": 0 },
-          "action": "Move on to Lake 2. (3 Legendaries total)"
+          "goalAll": [
+            { "type": "weight_at_least", "count": 70 },
+            { "type": "legendary_caught", "count": 3, "scope": "lake" }
+          ],
+          "action": "Lake 1 complete. (3 Legendaries total)",
+          "notes": "Set your current weight to 70+ kg to move to the next step."
         },
         {
           "stepId": "opt2_l2_legendary_goal",
           "lakeId": "lake_2",
           "goal": { "type": "manual_confirm", "count": 0 },
-          "action": "You will be fishing for 3 Legendary fish."
+          "action": "Head over to Lake 2. You will be fishing for 3 Legendary fish."
         },
         {
           "stepId": "opt2_l2_pools",
@@ -261,19 +292,18 @@
         {
           "stepId": "opt2_l2_unlock",
           "lakeId": "lake_2",
-          "goal": {
-            "type": "weight_at_least",
-            "count": 230,
-            "warnMessage": "If you haven't gotten your third legendary, fish this Lake until you catch it."
-          },
-          "action": "Unlock the third lake. (6 Legendaries total)",
-          "notes": "Press next when ready or set your current weight to 230+ kg to move to the next step."
+          "goalAll": [
+            { "type": "weight_at_least", "count": 230 },
+            { "type": "legendary_caught", "count": 3, "scope": "lake" }
+          ],
+          "action": "Lake 2 complete. (6 Legendaries total)",
+          "notes": "Set your current weight to 230+ kg to move to the next step."
         },
         {
           "stepId": "opt2_l3_legendary_goal",
           "lakeId": "lake_3",
           "goal": { "type": "manual_confirm", "count": 0 },
-          "action": "You will be fishing for 4 Legendary fish."
+          "action": "Head over to Lake 3. You will be fishing for 4 Legendary fish."
         },
         {
           "stepId": "opt2_l3_pools",
@@ -302,14 +332,19 @@
         {
           "stepId": "opt2_l3_unlock",
           "lakeId": "lake_3",
-          "goal": { "type": "manual_confirm", "count": 0 },
-          "action": "Move on to Lake 4. (10 Legendaries total)"
+          "goalAll": [
+            { "type": "weight_at_least", "count": 500 },
+            { "type": "legendary_caught", "count": 4, "scope": "lake" }
+          ],
+          "action": "Lake 3 complete. (10 Legendaries total)",
+          "notes": "Set your current weight to 500+ kg to move to the next step."
         },
         {
-          "stepId": "opt2_l4_minimum",
+          "stepId": "opt2_l4_legendary_goal",
           "lakeId": "lake_4",
           "goal": { "type": "manual_confirm", "count": 0 },
-          "action": "You will need a minimum of 162 lures (2 full pools of 80) to get to 16 gold tickets."
+          "action": "Head over to Lake 4. You will be fishing for 6 Legendary fish.",
+          "notes": "You will need a minimum of 162 lures (2 full pools of 80) + line breaking to reach 16 Golden Tickets."
         },
         {
           "stepId": "opt2_l4_pools",
