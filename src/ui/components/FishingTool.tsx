@@ -61,7 +61,13 @@ type GuidedRouteStep = {
   action: string;
   notes?: string;
   goal: {
-    type: "manual_confirm" | "pools_cleared" | "legendary_caught" | "gold_target" | "weight_at_least";
+    type:
+      | "manual_confirm"
+      | "pools_cleared"
+      | "legendary_caught"
+      | "gold_target"
+      | "weight_at_least"
+      | "remaining_fish_at_most";
     count: number;
     scope?: "lake" | "total";
     maxCount?: number;
@@ -69,9 +75,11 @@ type GuidedRouteStep = {
     onlyIfLegendaryBelow?: number;
     onlyIfLegendaryBelowScope?: "lake" | "total";
     warnIfBrokenLinesOver?: number;
+    warnMessage?: string;
   };
   skipIfBrokenLinesOver?: number;
   warnIfBrokenLinesOver?: number;
+  warnMessage?: string;
 };
 
 type LakeState = {
@@ -633,12 +641,14 @@ export default function FishingToolView({
     const lakeStateForStep = toolState.lakeStates[step.lakeId];
     const brokenLinesUsed = toolState.brokenLines ?? 0;
     const skipThreshold = step.skipIfBrokenLinesOver ?? step.goal.skipIfBrokenLinesOver ?? null;
-    const warnThreshold = step.warnIfBrokenLinesOver ?? step.goal.warnIfBrokenLinesOver ?? null;
+    const warnThreshold =
+      step.warnIfBrokenLinesOver ?? step.goal.warnIfBrokenLinesOver ?? skipThreshold ?? null;
+    const warnMessageText = step.warnMessage ?? step.goal.warnMessage;
     const warnMessage =
       warnThreshold !== null && brokenLinesUsed >= warnThreshold
-        ? `You are over ${warnThreshold} snapped lines. Consider switching strategies.`
+        ? warnMessageText ?? `You are over ${warnThreshold} snapped lines. Consider switching strategies.`
         : null;
-    const shouldSkip = skipThreshold !== null && brokenLinesUsed >= skipThreshold;
+    const shouldSkip = false;
     let progressLabel = "Awaiting progress";
     let completed = false;
     let offPathWarning: string | null = null;
@@ -677,6 +687,11 @@ export default function FishingToolView({
       const targetGold = goldTarget ?? 0;
       progressLabel = `${currentGold}/${targetGold} gold tickets`;
       completed = targetGold > 0 && currentGold >= targetGold;
+    } else if (step.goal.type === "remaining_fish_at_most" && lakeStateForStep) {
+      const remainingFish = sumCounts(lakeStateForStep.remainingByTypeId);
+      const remainingToFish = Math.max(0, remainingFish - step.goal.count);
+      progressLabel = remainingToFish > 0 ? `Fish ${remainingToFish} more` : "Step complete";
+      completed = remainingFish <= step.goal.count;
     } else if (lakeStateForStep) {
       if (step.goal.type === "pools_cleared") {
         const currentPools = lakeStateForStep.poolsCompleted ?? 0;
@@ -1251,7 +1266,7 @@ export default function FishingToolView({
                         </div>
                       ) : null}
                       {guidedStepData.offPathWarning ? (
-                        <div style={{ color: "var(--warning)", fontSize: 12, marginTop: 6 }}>
+                        <div style={{ color: "var(--danger)", fontSize: 12, marginTop: 6 }}>
                           {guidedStepData.offPathWarning}
                         </div>
                       ) : null}

@@ -34,7 +34,7 @@
         {
           "stepId": "opt1_l1_extra_20",
           "lakeId": "lake_1",
-          "goal": { "type": "manual_confirm", "count": 0 },
+          "goal": { "type": "remaining_fish_at_most", "count": 20 },
           "action": "Fish and track 20 more fish.",
           "notes": "Run lesser multipliers for easier tracking or run two 10x multipliers to save time."
         },
@@ -115,7 +115,7 @@
         {
           "stepId": "opt1_l3_extra_20",
           "lakeId": "lake_3",
-          "goal": { "type": "manual_confirm", "count": 0 },
+          "goal": { "type": "remaining_fish_at_most", "count": 20 },
           "action": "Fish and track 20 more fish.",
           "notes": "Run lesser multipliers for easier tracking or run two 10x multipliers to save time."
         },
@@ -161,15 +161,15 @@
         {
           "stepId": "opt1_l4_choices",
           "lakeId": "lake_4",
-          "goal": { "type": "manual_confirm", "count": 0 },
+          "goal": { "type": "legendary_caught", "count": 8, "scope": "lake" },
           "action": "At this point, you have two options.",
           "notes": "Spend more gems for more silver tickets or line break until you catch the last 2 legendaries. If you intend to get more silver tickets line breaking for epics is acceptable as well but ensure you can guarantee your last two legendaries with more lure purchases worst case scenario in that case. Track every fish caught if you are going for more silver tickets as we still need the 2 legendaries for 16 total Golden Tickets."
         },
         {
           "stepId": "opt1_l4_finish",
           "lakeId": "lake_4",
-          "goal": { "type": "gold_target", "count": 16 },
-          "action": "Congratulations! You should ideally have at least 16 Golden Tickets and a hefty chunk of silver tickets for all of your purchasing needs!",
+          "goal": { "type": "manual_confirm", "count": 0 },
+          "action": "Congratulations! You should have at least 16 Golden Tickets and a hefty chunk of silver tickets for all of your purchasing needs!",
           "notes": "If you decide to continue fishing, it is almost always recommended to do it on Polar Glacier as it provides the highest silver tickets per lure by far."
         }
       ]
@@ -201,7 +201,7 @@
         },
         {
           "stepId": "opt2_l1_backtrack",
-          "lakeId": "lake_2",
+          "lakeId": "lake_1",
           "goal": { "type": "manual_confirm", "count": 0 },
           "action": "Go back to Lake 1 if you are on the 2nd Lake.",
           "notes": "The arrows at the bottom right let you go back and forth."
@@ -210,11 +210,12 @@
           "stepId": "opt2_l1_breaks",
           "lakeId": "lake_1",
           "goal": {
-            "type": "manual_confirm",
-            "count": 0,
+            "type": "legendary_caught",
+            "count": 3,
+            "scope": "lake",
             "warnIfBrokenLinesOver": 75
           },
-          "action": "Change to 1x multiplier and snap all lines except for the Legendary fish.",
+          "action": "Change to 1x multiplier and snap all lines except for the 3rd Legendary fish.",
           "notes": "If you’re over 75 snapped lines and you haven’t caught the legendary, switch to option 1 if you have the gems. You most likely do not have the snaps left to finish option 2."
         },
         {
@@ -251,10 +252,11 @@
             "scope": "lake",
             "onlyIfLegendaryBelow": 3,
             "onlyIfLegendaryBelowScope": "lake",
-            "skipIfBrokenLinesOver": 50
+            "skipIfBrokenLinesOver": 50,
+            "warnMessage": "You are over 50 snapped lines. Skip this step and move onto the next."
           },
-          "action": "Break lines to catch the Legendary fish.",
-          "notes": "Ideally don't use more than 25 line breaks; you can catch a few more fish to up your odds if need be. If you are over 50 snaps including Lake 1, skip this step and move onto the next."
+          "action": "Snap all lines except for the 3rd Legendary fish.",
+          "notes": "Ideally don't use more than 25 line breaks; you can catch a few more fish to up your odds if need be."
         },
         {
           "stepId": "opt2_l2_unlock",
@@ -278,7 +280,7 @@
         },
         {
           "stepId": "opt2_l3_backtrack",
-          "lakeId": "lake_4",
+          "lakeId": "lake_3",
           "goal": { "type": "manual_confirm", "count": 0 },
           "action": "Go back to Lake 3 if you are on the 4th Lake.",
           "notes": "The arrows at the bottom right let you go back and forth."
@@ -286,8 +288,12 @@
         {
           "stepId": "opt2_l3_breaks",
           "lakeId": "lake_3",
-          "goal": { "type": "manual_confirm", "count": 0 },
-          "action": "Change to 1x multiplier and snap all lines except for the Legendary fish."
+          "goal": {
+            "type": "legendary_caught",
+            "count": 4,
+            "scope": "lake"
+          },
+          "action": "Change to 1x multiplier and snap all lines except for the 4th Legendary fish."
         },
         {
           "stepId": "opt2_l3_unlock",
@@ -311,15 +317,21 @@
         {
           "stepId": "opt2_l4_breaks",
           "lakeId": "lake_4",
-          "goal": { "type": "manual_confirm", "count": 0 },
-          "action": "Line break until you catch the last two Legendary fish.",
+          "goal": {
+            "type": "legendary_caught",
+            "count": 6,
+            "scope": "lake",
+            "warnIfBrokenLinesOver": 120,
+            "warnMessage": "You are out of line breaks! Use your remaining lures then buy more if needed."
+          },
+          "action": "Line break until you catch the last 2 Legendary fish.",
           "notes": "If you run out of line breaks, you will likely have to spend more gems to continue trying."
         },
         {
           "stepId": "opt2_l4_finish",
           "lakeId": "lake_4",
-          "goal": { "type": "gold_target", "count": 16 },
-          "action": "Congratulations! You should ideally have at least 16 Golden Tickets and a hefty chunk of silver tickets for all of your purchasing needs!",
+          "goal": { "type": "manual_confirm", "count": 0 },
+          "action": "Congratulations! You should have at least 16 Golden Tickets and a hefty chunk of silver tickets for all of your purchasing needs!",
           "notes": "If you decide to continue fishing, it is almost always recommended to do it on Polar Glacier as it provides the highest silver tickets per lure by far."
         }
       ]
