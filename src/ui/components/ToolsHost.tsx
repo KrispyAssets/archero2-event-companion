@@ -42,11 +42,13 @@ export default function ToolsHost({
   eventId,
   eventVersion,
   tasks,
+  guidedRoutePath,
 }: {
   tools: ToolDefinition[];
   eventId?: string;
   eventVersion?: number;
   tasks?: TaskDefinition[];
+  guidedRoutePath?: string;
 }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -65,6 +67,7 @@ export default function ToolsHost({
               eventId={eventId}
               eventVersion={eventVersion}
               tasks={tasks}
+              guidedRoutePath={guidedRoutePath}
             />
           );
         }

@@ -5,6 +5,7 @@
   title="Angler's Bounty"
   subtitle="Fishing event guide, tasks, and strategy reference."
   last_verified_date="2026-01-17">
+  <guided_route_ref path="catalog/events/anglers_bounty_guided.json" />
 
   <tasks>
     <task task_id="buy_silver_tickets_total_tier_1" display_order="10" requirement_action="buy" requirement_object="silver_tickets" requirement_scope="total" requirement_target_value="20" reward_type="lures" reward_amount="20" />

@@ -40,6 +40,40 @@ type FishingFishType = {
   baseCount: number;
 };
 
+type GuidedRouteData = {
+  schemaVersion: number;
+  finalLakeId: string;
+  poolSizes: Record<string, number>;
+  options: GuidedRouteOption[];
+};
+
+type GuidedRouteOption = {
+  optionId: string;
+  title: string;
+  summary?: string;
+  disclaimer?: string;
+  steps: GuidedRouteStep[];
+};
+
+type GuidedRouteStep = {
+  stepId: string;
+  lakeId: string;
+  action: string;
+  notes?: string;
+  goal: {
+    type: "manual_confirm" | "pools_cleared" | "legendary_caught" | "gold_target" | "weight_at_least";
+    count: number;
+    scope?: "lake" | "total";
+    maxCount?: number;
+    skipIfBrokenLinesOver?: number;
+    onlyIfLegendaryBelow?: number;
+    onlyIfLegendaryBelowScope?: "lake" | "total";
+    warnIfBrokenLinesOver?: number;
+  };
+  skipIfBrokenLinesOver?: number;
+  warnIfBrokenLinesOver?: number;
+};
+
 type LakeState = {
   remainingByTypeId: Record<string, number>;
   poolsCompleted: number;
@@ -84,6 +118,10 @@ type ToolState = {
     promisedShovelBundle: number | null;
     chromaticKeyBundle: number | null;
   };
+  guidedOptionId: string | null;
+  guidedStepIndex: number;
+  guidedCollapsed: boolean;
+  guidedCurrentWeight: number | null;
 };
 
 type DataState =
@@ -91,8 +129,15 @@ type DataState =
   | { status: "error"; error: string }
   | { status: "ready"; data: FishingToolData };
 
+type GuidedState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "error"; error: string }
+  | { status: "ready"; data: GuidedRouteData };
+
 const STORAGE_PREFIX = "archero2_tool_state_";
 const dataCache = new Map<string, FishingToolData>();
+const guidedCache = new Map<string, GuidedRouteData>();
 const toolStateCache = new Map<string, ToolState>();
 
 function resolvePath(path: string) {
@@ -163,14 +208,21 @@ export default function FishingToolView({
   eventId,
   eventVersion,
   tasks,
+  guidedRoutePath,
 }: {
   tool: ToolFishingCalculator;
   eventId?: string;
   eventVersion?: number;
   tasks?: TaskDefinition[];
+  guidedRoutePath?: string;
 }) {
   const [dataState, setDataState] = useState<DataState>(() => {
     const cached = dataCache.get(tool.dataPath);
+    return cached ? { status: "ready", data: cached } : { status: "loading" };
+  });
+  const [guidedState, setGuidedState] = useState<GuidedState>(() => {
+    if (!guidedRoutePath) return { status: "idle" };
+    const cached = guidedCache.get(guidedRoutePath);
     return cached ? { status: "ready", data: cached } : { status: "loading" };
   });
   const [toolState, setToolState] = useState<ToolState | null>(() => {
@@ -208,6 +260,40 @@ export default function FishingToolView({
       cancelled = true;
     };
   }, [tool.dataPath]);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!guidedRoutePath) {
+      setGuidedState({ status: "idle" });
+      return;
+    }
+    async function loadGuidedRoute() {
+      try {
+        const cached = guidedCache.get(guidedRoutePath);
+        if (cached) {
+          setGuidedState({ status: "ready", data: cached });
+          return;
+        }
+        const response = await fetch(resolvePath(guidedRoutePath), { cache: "no-cache" });
+        if (!response.ok) {
+          throw new Error(`Failed to load guided route: ${response.status} ${response.statusText}`);
+        }
+        const json = (await response.json()) as GuidedRouteData;
+        if (!cancelled) {
+          guidedCache.set(guidedRoutePath, json);
+          setGuidedState({ status: "ready", data: json });
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setGuidedState({ status: "error", error: error instanceof Error ? error.message : "Unknown error" });
+        }
+      }
+    }
+    loadGuidedRoute();
+    return () => {
+      cancelled = true;
+    };
+  }, [guidedRoutePath]);
 
   useEffect(() => {
     if (dataState.status !== "ready") return;
@@ -253,6 +339,10 @@ export default function FishingToolView({
         promisedShovelBundle: null,
         chromaticKeyBundle: null,
       },
+      guidedOptionId: stored?.guidedOptionId ?? null,
+      guidedStepIndex: stored?.guidedStepIndex ?? 0,
+      guidedCollapsed: stored?.guidedCollapsed ?? true,
+      guidedCurrentWeight: stored?.guidedCurrentWeight ?? null,
     };
     const storedLakeStates =
       stored?.lakeStates ?? {};
@@ -297,6 +387,10 @@ export default function FishingToolView({
       promisedShovelBundle: null,
       chromaticKeyBundle: null,
     };
+    nextState.guidedOptionId = stored?.guidedOptionId ?? null;
+    nextState.guidedStepIndex = stored?.guidedStepIndex ?? 0;
+    nextState.guidedCollapsed = stored?.guidedCollapsed ?? true;
+    nextState.guidedCurrentWeight = stored?.guidedCurrentWeight ?? null;
 
     setToolState(nextState);
     toolStateCache.set(tool.toolId, nextState);
@@ -379,6 +473,15 @@ export default function FishingToolView({
   const effectiveSilverTarget = toolState?.targetSilverTickets ?? suggestedSilverTarget ?? null;
   const silverGoalBaselineRaw = effectiveSilverTarget ?? baselineDefault;
   const silverGoalBaseline = clampNumber(silverGoalBaselineRaw, baselineMin, baselineMax);
+
+  const guidedOption = useMemo(() => {
+    if (guidedState.status !== "ready" || !toolState) return null;
+    const options = guidedState.data.options ?? [];
+    const preferred = toolState.guidedOptionId
+      ? options.find((option) => option.optionId === toolState.guidedOptionId)
+      : null;
+    return preferred ?? options[0] ?? null;
+  }, [guidedState, toolState?.guidedOptionId]);
 
   const lakeRecommendations = useMemo(() => {
     if (dataState.status !== "ready" || !toolState) return null;
@@ -521,6 +624,113 @@ export default function FishingToolView({
     );
   }, [dataState, toolState, lakeRecommendations, goldTarget]);
 
+  const guidedStepData = useMemo(() => {
+    if (!toolState || !guidedOption || guidedState.status !== "ready") return null;
+    const steps = guidedOption.steps ?? [];
+    const stepIndex = Math.min(toolState.guidedStepIndex, Math.max(steps.length - 1, 0));
+    const step = steps[stepIndex];
+    if (!step) return null;
+    const lakeStateForStep = toolState.lakeStates[step.lakeId];
+    const brokenLinesUsed = toolState.brokenLines ?? 0;
+    const skipThreshold = step.skipIfBrokenLinesOver ?? step.goal.skipIfBrokenLinesOver ?? null;
+    const warnThreshold = step.warnIfBrokenLinesOver ?? step.goal.warnIfBrokenLinesOver ?? null;
+    const warnMessage =
+      warnThreshold !== null && brokenLinesUsed >= warnThreshold
+        ? `You are over ${warnThreshold} snapped lines. Consider switching strategies.`
+        : null;
+    const shouldSkip = skipThreshold !== null && brokenLinesUsed >= skipThreshold;
+    let progressLabel = "Awaiting progress";
+    let completed = false;
+    let offPathWarning: string | null = null;
+    const totalLegendary = Object.values(toolState.lakeStates ?? {}).reduce(
+      (sum, entry) => sum + (entry.legendaryCaught ?? 0),
+      0
+    );
+    const lakeLegendary = lakeStateForStep?.legendaryCaught ?? 0;
+    const currentWeight = toolState.guidedCurrentWeight ?? null;
+    const onlyIfLegendaryBelow = step.goal.onlyIfLegendaryBelow;
+    const onlyIfLegendaryBelowScope = step.goal.onlyIfLegendaryBelowScope ?? "lake";
+    const legendaryValue =
+      onlyIfLegendaryBelowScope === "total" ? totalLegendary : lakeLegendary;
+    if (onlyIfLegendaryBelow !== undefined && legendaryValue >= onlyIfLegendaryBelow) {
+      return {
+        stepIndex,
+        step,
+        steps,
+        lakeStateForStep,
+        progressLabel: "Skipped (legendary target already met)",
+        completed: false,
+        shouldSkip: true,
+        skipThreshold,
+        offPathWarning: offPathWarning ?? warnMessage,
+      };
+    }
+    if (step.goal.type === "manual_confirm") {
+      progressLabel = "Manual step";
+      completed = false;
+    } else if (step.goal.type === "weight_at_least") {
+      progressLabel =
+        currentWeight !== null ? `${currentWeight} / ${step.goal.count}+ kg` : `0 / ${step.goal.count}+ kg`;
+      completed = currentWeight !== null && currentWeight >= step.goal.count;
+    } else if (step.goal.type === "gold_target") {
+      const currentGold = toolState.currentGoldTickets ?? 0;
+      const targetGold = goldTarget ?? 0;
+      progressLabel = `${currentGold}/${targetGold} gold tickets`;
+      completed = targetGold > 0 && currentGold >= targetGold;
+    } else if (lakeStateForStep) {
+      if (step.goal.type === "pools_cleared") {
+        const currentPools = lakeStateForStep.poolsCompleted ?? 0;
+        progressLabel = `${currentPools}/${step.goal.count} pools cleared`;
+        completed = currentPools >= step.goal.count;
+      } else if (step.goal.type === "legendary_caught") {
+        const currentLeg =
+          (step.goal.scope ?? "lake") === "total"
+            ? totalLegendary
+            : lakeStateForStep.legendaryCaught ?? 0;
+        progressLabel = `${currentLeg}/${step.goal.count} legendaries caught`;
+        completed = currentLeg >= step.goal.count;
+        if (step.goal.maxCount !== undefined && currentLeg > step.goal.maxCount) {
+          offPathWarning = `You are over the recommended legendary count (${step.goal.maxCount}+).`;
+        }
+      }
+    } else {
+      progressLabel = "No lake data";
+    }
+
+    return {
+      stepIndex,
+      step,
+      steps,
+      lakeStateForStep,
+      progressLabel,
+      completed,
+      shouldSkip,
+      skipThreshold,
+      offPathWarning: offPathWarning ?? warnMessage,
+    };
+  }, [guidedOption, guidedState, toolState, goldTarget]);
+
+  useEffect(() => {
+    if (!guidedStepData) return;
+    const shouldAdvance = guidedStepData.completed || guidedStepData.shouldSkip;
+    if (!shouldAdvance) return;
+    const nextIndex = Math.min(guidedStepData.steps.length - 1, guidedStepData.stepIndex + 1);
+    if (nextIndex === guidedStepData.stepIndex) return;
+    updateToolState((prev) => {
+      if (!prev) return prev;
+      const nextStep = guidedStepData.steps[nextIndex];
+      if (!nextStep) {
+        return { ...prev, guidedStepIndex: nextIndex };
+      }
+      const nextLakeId = prev.lakeStates[nextStep.lakeId] ? nextStep.lakeId : prev.activeLakeId;
+      return {
+        ...prev,
+        guidedStepIndex: nextIndex,
+        activeLakeId: nextLakeId,
+      };
+    });
+  }, [guidedStepData]);
+
   if (dataState.status === "loading") {
     return <p>Loading fishing tool…</p>;
   }
@@ -652,10 +862,14 @@ export default function FishingToolView({
   }
 
   function setActiveLake(lakeId: string) {
-    updateToolState((prev) => ({
-      ...prev,
-      activeLakeId: lakeId,
-    }));
+    updateToolState((prev) => {
+      if (!prev) return prev;
+      if (prev.lakeStates[lakeId]) {
+        return { ...prev, activeLakeId: lakeId };
+      }
+      const fallback = Object.keys(prev.lakeStates)[0] ?? prev.activeLakeId;
+      return { ...prev, activeLakeId: fallback };
+    });
   }
 
   function resetLake(lakeId: string) {
@@ -893,6 +1107,46 @@ export default function FishingToolView({
     }));
   }
 
+  function setGuidedOption(optionId: string) {
+    updateToolState((prev) => ({
+      ...prev,
+      guidedOptionId: optionId,
+      guidedStepIndex: 0,
+      guidedCollapsed: false,
+    }));
+  }
+
+  function setGuidedStepIndex(nextIndex: number) {
+    updateToolState((prev) => ({
+      ...prev,
+      guidedStepIndex: Math.max(0, nextIndex),
+    }));
+  }
+
+  function resetGuidedRoute() {
+    updateToolState((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        guidedStepIndex: 0,
+      };
+    });
+  }
+
+  function toggleGuidedCollapsed() {
+    updateToolState((prev) => ({
+      ...prev,
+      guidedCollapsed: !prev.guidedCollapsed,
+    }));
+  }
+
+  function setGuidedWeight(value: number | null) {
+    updateToolState((prev) => ({
+      ...prev,
+      guidedCurrentWeight: value,
+    }));
+  }
+
   function resetAllProgress() {
     updateToolState((prev) => {
       const nextLakeStates: Record<string, LakeState> = {};
@@ -931,6 +1185,135 @@ export default function FishingToolView({
       {tool.description ? <p style={{ marginTop: 6 }}>{tool.description}</p> : null}
 
       <div style={{ display: "grid", gap: 10, marginTop: 12 }}>
+        <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12, background: "var(--surface-2)" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+            <div style={{ fontWeight: 700 }}>Guided Route</div>
+            <button type="button" className="ghost" onClick={toggleGuidedCollapsed}>
+              {toolState.guidedCollapsed ? "Expand" : "Collapse"}
+            </button>
+          </div>
+          {toolState.guidedCollapsed ? null : (
+            <div style={{ display: "grid", gap: 10, marginTop: 10 }}>
+              {guidedState.status === "idle" ? (
+                <div style={{ color: "var(--text-muted)" }}>No guided route for this event.</div>
+              ) : guidedState.status === "loading" ? (
+                <div style={{ color: "var(--text-muted)" }}>Loading guided route…</div>
+              ) : guidedState.status === "error" ? (
+                <div style={{ color: "var(--danger)" }}>Guided route error: {guidedState.error}</div>
+              ) : guidedOption ? (
+                <>
+                  <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                    <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Option</label>
+                    <select
+                      value={guidedOption.optionId}
+                      onChange={(e) => setGuidedOption(e.target.value)}
+                    >
+                      {guidedState.data.options.map((option) => (
+                        <option key={option.optionId} value={option.optionId}>
+                          {option.title}
+                        </option>
+                      ))}
+                    </select>
+                    <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Current Weight</label>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="kg"
+                      value={toolState.guidedCurrentWeight === null ? "" : toolState.guidedCurrentWeight}
+                      onChange={(e) => {
+                        const raw = e.target.value.replace(/[^\d]/g, "");
+                        setGuidedWeight(raw ? Number(raw) : null);
+                      }}
+                      style={{ maxWidth: 120 }}
+                    />
+                  </div>
+                  {guidedOption.summary ? (
+                    <div style={{ fontSize: 13, color: "var(--text-muted)" }}>{guidedOption.summary}</div>
+                  ) : null}
+                  {guidedOption.disclaimer ? (
+                    <div style={{ fontSize: 12, color: "var(--text-muted)" }}>{guidedOption.disclaimer}</div>
+                  ) : null}
+                  {guidedStepData ? (
+                    <div style={{ border: "1px solid var(--border)", borderRadius: 10, padding: 10, background: "var(--surface)" }}>
+                      <div style={{ fontWeight: 700 }}>{guidedStepData.step.action}</div>
+                      <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>
+                        Lake: {set.lakes.find((entry) => entry.lakeId === guidedStepData.step.lakeId)?.label ?? guidedStepData.step.lakeId}
+                      </div>
+                      <div style={{ fontSize: 12, marginTop: 6 }}>{guidedStepData.progressLabel}</div>
+                      {guidedStepData.step.notes ? (
+                        <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 6 }}>
+                          {guidedStepData.step.notes}
+                        </div>
+                      ) : null}
+                      {guidedStepData.shouldSkip ? (
+                        <div style={{ color: "var(--warning)", fontSize: 12, marginTop: 6 }}>
+                          Broken lines are over {guidedStepData.skipThreshold}. This step should be skipped.
+                        </div>
+                      ) : null}
+                      {guidedStepData.offPathWarning ? (
+                        <div style={{ color: "var(--warning)", fontSize: 12, marginTop: 6 }}>
+                          {guidedStepData.offPathWarning}
+                        </div>
+                      ) : null}
+                      <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
+                        <button
+                          type="button"
+                          className="ghost"
+                          onClick={() => {
+                            const prevIndex = Math.max(0, guidedStepData.stepIndex - 1);
+                            setGuidedStepIndex(prevIndex);
+                            const prevStep = guidedStepData.steps[prevIndex];
+                            if (prevStep && prevStep.lakeId && prevStep.lakeId !== lake.lakeId) {
+                              setActiveLake(prevStep.lakeId);
+                            }
+                          }}
+                          disabled={guidedStepData.stepIndex === 0}
+                        >
+                          Previous Step
+                        </button>
+                        <button
+                          type="button"
+                          className="secondary"
+                          onClick={() => setActiveLake(guidedStepData.step.lakeId)}
+                        >
+                          Go to {set.lakes.find((entry) => entry.lakeId === guidedStepData.step.lakeId)?.label ?? guidedStepData.step.lakeId}
+                        </button>
+                        <button
+                          type="button"
+                          className="secondary"
+                          onClick={() => {
+                            const nextIndex = Math.min(
+                              guidedStepData.steps.length - 1,
+                              guidedStepData.stepIndex + 1
+                            );
+                            setGuidedStepIndex(nextIndex);
+                            const nextStep = guidedStepData.steps[nextIndex];
+                            if (nextStep && nextStep.lakeId && nextStep.lakeId !== lake.lakeId) {
+                              setActiveLake(nextStep.lakeId);
+                            }
+                          }}
+                        >
+                          {guidedStepData.shouldSkip
+                            ? "Skip Step"
+                            : guidedStepData.completed
+                            ? "Next Step"
+                            : "Mark Step Complete"}
+                        </button>
+                        <button type="button" className="ghost" onClick={resetGuidedRoute}>
+                          Reset Route
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ color: "var(--text-muted)" }}>No guided steps available.</div>
+                  )}
+                </>
+              ) : (
+                <div style={{ color: "var(--text-muted)" }}>No guided steps available.</div>
+              )}
+            </div>
+          )}
+        </div>
         <div style={{ display: "grid", gap: 8 }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-muted)" }}>Select a Lake</div>
           <div style={{ display: "grid", gap: 8, gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))" }}>

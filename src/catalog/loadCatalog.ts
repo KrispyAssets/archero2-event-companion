@@ -174,6 +174,7 @@ function parseEventDocument(doc: Document, relPath?: string): EventCatalogFull {
   const dataEl = eventEl.getElementsByTagName("data")[0];
   const faqEl = eventEl.getElementsByTagName("faq")[0];
   const toolsEl = eventEl.getElementsByTagName("tools")[0];
+  const guidedRouteRefEl = eventEl.getElementsByTagName("guided_route_ref")[0];
 
   const taskNodes = tasksEl ? Array.from(tasksEl.getElementsByTagName("task")) : [];
   const tasks: TaskDefinition[] = taskNodes
@@ -211,6 +212,7 @@ function parseEventDocument(doc: Document, relPath?: string): EventCatalogFull {
     title: getAttr(eventEl, "title"),
     subtitle: eventEl.getAttribute("subtitle") ?? undefined,
     lastVerifiedDate: eventEl.getAttribute("last_verified_date") ?? undefined,
+    guidedRoutePath: guidedRouteRefEl ? getAttr(guidedRouteRefEl, "path") : undefined,
     sections: {
       taskCount: tasks.length,
       guideSectionCount,

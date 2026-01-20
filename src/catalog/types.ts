@@ -118,4 +118,5 @@ export type EventCatalogFull = EventCatalogItemFull & {
   dataSections: DataSection[];
   faqItems: FaqItem[];
   toolRefs: ToolRef[];
+  guidedRoutePath?: string;
 };
