@@ -4,12 +4,42 @@
   "lastLakeMultiplier": 2,
   "brokenLinesMax": 120,
   "fishTypes": [
-    { "typeId": "rare_1", "label": "C1", "rarity": "rare", "baseCount": 15 },
-    { "typeId": "rare_2", "label": "C2", "rarity": "rare", "baseCount": 10 },
-    { "typeId": "rare_3", "label": "C3", "rarity": "rare", "baseCount": 5 },
-    { "typeId": "epic_1", "label": "E1", "rarity": "epic", "baseCount": 6 },
-    { "typeId": "epic_2", "label": "E2", "rarity": "epic", "baseCount": 3 },
-    { "typeId": "legendary", "label": "L", "rarity": "legendary", "baseCount": 1 }
+    {
+      "typeId": "rare_1",
+      "label": "C1",
+      "rarity": "rare",
+      "baseCount": 15
+    },
+    {
+      "typeId": "rare_2",
+      "label": "C2",
+      "rarity": "rare",
+      "baseCount": 10
+    },
+    {
+      "typeId": "rare_3",
+      "label": "C3",
+      "rarity": "rare",
+      "baseCount": 5
+    },
+    {
+      "typeId": "epic_1",
+      "label": "E1",
+      "rarity": "epic",
+      "baseCount": 6
+    },
+    {
+      "typeId": "epic_2",
+      "label": "E2",
+      "rarity": "epic",
+      "baseCount": 3
+    },
+    {
+      "typeId": "legendary",
+      "label": "L",
+      "rarity": "legendary",
+      "baseCount": 1
+    }
   ],
   "weightsByLake": {
     "lake_1": {
@@ -60,48 +90,168 @@
           "lakeId": "lake_1",
           "label": "Lakehouse",
           "fish": [
-            { "fishId": "set1_l1_r1", "typeId": "rare_1", "name": "Small Rare" },
-            { "fishId": "set1_l1_r2", "typeId": "rare_2", "name": "Medium Rare" },
-            { "fishId": "set1_l1_r3", "typeId": "rare_3", "name": "Large Rare" },
-            { "fishId": "set1_l1_e1", "typeId": "epic_1", "name": "Small Epic" },
-            { "fishId": "set1_l1_e2", "typeId": "epic_2", "name": "Big Epic" },
-            { "fishId": "set1_l1_l1", "typeId": "legendary", "name": "Legendary" }
+            {
+              "fishId": "set1_l1_r1",
+              "typeId": "rare_1",
+              "name": "Small Rare",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_1/Fish_1_Lakehouse_SR.png"
+            },
+            {
+              "fishId": "set1_l1_r2",
+              "typeId": "rare_2",
+              "name": "Medium Rare",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_1/Fish_1_Lakehouse_MR.png"
+            },
+            {
+              "fishId": "set1_l1_r3",
+              "typeId": "rare_3",
+              "name": "Large Rare",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_1/Fish_1_Lakehouse_LR.png"
+            },
+            {
+              "fishId": "set1_l1_e1",
+              "typeId": "epic_1",
+              "name": "Small Epic",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_1/Fish_1_Lakehouse_SE.png"
+            },
+            {
+              "fishId": "set1_l1_e2",
+              "typeId": "epic_2",
+              "name": "Large Epic",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_1/Fish_1_Lakehouse_LE.png"
+            },
+            {
+              "fishId": "set1_l1_l1",
+              "typeId": "legendary",
+              "name": "Legendary",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_1/Fish_1_Lakehouse_LEG.png"
+            }
           ]
         },
         {
           "lakeId": "lake_2",
           "label": "Sunset Coast",
           "fish": [
-            { "fishId": "set1_l2_r1", "typeId": "rare_1", "name": "Small Rare" },
-            { "fishId": "set1_l2_r2", "typeId": "rare_2", "name": "Medium Rare" },
-            { "fishId": "set1_l2_r3", "typeId": "rare_3", "name": "Large Rare" },
-            { "fishId": "set1_l2_e1", "typeId": "epic_1", "name": "Small Epic" },
-            { "fishId": "set1_l2_e2", "typeId": "epic_2", "name": "Big Epic" },
-            { "fishId": "set1_l2_l1", "typeId": "legendary", "name": "Legendary" }
+            {
+              "fishId": "set1_l2_r1",
+              "typeId": "rare_1",
+              "name": "Small Rare",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_2/Fish_1_Sunset_SR.png"
+            },
+            {
+              "fishId": "set1_l2_r2",
+              "typeId": "rare_2",
+              "name": "Medium Rare",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_2/Fish_1_Sunset_MR.png"
+            },
+            {
+              "fishId": "set1_l2_r3",
+              "typeId": "rare_3",
+              "name": "Large Rare",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_2/Fish_1_Sunset_LR.png"
+            },
+            {
+              "fishId": "set1_l2_e1",
+              "typeId": "epic_1",
+              "name": "Small Epic",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_2/Fish_1_Sunset_SE.png"
+            },
+            {
+              "fishId": "set1_l2_e2",
+              "typeId": "epic_2",
+              "name": "Large Epic",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_2/Fish_1_Sunset_LE.png"
+            },
+            {
+              "fishId": "set1_l2_l1",
+              "typeId": "legendary",
+              "name": "Legendary",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_2/Fish_1_Sunset_LEG.png"
+            }
           ]
         },
         {
           "lakeId": "lake_3",
           "label": "Oceanic Abyss",
           "fish": [
-            { "fishId": "set1_l3_r1", "typeId": "rare_1", "name": "Small Rare" },
-            { "fishId": "set1_l3_r2", "typeId": "rare_2", "name": "Medium Rare" },
-            { "fishId": "set1_l3_r3", "typeId": "rare_3", "name": "Large Rare" },
-            { "fishId": "set1_l3_e1", "typeId": "epic_1", "name": "Small Epic" },
-            { "fishId": "set1_l3_e2", "typeId": "epic_2", "name": "Big Epic" },
-            { "fishId": "set1_l3_l1", "typeId": "legendary", "name": "Legendary" }
+            {
+              "fishId": "set1_l3_r1",
+              "typeId": "rare_1",
+              "name": "Small Rare",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_3/Fish_1_Oceanic_SR.png"
+            },
+            {
+              "fishId": "set1_l3_r2",
+              "typeId": "rare_2",
+              "name": "Medium Rare",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_3/Fish_1_Oceanic_MR.png"
+            },
+            {
+              "fishId": "set1_l3_r3",
+              "typeId": "rare_3",
+              "name": "Large Rare",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_3/Fish_1_Oceanic_LR.png"
+            },
+            {
+              "fishId": "set1_l3_e1",
+              "typeId": "epic_1",
+              "name": "Small Epic",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_3/Fish_1_Oceanic_SE.png"
+            },
+            {
+              "fishId": "set1_l3_e2",
+              "typeId": "epic_2",
+              "name": "Large Epic",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_3/Fish_1_Oceanic_LE.png"
+            },
+            {
+              "fishId": "set1_l3_l1",
+              "typeId": "legendary",
+              "name": "Legendary",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_3/Fish_1_Oceanic_LEG.png"
+            }
           ]
         },
         {
           "lakeId": "lake_4",
           "label": "Polar Glacier",
           "fish": [
-            { "fishId": "set1_l4_r1", "typeId": "rare_1", "name": "Small Rare" },
-            { "fishId": "set1_l4_r2", "typeId": "rare_2", "name": "Medium Rare" },
-            { "fishId": "set1_l4_r3", "typeId": "rare_3", "name": "Large Rare" },
-            { "fishId": "set1_l4_e1", "typeId": "epic_1", "name": "Small Epic" },
-            { "fishId": "set1_l4_e2", "typeId": "epic_2", "name": "Big Epic" },
-            { "fishId": "set1_l4_l1", "typeId": "legendary", "name": "Legendary" }
+            {
+              "fishId": "set1_l4_r1",
+              "typeId": "rare_1",
+              "name": "Small Rare",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_4/Fish_1_Polar_SR.png"
+            },
+            {
+              "fishId": "set1_l4_r2",
+              "typeId": "rare_2",
+              "name": "Medium Rare",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_4/Fish_1_Polar_MR.png"
+            },
+            {
+              "fishId": "set1_l4_r3",
+              "typeId": "rare_3",
+              "name": "Large Rare",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_4/Fish_1_Polar_LR.png"
+            },
+            {
+              "fishId": "set1_l4_e1",
+              "typeId": "epic_1",
+              "name": "Small Epic",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_4/Fish_1_Polar_SE.png"
+            },
+            {
+              "fishId": "set1_l4_e2",
+              "typeId": "epic_2",
+              "name": "Large Epic",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_4/Fish_1_Polar_LE.png"
+            },
+            {
+              "fishId": "set1_l4_l1",
+              "typeId": "legendary",
+              "name": "Legendary",
+              "image": "catalog/shared/fishing/images/sets/set_1/lake_4/Fish_1_Polar_LEG.png"
+            }
           ]
         }
       ]
@@ -114,48 +264,168 @@
           "lakeId": "lake_1",
           "label": "Lakehouse",
           "fish": [
-            { "fishId": "set2_l1_r1", "typeId": "rare_1", "name": "Small Rare" },
-            { "fishId": "set2_l1_r2", "typeId": "rare_2", "name": "Medium Rare" },
-            { "fishId": "set2_l1_r3", "typeId": "rare_3", "name": "Large Rare" },
-            { "fishId": "set2_l1_e1", "typeId": "epic_1", "name": "Small Epic" },
-            { "fishId": "set2_l1_e2", "typeId": "epic_2", "name": "Big Epic" },
-            { "fishId": "set2_l1_l1", "typeId": "legendary", "name": "Legendary" }
+            {
+              "fishId": "set2_l1_r1",
+              "typeId": "rare_1",
+              "name": "Small Rare",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_1/Fish_2_Lakehouse_SR.png"
+            },
+            {
+              "fishId": "set2_l1_r2",
+              "typeId": "rare_2",
+              "name": "Medium Rare",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_1/Fish_2_Lakehouse_MR.png"
+            },
+            {
+              "fishId": "set2_l1_r3",
+              "typeId": "rare_3",
+              "name": "Large Rare",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_1/Fish_2_Lakehouse_LR.png"
+            },
+            {
+              "fishId": "set2_l1_e1",
+              "typeId": "epic_1",
+              "name": "Small Epic",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_1/Fish_2_Lakehouse_SE.png"
+            },
+            {
+              "fishId": "set2_l1_e2",
+              "typeId": "epic_2",
+              "name": "Large Epic",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_1/Fish_2_Lakehouse_LE.png"
+            },
+            {
+              "fishId": "set2_l1_l1",
+              "typeId": "legendary",
+              "name": "Legendary",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_1/Fish_2_Lakehouse_LEG.png"
+            }
           ]
         },
         {
           "lakeId": "lake_2",
           "label": "Sunset Coast",
           "fish": [
-            { "fishId": "set2_l2_r1", "typeId": "rare_1", "name": "Small Rare" },
-            { "fishId": "set2_l2_r2", "typeId": "rare_2", "name": "Medium Rare" },
-            { "fishId": "set2_l2_r3", "typeId": "rare_3", "name": "Large Rare" },
-            { "fishId": "set2_l2_e1", "typeId": "epic_1", "name": "Small Epic" },
-            { "fishId": "set2_l2_e2", "typeId": "epic_2", "name": "Big Epic" },
-            { "fishId": "set2_l2_l1", "typeId": "legendary", "name": "Legendary" }
+            {
+              "fishId": "set2_l2_r1",
+              "typeId": "rare_1",
+              "name": "Small Rare",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_2/Fish_2_Sunset_SR.png"
+            },
+            {
+              "fishId": "set2_l2_r2",
+              "typeId": "rare_2",
+              "name": "Medium Rare",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_2/Fish_2_Sunset_MR.png"
+            },
+            {
+              "fishId": "set2_l2_r3",
+              "typeId": "rare_3",
+              "name": "Large Rare",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_2/Fish_2_Sunset_LR.png"
+            },
+            {
+              "fishId": "set2_l2_e1",
+              "typeId": "epic_1",
+              "name": "Small Epic",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_2/Fish_2_Sunset_SE.png"
+            },
+            {
+              "fishId": "set2_l2_e2",
+              "typeId": "epic_2",
+              "name": "Large Epic",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_2/Fish_2_Sunset_LE.png"
+            },
+            {
+              "fishId": "set2_l2_l1",
+              "typeId": "legendary",
+              "name": "Legendary",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_2/Fish_2_Sunset_LEG.png"
+            }
           ]
         },
         {
           "lakeId": "lake_3",
           "label": "Oceanic Abyss",
           "fish": [
-            { "fishId": "set2_l3_r1", "typeId": "rare_1", "name": "Small Rare" },
-            { "fishId": "set2_l3_r2", "typeId": "rare_2", "name": "Medium Rare" },
-            { "fishId": "set2_l3_r3", "typeId": "rare_3", "name": "Large Rare" },
-            { "fishId": "set2_l3_e1", "typeId": "epic_1", "name": "Small Epic" },
-            { "fishId": "set2_l3_e2", "typeId": "epic_2", "name": "Big Epic" },
-            { "fishId": "set2_l3_l1", "typeId": "legendary", "name": "Legendary" }
+            {
+              "fishId": "set2_l3_r1",
+              "typeId": "rare_1",
+              "name": "Small Rare",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_3/Fish_2_Oceanic_SR.png"
+            },
+            {
+              "fishId": "set2_l3_r2",
+              "typeId": "rare_2",
+              "name": "Medium Rare",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_3/Fish_2_Oceanic_MR.png"
+            },
+            {
+              "fishId": "set2_l3_r3",
+              "typeId": "rare_3",
+              "name": "Large Rare",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_3/Fish_2_Oceanic_LR.png"
+            },
+            {
+              "fishId": "set2_l3_e1",
+              "typeId": "epic_1",
+              "name": "Small Epic",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_3/Fish_2_Oceanic_SE.png"
+            },
+            {
+              "fishId": "set2_l3_e2",
+              "typeId": "epic_2",
+              "name": "Large Epic",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_3/Fish_2_Oceanic_LE.png"
+            },
+            {
+              "fishId": "set2_l3_l1",
+              "typeId": "legendary",
+              "name": "Legendary",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_3/Fish_2_Oceanic_LEG.png"
+            }
           ]
         },
         {
           "lakeId": "lake_4",
           "label": "Polar Glacier",
           "fish": [
-            { "fishId": "set2_l4_r1", "typeId": "rare_1", "name": "Small Rare" },
-            { "fishId": "set2_l4_r2", "typeId": "rare_2", "name": "Medium Rare" },
-            { "fishId": "set2_l4_r3", "typeId": "rare_3", "name": "Large Rare" },
-            { "fishId": "set2_l4_e1", "typeId": "epic_1", "name": "Small Epic" },
-            { "fishId": "set2_l4_e2", "typeId": "epic_2", "name": "Big Epic" },
-            { "fishId": "set2_l4_l1", "typeId": "legendary", "name": "Legendary" }
+            {
+              "fishId": "set2_l4_r1",
+              "typeId": "rare_1",
+              "name": "Small Rare",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_4/Fish_2_Polar_SR.png"
+            },
+            {
+              "fishId": "set2_l4_r2",
+              "typeId": "rare_2",
+              "name": "Medium Rare",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_4/Fish_2_Polar_MR.png"
+            },
+            {
+              "fishId": "set2_l4_r3",
+              "typeId": "rare_3",
+              "name": "Large Rare",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_4/Fish_2_Polar_LR.png"
+            },
+            {
+              "fishId": "set2_l4_e1",
+              "typeId": "epic_1",
+              "name": "Small Epic",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_4/Fish_2_Polar_SE.png"
+            },
+            {
+              "fishId": "set2_l4_e2",
+              "typeId": "epic_2",
+              "name": "Large Epic",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_4/Fish_2_Polar_LE.png"
+            },
+            {
+              "fishId": "set2_l4_l1",
+              "typeId": "legendary",
+              "name": "Legendary",
+              "image": "catalog/shared/fishing/images/sets/set_2/lake_4/Fish_2_Polar_LEG.png"
+            }
           ]
         }
       ]
@@ -168,48 +438,168 @@
           "lakeId": "lake_1",
           "label": "Lakehouse",
           "fish": [
-            { "fishId": "set3_l1_r1", "typeId": "rare_1", "name": "Small Rare" },
-            { "fishId": "set3_l1_r2", "typeId": "rare_2", "name": "Medium Rare" },
-            { "fishId": "set3_l1_r3", "typeId": "rare_3", "name": "Large Rare" },
-            { "fishId": "set3_l1_e1", "typeId": "epic_1", "name": "Small Epic" },
-            { "fishId": "set3_l1_e2", "typeId": "epic_2", "name": "Big Epic" },
-            { "fishId": "set3_l1_l1", "typeId": "legendary", "name": "Legendary" }
+            {
+              "fishId": "set3_l1_r1",
+              "typeId": "rare_1",
+              "name": "Small Rare",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_1/Fish_3_Lakehouse_SR.png"
+            },
+            {
+              "fishId": "set3_l1_r2",
+              "typeId": "rare_2",
+              "name": "Medium Rare",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_1/Fish_3_Lakehouse_MR.png"
+            },
+            {
+              "fishId": "set3_l1_r3",
+              "typeId": "rare_3",
+              "name": "Large Rare",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_1/Fish_3_Lakehouse_LR.png"
+            },
+            {
+              "fishId": "set3_l1_e1",
+              "typeId": "epic_1",
+              "name": "Small Epic",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_1/Fish_3_Lakehouse_SE.png"
+            },
+            {
+              "fishId": "set3_l1_e2",
+              "typeId": "epic_2",
+              "name": "Large Epic",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_1/Fish_3_Lakehouse_LE.png"
+            },
+            {
+              "fishId": "set3_l1_l1",
+              "typeId": "legendary",
+              "name": "Legendary",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_1/Fish_3_Lakehouse_LEG.png"
+            }
           ]
         },
         {
           "lakeId": "lake_2",
           "label": "Sunset Coast",
           "fish": [
-            { "fishId": "set3_l2_r1", "typeId": "rare_1", "name": "Small Rare" },
-            { "fishId": "set3_l2_r2", "typeId": "rare_2", "name": "Medium Rare" },
-            { "fishId": "set3_l2_r3", "typeId": "rare_3", "name": "Large Rare" },
-            { "fishId": "set3_l2_e1", "typeId": "epic_1", "name": "Small Epic" },
-            { "fishId": "set3_l2_e2", "typeId": "epic_2", "name": "Big Epic" },
-            { "fishId": "set3_l2_l1", "typeId": "legendary", "name": "Legendary" }
+            {
+              "fishId": "set3_l2_r1",
+              "typeId": "rare_1",
+              "name": "Small Rare",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_2/Fish_3_Sunset_SR.png"
+            },
+            {
+              "fishId": "set3_l2_r2",
+              "typeId": "rare_2",
+              "name": "Medium Rare",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_2/Fish_3_Sunset_MR.png"
+            },
+            {
+              "fishId": "set3_l2_r3",
+              "typeId": "rare_3",
+              "name": "Large Rare",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_2/Fish_3_Sunset_LR.png"
+            },
+            {
+              "fishId": "set3_l2_e1",
+              "typeId": "epic_1",
+              "name": "Small Epic",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_2/Fish_3_Sunset_SE.png"
+            },
+            {
+              "fishId": "set3_l2_e2",
+              "typeId": "epic_2",
+              "name": "Large Epic",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_2/Fish_3_Sunset_LE.png"
+            },
+            {
+              "fishId": "set3_l2_l1",
+              "typeId": "legendary",
+              "name": "Legendary",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_2/Fish_3_Sunset_LEG.png"
+            }
           ]
         },
         {
           "lakeId": "lake_3",
           "label": "Oceanic Abyss",
           "fish": [
-            { "fishId": "set3_l3_r1", "typeId": "rare_1", "name": "Small Rare" },
-            { "fishId": "set3_l3_r2", "typeId": "rare_2", "name": "Medium Rare" },
-            { "fishId": "set3_l3_r3", "typeId": "rare_3", "name": "Large Rare" },
-            { "fishId": "set3_l3_e1", "typeId": "epic_1", "name": "Small Epic" },
-            { "fishId": "set3_l3_e2", "typeId": "epic_2", "name": "Big Epic" },
-            { "fishId": "set3_l3_l1", "typeId": "legendary", "name": "Legendary" }
+            {
+              "fishId": "set3_l3_r1",
+              "typeId": "rare_1",
+              "name": "Small Rare",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_3/Fish_3_Oceanic_SR.png"
+            },
+            {
+              "fishId": "set3_l3_r2",
+              "typeId": "rare_2",
+              "name": "Medium Rare",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_3/Fish_3_Oceanic_MR.png"
+            },
+            {
+              "fishId": "set3_l3_r3",
+              "typeId": "rare_3",
+              "name": "Large Rare",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_3/Fish_3_Oceanic_LR.png"
+            },
+            {
+              "fishId": "set3_l3_e1",
+              "typeId": "epic_1",
+              "name": "Small Epic",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_3/Fish_3_Oceanic_SE.png"
+            },
+            {
+              "fishId": "set3_l3_e2",
+              "typeId": "epic_2",
+              "name": "Large Epic",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_3/Fish_3_Oceanic_LE.png"
+            },
+            {
+              "fishId": "set3_l3_l1",
+              "typeId": "legendary",
+              "name": "Legendary",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_3/Fish_3_Oceanic_LEG.png"
+            }
           ]
         },
         {
           "lakeId": "lake_4",
           "label": "Polar Glacier",
           "fish": [
-            { "fishId": "set3_l4_r1", "typeId": "rare_1", "name": "Small Rare" },
-            { "fishId": "set3_l4_r2", "typeId": "rare_2", "name": "Medium Rare" },
-            { "fishId": "set3_l4_r3", "typeId": "rare_3", "name": "Large Rare" },
-            { "fishId": "set3_l4_e1", "typeId": "epic_1", "name": "Small Epic" },
-            { "fishId": "set3_l4_e2", "typeId": "epic_2", "name": "Big Epic" },
-            { "fishId": "set3_l4_l1", "typeId": "legendary", "name": "Legendary" }
+            {
+              "fishId": "set3_l4_r1",
+              "typeId": "rare_1",
+              "name": "Small Rare",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_4/Fish_3_Polar_SR.png"
+            },
+            {
+              "fishId": "set3_l4_r2",
+              "typeId": "rare_2",
+              "name": "Medium Rare",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_4/Fish_3_Polar_MR.png"
+            },
+            {
+              "fishId": "set3_l4_r3",
+              "typeId": "rare_3",
+              "name": "Large Rare",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_4/Fish_3_Polar_LR.png"
+            },
+            {
+              "fishId": "set3_l4_e1",
+              "typeId": "epic_1",
+              "name": "Small Epic",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_4/Fish_3_Polar_SE.png"
+            },
+            {
+              "fishId": "set3_l4_e2",
+              "typeId": "epic_2",
+              "name": "Large Epic",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_4/Fish_3_Polar_LE.png"
+            },
+            {
+              "fishId": "set3_l4_l1",
+              "typeId": "legendary",
+              "name": "Legendary",
+              "image": "catalog/shared/fishing/images/sets/set_3/lake_4/Fish_3_Polar_LEG.png"
+            }
           ]
         }
       ]
