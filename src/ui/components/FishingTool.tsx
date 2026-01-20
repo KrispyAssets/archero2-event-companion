@@ -96,6 +96,7 @@ type HistoryEntry = {
   prevBrokenLines?: number;
   prevGuidedWeight?: number | null;
   prevHistory?: HistoryEntry[];
+  prevResetEpoch?: number | null;
 };
 
 type ToolState = {
@@ -104,6 +105,7 @@ type ToolState = {
   lakeStates: Record<string, LakeState>;
   brokenLines: number;
   history: HistoryEntry[];
+  resetHistoryEpoch: number | null;
   goalMode: "silver" | "gold" | "both";
   goalPreset: "silver-heavy" | "gold-efficient" | "custom";
   currentSilverTickets: number | null;
@@ -232,6 +234,7 @@ export default function FishingToolView({
   const [breakStep, setBreakStep] = useState(1);
   const [taskTick, setTaskTick] = useState(0);
   const [resetMenuOpen, setResetMenuOpen] = useState(false);
+  const [showBreakOdds, setShowBreakOdds] = useState(false);
   const resetMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -323,6 +326,7 @@ export default function FishingToolView({
       lakeStates: {},
       brokenLines: 0,
       history: [],
+      resetHistoryEpoch: stored?.resetHistoryEpoch ?? null,
       goalMode: stored?.goalMode ?? "silver",
       goalPreset: stored?.goalPreset ?? "custom",
       currentSilverTickets: stored?.currentSilverTickets ?? null,
@@ -365,6 +369,7 @@ export default function FishingToolView({
     nextState.lakeStates = nextLakeStates;
     nextState.brokenLines = stored?.brokenLines ?? 0;
     nextState.history = stored?.history ?? [];
+    nextState.resetHistoryEpoch = stored?.resetHistoryEpoch ?? null;
     nextState.goalMode = stored?.goalMode ?? "silver";
     nextState.goalPreset = stored?.goalPreset ?? "custom";
     nextState.currentSilverTickets = stored?.currentSilverTickets ?? null;
@@ -727,14 +732,24 @@ export default function FishingToolView({
   const legendaryTypeId = getLegendaryTypeId(data);
   const brokenLinesMax = data.brokenLinesMax ?? 120;
   const history = toolState.history ?? [];
-  const resetAllEntry = history[history.length - 1];
-  const historyVisible = resetAllEntry?.action === "reset_all" ? [] : history;
+  const historyVisible = history.filter((entry) => {
+    if (entry.action === "reset_all") return false;
+    if (!toolState.resetHistoryEpoch) return true;
+    return entry.timestamp >= toolState.resetHistoryEpoch;
+  });
   const recentCatchEntries = historyVisible.filter((entry) => entry.action === "catch" || entry.action === "pool_clear");
   const lastThree = recentCatchEntries.slice(-3).reverse();
 
   const totalFishRemaining = sumCounts(lakeState.remainingByTypeId);
   const legendaryRemaining = lakeState.remainingByTypeId[legendaryTypeId] ?? 0;
   const legendaryChance = totalFishRemaining > 0 ? (legendaryRemaining / totalFishRemaining) * 100 : 0;
+  const expectedLuresNextLegendary = legendaryRemaining > 0 ? (totalFishRemaining + 1) / (legendaryRemaining + 1) : null;
+  const breakChance = totalFishRemaining > 0 ? legendaryRemaining / totalFishRemaining : null;
+  const breakExpectedLures = breakChance ? 1 / breakChance : null;
+  const breakLuresForChance = (targetChance: number) => {
+    if (!breakChance) return null;
+    return Math.ceil(Math.log(1 - targetChance) / Math.log(1 - breakChance));
+  };
 
   const weightsForLake = data.weightsByLake[lake.lakeId] ?? {};
   const ticketsPerKg = data.ticketsPerKgByLake?.[lake.lakeId] ?? null;
@@ -785,9 +800,7 @@ export default function FishingToolView({
   const currentGems = toolState.currentGems ?? null;
   const luresEarnedFromTasks = taskTotals?.earned ?? null;
   const estimatedGemLuresUsed =
-    luresEarnedFromTasks !== null && currentLures !== null
-      ? Math.max(0, totalFishCaught - luresEarnedFromTasks - currentLures)
-      : null;
+    luresEarnedFromTasks !== null && currentLures !== null ? Math.max(0, totalFishCaught - luresEarnedFromTasks - currentLures) : null;
   const estimatedGemsSpent = estimatedGemLuresUsed !== null ? estimatedGemLuresUsed * 150 : null;
   const totalAvailableLures =
     currentLures !== null && luresRemainingFromTasks !== null ? currentLures + luresRemainingFromTasks + (purchasedLures ?? 0) : null;
@@ -900,7 +913,7 @@ export default function FishingToolView({
         action: "reset_lake",
         prevHistory,
       });
-      return { ...prev, lakeStates: nextLakeStates, history: nextHistory.slice(-200) };
+      return { ...prev, lakeStates: nextLakeStates, history: nextHistory.slice(-100) };
     });
   }
 
@@ -934,7 +947,7 @@ export default function FishingToolView({
         action: "reset_lake_progress",
         prevHistory,
       });
-      return { ...prev, lakeStates: nextLakeStates, history: nextHistory.slice(-200) };
+      return { ...prev, lakeStates: nextLakeStates, history: nextHistory.slice(-100) };
     });
   }
 
@@ -990,7 +1003,7 @@ export default function FishingToolView({
       return {
         ...prev,
         lakeStates: nextLakeStates,
-        history: nextHistory.slice(-200),
+        history: nextHistory.slice(-100),
       };
     });
   }
@@ -1019,7 +1032,7 @@ export default function FishingToolView({
         fishCaught: currentLakeState.fishCaught + remainingTotal,
       };
 
-      const nextHistory = [...(prev.history ?? [])];
+      const nextHistory: HistoryEntry[] = [];
       nextHistory.push({
         entryId: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         lakeId: lake.lakeId,
@@ -1034,7 +1047,7 @@ export default function FishingToolView({
       return {
         ...prev,
         lakeStates: nextLakeStates,
-        history: nextHistory.slice(-200),
+        history: nextHistory.slice(-100),
       };
     });
   }
@@ -1051,6 +1064,7 @@ export default function FishingToolView({
           brokenLines: last.prevBrokenLines ?? prev.brokenLines,
           guidedCurrentWeight: last.prevGuidedWeight ?? prev.guidedCurrentWeight,
           history: last.prevHistory,
+          resetHistoryEpoch: last.prevResetEpoch ?? prev.resetHistoryEpoch,
         };
       }
       if ((last.action === "reset_lake" || last.action === "reset_lake_progress") && last.prevHistory) {
@@ -1223,13 +1237,14 @@ export default function FishingToolView({
         };
       }
       const nextHistory = [...(prev.history ?? [])];
+      const resetEpoch = Date.now();
       nextHistory.push({
-        entryId: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        entryId: `${resetEpoch}-${Math.random().toString(36).slice(2, 7)}`,
         lakeId: prev.activeLakeId,
         typeId: "__reset__",
         fishName: "Reset all progress",
         rarity: "rare",
-        timestamp: Date.now(),
+        timestamp: resetEpoch,
         prevLakeState: prev.lakeStates[prev.activeLakeId] ?? {
           remainingByTypeId: buildFullCounts(data, prev.activeLakeId),
           poolsCompleted: 0,
@@ -1241,13 +1256,15 @@ export default function FishingToolView({
         prevBrokenLines: prev.brokenLines,
         prevGuidedWeight: prev.guidedCurrentWeight ?? null,
         prevHistory: prev.history ?? [],
+        prevResetEpoch: prev.resetHistoryEpoch ?? null,
       });
       return {
         ...prev,
         lakeStates: nextLakeStates,
         brokenLines: 0,
-        history: nextHistory.slice(-200),
+        history: nextHistory.slice(-100),
         guidedCurrentWeight: null,
+        resetHistoryEpoch: resetEpoch,
       };
     });
   }
@@ -1534,9 +1551,7 @@ export default function FishingToolView({
               type="button"
               className="secondary"
               onClick={() => resetLake(lake.lakeId)}
-              disabled={Object.entries(buildFullCounts(data, lake.lakeId)).every(
-                ([typeId, count]) => lakeState.remainingByTypeId[typeId] === count,
-              )}
+              disabled={Object.entries(buildFullCounts(data, lake.lakeId)).every(([typeId, count]) => lakeState.remainingByTypeId[typeId] === count)}
             >
               Refill Lake
             </button>
@@ -1566,23 +1581,24 @@ export default function FishingToolView({
               >
                 Add Breaks
               </button>
-              <button
-                type="button"
-                className="secondary"
-                onClick={() => updateBrokenLines(-breakStep)}
-                disabled={(toolState.brokenLines ?? 0) <= 0}
-              >
+              <button type="button" className="secondary" onClick={() => updateBrokenLines(-breakStep)} disabled={(toolState.brokenLines ?? 0) <= 0}>
                 Remove Breaks
               </button>
-              <button
-                type="button"
-                className="ghost"
-                onClick={() => updateBrokenLines(-brokenLinesMax)}
-                disabled={(toolState.brokenLines ?? 0) <= 0}
-              >
+              <button type="button" className="ghost" onClick={() => updateBrokenLines(-brokenLinesMax)} disabled={(toolState.brokenLines ?? 0) <= 0}>
                 Reset
               </button>
+              <button type="button" className="ghost" onClick={() => setShowBreakOdds((prev) => !prev)}>
+                {showBreakOdds ? "Hide Odds" : "Show Odds"}
+              </button>
             </div>
+            {showBreakOdds ? (
+              <div style={{ marginTop: 10, display: "grid", gap: 6, fontSize: 12, color: "var(--text-muted)" }}>
+                <div>Chance per break: {breakChance !== null ? `${(breakChance * 100).toFixed(1)}%` : "No legendary in pool"}</div>
+                <div>50% chance by: {breakLuresForChance(0.5) ?? "—"} breaks</div>
+                <div>90% chance by: {breakLuresForChance(0.9) ?? "—"} breaks</div>
+                <div>95% chance by: {breakLuresForChance(0.95) ?? "—"} breaks</div>
+              </div>
+            ) : null}
           </div>
         </div>
 
@@ -1590,25 +1606,27 @@ export default function FishingToolView({
           <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12, background: "var(--surface-2)" }}>
             <div style={{ fontWeight: 700, marginBottom: 6 }}>Pool</div>
             <div style={{ display: "grid", gap: 6, fontSize: 14 }}>
-              <div>Fish remaining: {totalFishRemaining}</div>
-              <div>Chance next fish is Legendary: {legendaryChance.toFixed(1)}%</div>
+              <div>Fish Remaining: {totalFishRemaining}</div>
+              <div>Chance Next Fish is Legendary: {legendaryChance.toFixed(1)}%</div>
+              <div>
+                Estimated Lures to Next Legendary:{" "}
+                {expectedLuresNextLegendary !== null ? formatNumber(expectedLuresNextLegendary, 1) : "None in pool"}
+              </div>
               <div>Estimated Weight Remaining: {formatNumber(weightRemaining, 1)} kg</div>
               <div>Estimated Silver Tickets Remaining: {ticketsPerKg ? formatNumber(ticketsRemaining, 0) : "Add ticket data"}</div>
             </div>
           </div>
           <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12, background: "var(--surface-2)" }}>
             <div style={{ fontWeight: 700, marginBottom: 6 }}>Totals</div>
-              <div style={{ display: "grid", gap: 6, fontSize: 14 }}>
-                <div>Total Fish Caught: {totalFishCaught}</div>
-                <div>Total Legendary Fish Caught: {totalLegendaryCaught}</div>
-                <div>Estimated Weight Caught: {formatNumber(totalWeightCaught, 1)} kg</div>
-                <div>
-                  Estimated Silver Tickets Gained: {totalTicketsGained !== null ? formatNumber(totalTicketsGained, 0) : "Add ticket data"}
-                </div>
-                <div>
-                  Estimated Gems Spent: {estimatedGemsSpent !== null ? formatNumber(estimatedGemsSpent, 0) : "Add current lures + task progress"}
-                </div>
+            <div style={{ display: "grid", gap: 6, fontSize: 14 }}>
+              <div>Total Fish Caught: {totalFishCaught}</div>
+              <div>Total Legendary Fish Caught: {totalLegendaryCaught}</div>
+              <div>Estimated Weight Caught: {formatNumber(totalWeightCaught, 1)} kg</div>
+              <div>Estimated Silver Tickets Gained: {totalTicketsGained !== null ? formatNumber(totalTicketsGained, 0) : "Add ticket data"}</div>
+              <div>
+                Estimated Gems Spent: {estimatedGemsSpent !== null ? formatNumber(estimatedGemsSpent, 0) : "Add current lures + task progress"}
               </div>
+            </div>
           </div>
         </div>
 
@@ -1971,9 +1989,9 @@ export default function FishingToolView({
 
         <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12 }}>
           <div style={{ fontWeight: 700, marginBottom: 6 }}>Recent Catches</div>
-            {lastThree.length ? (
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                {lastThree.map((entry) => (
+          {lastThree.length ? (
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {lastThree.map((entry) => (
                 <div
                   key={entry.entryId}
                   style={{
@@ -1991,11 +2009,11 @@ export default function FishingToolView({
           ) : (
             <div style={{ color: "var(--text-muted)" }}>No catches yet.</div>
           )}
-            <details style={{ marginTop: 10 }}>
-              <summary style={{ cursor: "pointer" }}>History ({historyVisible.length})</summary>
-              <div style={{ marginTop: 8, display: "grid", gap: 6, maxHeight: 180, overflow: "auto" }}>
-                {historyVisible
-                  .slice()
+          <details style={{ marginTop: 10 }}>
+            <summary style={{ cursor: "pointer" }}>History ({historyVisible.length})</summary>
+            <div style={{ marginTop: 8, display: "grid", gap: 6, maxHeight: 180, overflow: "auto" }}>
+              {historyVisible
+                .slice()
                 .reverse()
                 .map((entry) => {
                   const lakeLabel = set.lakes.find((l) => l.lakeId === entry.lakeId)?.label ?? entry.lakeId;

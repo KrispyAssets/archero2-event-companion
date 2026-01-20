@@ -56,7 +56,7 @@
             "onlyIfLegendaryBelowScope": "lake"
           },
           "action": "Break lines to catch the Legendary fish.",
-          "notes": "Ideally don't use more than 25 line breaks; you can catch a few more fish to up your odds if need be."
+          "notes": "Ideally don't use more than 25 line breaks total; you can catch a few more fish to up your odds if need be."
         },
         {
           "stepId": "opt1_l1_unlock",
@@ -96,7 +96,7 @@
             "skipIfBrokenLinesOver": 50
           },
           "action": "Break lines to catch the Legendary fish.",
-          "notes": "Ideally don't use more than 25 line breaks; you can catch a few more fish to up your odds if need be. If you are over 50 snaps including Lake 1, skip this step and move onto the next."
+          "notes": "Ideally don't use more than 50 line breaks total; you can catch a few more fish to up your odds if need be. If you are over 50 snaps including Lake 1, skip this step and move onto the next."
         },
         {
           "stepId": "opt1_l2_unlock",
@@ -136,7 +136,7 @@
             "onlyIfLegendaryBelowScope": "lake"
           },
           "action": "Break lines to catch the Legendary fish.",
-          "notes": "Ideally don't use more than 25 line breaks; you can catch a few more fish to up your odds if need be."
+          "notes": "Ideally don't use more than 75 line breaks total; you can catch a few more fish to up your odds if need be."
         },
         {
           "stepId": "opt1_l3_unlock",
@@ -253,15 +253,19 @@
             "onlyIfLegendaryBelow": 3,
             "onlyIfLegendaryBelowScope": "lake",
             "skipIfBrokenLinesOver": 50,
-            "warnMessage": "You are over 50 snapped lines. Skip this step and move onto the next."
+            "warnMessage": "You are over 50 snapped lines. Fish until Lake 3 is unlocked and 3rd Legendary has been caught."
           },
           "action": "Snap all lines except for the 3rd Legendary fish.",
-          "notes": "Ideally don't use more than 25 line breaks; you can catch a few more fish to up your odds if need be."
+          "notes": "Ideally don't use more than 50 line breaks total; you can catch a few more fish to up your odds if need be."
         },
         {
           "stepId": "opt2_l2_unlock",
           "lakeId": "lake_2",
-          "goal": { "type": "weight_at_least", "count": 230 },
+          "goal": {
+            "type": "weight_at_least",
+            "count": 230,
+            "warnMessage": "If you haven't gotten your third legendary, fish this Lake until you catch it."
+          },
           "action": "Unlock the third lake. (6 Legendaries total)",
           "notes": "Press next when ready or set your current weight to 230+ kg to move to the next step."
         },
