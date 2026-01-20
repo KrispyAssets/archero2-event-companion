@@ -136,6 +136,7 @@ type ToolState = {
   guidedStepIndex: number;
   guidedCollapsed: boolean;
   guidedCurrentWeight: number | null;
+  guidedAutoAdvance: boolean;
 };
 
 type DataState = { status: "loading" } | { status: "error"; error: string } | { status: "ready"; data: FishingToolData };
@@ -368,6 +369,7 @@ export default function FishingToolView({
       guidedStepIndex: stored?.guidedStepIndex ?? 0,
       guidedCollapsed: stored?.guidedCollapsed ?? true,
       guidedCurrentWeight: stored?.guidedCurrentWeight ?? null,
+      guidedAutoAdvance: stored?.guidedAutoAdvance ?? true,
     };
     const storedLakeStates = stored?.lakeStates ?? {};
     const nextLakeStates: Record<string, LakeState> = {};
@@ -411,6 +413,7 @@ export default function FishingToolView({
     nextState.guidedStepIndex = stored?.guidedStepIndex ?? 0;
     nextState.guidedCollapsed = stored?.guidedCollapsed ?? true;
     nextState.guidedCurrentWeight = stored?.guidedCurrentWeight ?? null;
+    nextState.guidedAutoAdvance = stored?.guidedAutoAdvance ?? true;
 
     setToolState(nextState);
     toolStateCache.set(stateKey, nextState);
@@ -695,7 +698,7 @@ export default function FishingToolView({
         return { label, completed: currentWeight !== null && currentWeight >= goal.count };
       }
       if (goal.type === "gold_target") {
-        const currentGold = (toolState?.currentGoldTickets ?? 0);
+        const currentGold = toolState?.currentGoldTickets ?? 0;
         const targetGold = goldTarget ?? 0;
         return { label: `${currentGold}/${targetGold} gold tickets`, completed: targetGold > 0 && currentGold >= targetGold };
       }
@@ -711,7 +714,8 @@ export default function FishingToolView({
         }
         if (goal.type === "legendary_caught") {
           const currentLeg = (goal.scope ?? "lake") === "total" ? totalLegendary : (lakeStateForStep.legendaryCaught ?? 0);
-          const warning = goal.maxCount !== undefined && currentLeg > goal.maxCount ? `You are over the recommended legendary count (${goal.maxCount}+).` : null;
+          const warning =
+            goal.maxCount !== undefined && currentLeg > goal.maxCount ? `You are over the recommended legendary count (${goal.maxCount}+).` : null;
           return { label: `${currentLeg}/${goal.count} legendaries caught`, completed: currentLeg >= goal.count, warning };
         }
       }
@@ -725,7 +729,11 @@ export default function FishingToolView({
       const statuses = goals.map((goal) => evaluateGoal(goal));
       progressLabel = statuses.map((status) => status.label).join(" | ");
       const progressLines = statuses.map((status) => status.label);
-      completed = useAll ? statuses.every((status) => status.completed) : useAny ? statuses.some((status) => status.completed) : statuses[0].completed;
+      completed = useAll
+        ? statuses.every((status) => status.completed)
+        : useAny
+          ? statuses.some((status) => status.completed)
+          : statuses[0].completed;
       offPathWarning = statuses.find((status) => status.warning)?.warning ?? offPathWarning;
       return {
         stepIndex,
@@ -760,7 +768,7 @@ export default function FishingToolView({
   }, [guidedOption, guidedState, toolState, goldTarget]);
 
   useEffect(() => {
-    if (!guidedStepData) return;
+    if (!guidedStepData || !toolState?.guidedAutoAdvance) return;
     const shouldAdvance = guidedStepData.completed || guidedStepData.shouldSkip;
     if (!shouldAdvance) return;
     const nextIndex = Math.min(guidedStepData.steps.length - 1, guidedStepData.stepIndex + 1);
@@ -778,7 +786,7 @@ export default function FishingToolView({
         activeLakeId: nextLakeId,
       };
     });
-  }, [guidedStepData]);
+  }, [guidedStepData, toolState?.guidedAutoAdvance]);
 
   if (dataState.status === "loading") {
     return <p>Loading fishing tool…</p>;
@@ -1335,414 +1343,438 @@ export default function FishingToolView({
           {tool.description ? <p style={{ marginTop: 6 }}>{tool.description}</p> : null}
 
           <div style={{ display: "grid", gap: 10, marginTop: 12 }}>
-        <details
-          open={!toolState.guidedCollapsed}
-          onToggle={(event) => {
-            const isOpen = (event.currentTarget as HTMLDetailsElement).open;
-            updateToolState((prev) => ({ ...prev, guidedCollapsed: !isOpen }));
-          }}
-          style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12, background: "var(--surface-2)" }}
-        >
-          <summary className="detailsSummary" style={{ cursor: "pointer", fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
-            <span aria-hidden="true" className="detailsChevron">
-              ▸
-            </span>
-            <span style={{ flex: 1 }}>Guided Route</span>
-          </summary>
-          {toolState.guidedCollapsed ? null : (
-            <div style={{ display: "grid", gap: 10, marginTop: 10 }}>
-              {guidedState.status === "idle" ? (
-                <div style={{ color: "var(--text-muted)" }}>No guided route for this event.</div>
-              ) : guidedState.status === "loading" ? (
-                <div style={{ color: "var(--text-muted)" }}>Loading guided route…</div>
-              ) : guidedState.status === "error" ? (
-                <div style={{ color: "var(--danger)" }}>Guided route error: {guidedState.error}</div>
-              ) : guidedOption ? (
-                <>
-                  <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-                    <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Option</label>
-                    <DropdownButton
-                      valueLabel={guidedOption.title}
-                      options={guidedState.data.options.map((option) => ({ value: option.optionId, label: option.title }))}
-                      onSelect={setGuidedOption}
-                      minWidth={200}
-                    />
-                    <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Current Weight</label>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="kg"
-                      value={toolState.guidedCurrentWeight === null ? "" : toolState.guidedCurrentWeight}
-                      onChange={(e) => {
-                        const raw = e.target.value.replace(/[^\d]/g, "");
-                        setGuidedWeight(raw ? Number(raw) : null);
-                      }}
-                      style={{ maxWidth: 120 }}
-                    />
-                  </div>
-                  {guidedOption.summary ? <div style={{ fontSize: 13, color: "var(--text-muted)" }}>{guidedOption.summary}</div> : null}
-                  {guidedOption.disclaimer ? <div style={{ fontSize: 12, color: "var(--text-muted)" }}>{guidedOption.disclaimer}</div> : null}
-                  {guidedStepData ? (
-                    <div style={{ border: "1px solid var(--border)", borderRadius: 10, padding: 10, background: "var(--surface)" }}>
-                      <div style={{ fontWeight: 700 }}>{guidedStepData.step.action}</div>
-                      <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>
-                        Lake: {set.lakes.find((entry) => entry.lakeId === guidedStepData.step.lakeId)?.label ?? guidedStepData.step.lakeId}
+            <details
+              open={!toolState.guidedCollapsed}
+              onToggle={(event) => {
+                const isOpen = (event.currentTarget as HTMLDetailsElement).open;
+                updateToolState((prev) => ({ ...prev, guidedCollapsed: !isOpen }));
+              }}
+              style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12, background: "var(--surface-2)" }}
+            >
+              <summary className="detailsSummary" style={{ cursor: "pointer", fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
+                <span aria-hidden="true" className="detailsChevron">
+                  ▸
+                </span>
+                <span style={{ flex: 1 }}>Guided Route</span>
+              </summary>
+              {toolState.guidedCollapsed ? null : (
+                <div style={{ display: "grid", gap: 10, marginTop: 10 }}>
+                  {guidedState.status === "idle" ? (
+                    <div style={{ color: "var(--text-muted)" }}>No guided route for this event.</div>
+                  ) : guidedState.status === "loading" ? (
+                    <div style={{ color: "var(--text-muted)" }}>Loading guided route…</div>
+                  ) : guidedState.status === "error" ? (
+                    <div style={{ color: "var(--danger)" }}>Guided route error: {guidedState.error}</div>
+                  ) : guidedOption ? (
+                    <>
+                      <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                        <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Option</label>
+                        <DropdownButton
+                          valueLabel={guidedOption.title}
+                          options={guidedState.data.options.map((option) => ({ value: option.optionId, label: option.title }))}
+                          onSelect={setGuidedOption}
+                          minWidth={200}
+                        />
+                        <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Auto Complete Steps</label>
+                        <button
+                          type="button"
+                          className={toolState.guidedAutoAdvance ? "secondary" : "ghost"}
+                          onClick={() => updateToolState((prev) => ({ ...prev, guidedAutoAdvance: !prev.guidedAutoAdvance }))}
+                        >
+                          {toolState.guidedAutoAdvance ? "On" : "Off"}
+                        </button>
+                        <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Current Weight</label>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          placeholder="kg"
+                          value={toolState.guidedCurrentWeight === null ? "" : toolState.guidedCurrentWeight}
+                          onChange={(e) => {
+                            const raw = e.target.value.replace(/[^\d]/g, "");
+                            setGuidedWeight(raw ? Number(raw) : null);
+                          }}
+                          style={{ maxWidth: 120 }}
+                        />
                       </div>
-                      <div style={{ display: "grid", gap: 4, fontSize: 12, marginTop: 6 }}>
-                        {guidedStepData.progressLines.map((line, index) => (
-                          <div key={`${guidedStepData.step.stepId}-progress-${index}`}>{line}</div>
+                      {guidedOption.summary ? <div style={{ fontSize: 13, color: "var(--text-muted)" }}>{guidedOption.summary}</div> : null}
+                      {guidedOption.disclaimer ? <div style={{ fontSize: 12, color: "var(--text-muted)" }}>{guidedOption.disclaimer}</div> : null}
+                      {!toolState.guidedAutoAdvance ? <div style={{ fontSize: 12, color: "var(--warning)" }}>Auto Complete Steps is OFF.</div> : null}
+                      {guidedStepData ? (
+                        <div style={{ border: "1px solid var(--border)", borderRadius: 10, padding: 10, background: "var(--surface)" }}>
+                          <div style={{ fontWeight: 700 }}>{guidedStepData.step.action}</div>
+                          <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>
+                            Lake: {set.lakes.find((entry) => entry.lakeId === guidedStepData.step.lakeId)?.label ?? guidedStepData.step.lakeId}
+                          </div>
+                          <div style={{ display: "grid", gap: 4, fontSize: 12, marginTop: 6 }}>
+                            {guidedStepData.progressLines.map((line, index) => (
+                              <div key={`${guidedStepData.step.stepId}-progress-${index}`}>{line}</div>
+                            ))}
+                          </div>
+                          {guidedStepData.step.notes ? (
+                            <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 6 }}>{guidedStepData.step.notes}</div>
+                          ) : null}
+                          {guidedStepData.shouldSkip ? (
+                            <div style={{ color: "var(--warning)", fontSize: 12, marginTop: 6 }}>
+                              Broken lines are over {guidedStepData.skipThreshold}. This step should be skipped.
+                            </div>
+                          ) : null}
+                          {guidedStepData.wrongLakeId ? (
+                            <div style={{ color: "var(--danger)", fontSize: 12, marginTop: 6 }}>
+                              You are on {set.lakes.find((entry) => entry.lakeId === guidedStepData.wrongLakeId)?.label ?? guidedStepData.wrongLakeId}
+                              . Switch to{" "}
+                              {set.lakes.find((entry) => entry.lakeId === guidedStepData.wrongLakeTargetId)?.label ??
+                                guidedStepData.wrongLakeTargetId}{" "}
+                              to follow this step.
+                            </div>
+                          ) : guidedStepData.offPathWarning ? (
+                            <div style={{ color: "var(--danger)", fontSize: 12, marginTop: 6 }}>{guidedStepData.offPathWarning}</div>
+                          ) : null}
+                          <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap", alignItems: "center" }}>
+                            <button
+                              type="button"
+                              className="ghost"
+                              onClick={() => {
+                                const prevIndex = Math.max(0, guidedStepData.stepIndex - 1);
+                                setGuidedStepIndex(prevIndex);
+                                updateToolState((prev) => ({ ...prev, guidedAutoAdvance: false }));
+                                const prevStep = guidedStepData.steps[prevIndex];
+                                if (prevStep && prevStep.lakeId && prevStep.lakeId !== lake.lakeId) {
+                                  setActiveLake(prevStep.lakeId);
+                                }
+                              }}
+                              disabled={guidedStepData.stepIndex === 0}
+                            >
+                              Previous Step
+                            </button>
+                            <button type="button" className="secondary" onClick={() => setActiveLake(guidedStepData.step.lakeId)}>
+                              Go to {set.lakes.find((entry) => entry.lakeId === guidedStepData.step.lakeId)?.label ?? guidedStepData.step.lakeId}
+                            </button>
+                            <button
+                              type="button"
+                              className="secondary"
+                              onClick={() => {
+                                const nextIndex = Math.min(guidedStepData.steps.length - 1, guidedStepData.stepIndex + 1);
+                                setGuidedStepIndex(nextIndex);
+                                const nextStep = guidedStepData.steps[nextIndex];
+                                if (nextStep && nextStep.lakeId && nextStep.lakeId !== lake.lakeId) {
+                                  setActiveLake(nextStep.lakeId);
+                                }
+                              }}
+                            >
+                              {guidedStepData.shouldSkip ? "Skip Step" : "Next Step"}
+                            </button>
+                            <div style={{ marginLeft: "auto" }} />
+                            <button type="button" className="ghost" onClick={resetGuidedRoute}>
+                              Reset Route
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div style={{ color: "var(--text-muted)" }}>No guided steps available.</div>
+                      )}
+                    </>
+                  ) : (
+                    <div style={{ color: "var(--text-muted)" }}>No guided steps available.</div>
+                  )}
+                </div>
+              )}
+            </details>
+            <div style={{ display: "grid", gap: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-muted)" }}>Select a Lake</div>
+                <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                  <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Set</label>
+                  <DropdownButton
+                    valueLabel={set.label}
+                    options={data.sets.map((option) => ({ value: option.setId, label: option.label }))}
+                    onSelect={setActiveSet}
+                    minWidth={96}
+                  />
+                  <div ref={resetMenuRef} style={{ position: "relative" }}>
+                    <button
+                      type="button"
+                      className="secondary"
+                      onClick={() => setResetMenuOpen((prev) => !prev)}
+                      style={{ display: "flex", alignItems: "center", gap: 8 }}
+                    >
+                      <span>Reset Options</span>
+                      <span aria-hidden="true" style={{ fontSize: 12, lineHeight: 1 }}>
+                        {resetMenuOpen ? "▲" : "▼"}
+                      </span>
+                    </button>
+                    {resetMenuOpen ? (
+                      <div
+                        style={{
+                          position: "absolute",
+                          right: 0,
+                          top: "100%",
+                          marginTop: 6,
+                          display: "grid",
+                          gap: 6,
+                          padding: 8,
+                          minWidth: 180,
+                          background: "var(--surface)",
+                          border: "1px solid var(--border)",
+                          borderRadius: 10,
+                          zIndex: 5,
+                        }}
+                      >
+                        {set.lakes.map((entry, index) => (
+                          <button
+                            key={entry.lakeId}
+                            type="button"
+                            className="ghost"
+                            onClick={() => {
+                              resetLakeProgress(entry.lakeId);
+                              closeResetMenu();
+                            }}
+                          >
+                            Reset Lake {index + 1}
+                          </button>
                         ))}
-                      </div>
-                      {guidedStepData.step.notes ? (
-                        <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 6 }}>{guidedStepData.step.notes}</div>
-                      ) : null}
-                      {guidedStepData.shouldSkip ? (
-                        <div style={{ color: "var(--warning)", fontSize: 12, marginTop: 6 }}>
-                          Broken lines are over {guidedStepData.skipThreshold}. This step should be skipped.
-                        </div>
-                      ) : null}
-                      {guidedStepData.wrongLakeId ? (
-                        <div style={{ color: "var(--danger)", fontSize: 12, marginTop: 6 }}>
-                          You are on {set.lakes.find((entry) => entry.lakeId === guidedStepData.wrongLakeId)?.label ?? guidedStepData.wrongLakeId}.{" "}
-                          Switch to{" "}
-                          {set.lakes.find((entry) => entry.lakeId === guidedStepData.wrongLakeTargetId)?.label ?? guidedStepData.wrongLakeTargetId} to
-                          follow this step.
-                        </div>
-                      ) : guidedStepData.offPathWarning ? (
-                        <div style={{ color: "var(--danger)", fontSize: 12, marginTop: 6 }}>{guidedStepData.offPathWarning}</div>
-                      ) : null}
-                      <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
                         <button
                           type="button"
                           className="ghost"
                           onClick={() => {
-                            const prevIndex = Math.max(0, guidedStepData.stepIndex - 1);
-                            setGuidedStepIndex(prevIndex);
-                            const prevStep = guidedStepData.steps[prevIndex];
-                            if (prevStep && prevStep.lakeId && prevStep.lakeId !== lake.lakeId) {
-                              setActiveLake(prevStep.lakeId);
-                            }
-                          }}
-                          disabled={guidedStepData.stepIndex === 0}
-                        >
-                          Previous Step
-                        </button>
-                        <button type="button" className="secondary" onClick={() => setActiveLake(guidedStepData.step.lakeId)}>
-                          Go to {set.lakes.find((entry) => entry.lakeId === guidedStepData.step.lakeId)?.label ?? guidedStepData.step.lakeId}
-                        </button>
-                        <button
-                          type="button"
-                          className="secondary"
-                          onClick={() => {
-                            const nextIndex = Math.min(guidedStepData.steps.length - 1, guidedStepData.stepIndex + 1);
-                            setGuidedStepIndex(nextIndex);
-                            const nextStep = guidedStepData.steps[nextIndex];
-                            if (nextStep && nextStep.lakeId && nextStep.lakeId !== lake.lakeId) {
-                              setActiveLake(nextStep.lakeId);
-                            }
+                            const confirmed = window.confirm("Reset all progress? You can undo this with Undo Last.");
+                            if (!confirmed) return;
+                            resetAllProgress();
+                            closeResetMenu();
                           }}
                         >
-                          {guidedStepData.shouldSkip ? "Skip Step" : guidedStepData.completed ? "Next Step" : "Mark Step Complete"}
-                        </button>
-                        <button type="button" className="ghost" onClick={resetGuidedRoute}>
-                          Reset Route
+                          Reset All Progress
                         </button>
                       </div>
-                    </div>
-                  ) : (
-                    <div style={{ color: "var(--text-muted)" }}>No guided steps available.</div>
-                  )}
-                </>
-              ) : (
-                <div style={{ color: "var(--text-muted)" }}>No guided steps available.</div>
-              )}
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+              <div style={{ display: "grid", gap: 8, gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))" }}>
+                {set.lakes.map((entry) => {
+                  const entryState = toolState.lakeStates[entry.lakeId];
+                  const remaining = entryState ? Object.values(entryState.remainingByTypeId).reduce((sum, count) => sum + count, 0) : 0;
+                  const legendaryLeft = entryState?.remainingByTypeId[legendaryTypeId] ?? 0;
+                  const odds = remaining > 0 ? (legendaryLeft / remaining) * 100 : 0;
+                  const active = entry.lakeId === lake.lakeId;
+                  return (
+                    <button
+                      key={entry.lakeId}
+                      type="button"
+                      onClick={() => setActiveLake(entry.lakeId)}
+                      style={{
+                        border: active ? "2px solid var(--accent)" : "1px solid var(--border)",
+                        background: active ? "var(--highlight)" : "var(--surface-2)",
+                        color: "var(--text)",
+                        padding: "10px 12px",
+                        borderRadius: 12,
+                        textAlign: "left",
+                      }}
+                    >
+                      <div style={{ fontWeight: 700 }}>
+                        {entry.label}{" "}
+                        {entry.lakeId.endsWith("_1")
+                          ? "(Lake 1)"
+                          : entry.lakeId.endsWith("_2")
+                            ? "(Lake 2)"
+                            : entry.lakeId.endsWith("_3")
+                              ? "(Lake 3)"
+                              : entry.lakeId.endsWith("_4")
+                                ? "(Lake 4)"
+                                : ""}
+                      </div>
+                      <div style={{ fontSize: 12, color: "var(--text-muted)" }}>
+                        Fish Remaining {remaining} • Legendary {odds.toFixed(1)}%
+                      </div>
+                      <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>
+                        Pools Cleared {entryState?.poolsCompleted ?? 0} • Legendaries {entryState?.legendaryCaught ?? 0}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          )}
-        </details>
-        <div style={{ display: "grid", gap: 8 }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-muted)" }}>Select a Lake</div>
-            <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-              <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Set</label>
-              <DropdownButton
-                valueLabel={set.label}
-                options={data.sets.map((option) => ({ value: option.setId, label: option.label }))}
-                onSelect={setActiveSet}
-                minWidth={96}
-              />
-              <div ref={resetMenuRef} style={{ position: "relative" }}>
+
+            <div style={{ display: "grid", gap: 10 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: 10 }}>
+                {data.fishTypes.map((fishType) => {
+                  const fish = lake.fish.find((entry) => entry.typeId === fishType.typeId);
+                  const remaining = lakeState.remainingByTypeId[fishType.typeId] ?? 0;
+                  const typeLabel = getFishTypeLabel(fishType.typeId, fishType.rarity);
+                  const displayName = fish?.name ?? typeLabel;
+                  const rarityStyle =
+                    fishType.rarity === "legendary"
+                      ? { background: "#F2A31A", border: "1px solid #E79A14" }
+                      : fishType.rarity === "epic"
+                        ? { background: "#9B6BFF", border: "1px solid #8D5CFA" }
+                        : { background: "#0E84FF", border: "1px solid #0A7CF2" };
+                  return (
+                    <button
+                      key={fishType.typeId}
+                      type="button"
+                      onClick={() => catchFish(fishType.typeId)}
+                      style={{
+                        border: rarityStyle.border,
+                        background: rarityStyle.background,
+                        borderRadius: 12,
+                        padding: "10px 8px",
+                        textAlign: "center",
+                        fontWeight: 600,
+                      }}
+                    >
+                      {fish?.image ? (
+                        <img
+                          src={resolvePath(fish.image)}
+                          alt={fish?.name ?? fishType.label}
+                          style={{ width: 44, height: 44, objectFit: "contain", marginBottom: 6 }}
+                        />
+                      ) : (
+                        <div style={{ fontSize: 18, marginBottom: 6 }}>{typeLabel}</div>
+                      )}
+                      <div style={{ fontSize: 12, color: "#0A0A0A" }}>{displayName}</div>
+                      <div style={{ fontSize: 13, color: "#0A0A0A" }}>{remaining} left</div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button type="button" className="secondary" onClick={catchWholePool}>
+                Catch Whole Pool
+              </button>
+
+              <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
                 <button
                   type="button"
                   className="secondary"
-                  onClick={() => setResetMenuOpen((prev) => !prev)}
-                  style={{ display: "flex", alignItems: "center", gap: 8 }}
+                  onClick={() => resetLake(lake.lakeId)}
+                  disabled={Object.entries(buildFullCounts(data, lake.lakeId)).every(
+                    ([typeId, count]) => lakeState.remainingByTypeId[typeId] === count,
+                  )}
                 >
-                  <span>Reset Options</span>
-                  <span aria-hidden="true" style={{ fontSize: 12, lineHeight: 1 }}>
-                    {resetMenuOpen ? "▲" : "▼"}
-                  </span>
+                  Refill Lake
                 </button>
-                {resetMenuOpen ? (
-                  <div
-                    style={{
-                      position: "absolute",
-                      right: 0,
-                      top: "100%",
-                      marginTop: 6,
-                      display: "grid",
-                      gap: 6,
-                      padding: 8,
-                      minWidth: 180,
-                      background: "var(--surface)",
-                      border: "1px solid var(--border)",
-                      borderRadius: 10,
-                      zIndex: 5,
-                    }}
+                <button type="button" className="secondary" onClick={undoLast} disabled={!history.length}>
+                  Undo Last
+                </button>
+              </div>
+
+              <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12 }}>
+                <div style={{ fontWeight: 700, marginBottom: 6 }}>Broken Lines</div>
+                <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+                  <div style={{ fontWeight: 700 }}>
+                    {toolState.brokenLines ?? 0}/{brokenLinesMax}
+                  </div>
+                  <DropdownButton
+                    valueLabel={`+${breakStep}`}
+                    options={[1, 2, 3, 5, 10].map((value) => ({ value: String(value), label: `+${value}` }))}
+                    onSelect={(value) => setBreakStep(Number(value))}
+                    minWidth={72}
+                  />
+                  <button
+                    type="button"
+                    className="secondary"
+                    onClick={() => updateBrokenLines(breakStep)}
+                    disabled={(toolState.brokenLines ?? 0) >= brokenLinesMax}
                   >
-                    {set.lakes.map((entry, index) => (
-                      <button
-                        key={entry.lakeId}
-                        type="button"
-                        className="ghost"
-                        onClick={() => {
-                          resetLakeProgress(entry.lakeId);
-                          closeResetMenu();
-                        }}
-                      >
-                        Reset Lake {index + 1}
-                      </button>
-                    ))}
-                    <button
-                      type="button"
-                      className="ghost"
-                      onClick={() => {
-                        const confirmed = window.confirm("Reset all progress? You can undo this with Undo Last.");
-                        if (!confirmed) return;
-                        resetAllProgress();
-                        closeResetMenu();
-                      }}
-                    >
-                      Reset All Progress
-                    </button>
+                    Add Breaks
+                  </button>
+                  <button
+                    type="button"
+                    className="secondary"
+                    onClick={() => updateBrokenLines(-breakStep)}
+                    disabled={(toolState.brokenLines ?? 0) <= 0}
+                  >
+                    Remove Breaks
+                  </button>
+                  <button
+                    type="button"
+                    className="ghost"
+                    onClick={() => updateBrokenLines(-brokenLinesMax)}
+                    disabled={(toolState.brokenLines ?? 0) <= 0}
+                  >
+                    Reset
+                  </button>
+                  <button type="button" className="ghost" onClick={() => setShowBreakOdds((prev) => !prev)}>
+                    {showBreakOdds ? "Hide Odds" : "Show Odds"}
+                  </button>
+                </div>
+                {showBreakOdds ? (
+                  <div style={{ marginTop: 10, display: "grid", gap: 6, fontSize: 12, color: "var(--text-muted)" }}>
+                    <div>Chance per break: {breakChance !== null ? `${(breakChance * 100).toFixed(1)}%` : "No legendary in pool"}</div>
+                    <div>50% chance by: {breakLuresForChance(0.5) ?? "—"} breaks</div>
+                    <div>90% chance by: {breakLuresForChance(0.9) ?? "—"} breaks</div>
+                    <div>95% chance by: {breakLuresForChance(0.95) ?? "—"} breaks</div>
                   </div>
                 ) : null}
               </div>
             </div>
-          </div>
-          <div style={{ display: "grid", gap: 8, gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))" }}>
-            {set.lakes.map((entry) => {
-              const entryState = toolState.lakeStates[entry.lakeId];
-              const remaining = entryState ? Object.values(entryState.remainingByTypeId).reduce((sum, count) => sum + count, 0) : 0;
-              const legendaryLeft = entryState?.remainingByTypeId[legendaryTypeId] ?? 0;
-              const odds = remaining > 0 ? (legendaryLeft / remaining) * 100 : 0;
-              const active = entry.lakeId === lake.lakeId;
-              return (
-                <button
-                  key={entry.lakeId}
-                  type="button"
-                  onClick={() => setActiveLake(entry.lakeId)}
-                  style={{
-                    border: active ? "2px solid var(--accent)" : "1px solid var(--border)",
-                    background: active ? "var(--highlight)" : "var(--surface-2)",
-                    color: "var(--text)",
-                    padding: "10px 12px",
-                    borderRadius: 12,
-                    textAlign: "left",
-                  }}
-                >
-                  <div style={{ fontWeight: 700 }}>
-                    {entry.label}{" "}
-                    {entry.lakeId.endsWith("_1")
-                      ? "(Lake 1)"
-                      : entry.lakeId.endsWith("_2")
-                        ? "(Lake 2)"
-                        : entry.lakeId.endsWith("_3")
-                          ? "(Lake 3)"
-                          : entry.lakeId.endsWith("_4")
-                            ? "(Lake 4)"
-                            : ""}
+
+            <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
+              <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12, background: "var(--surface-2)" }}>
+                <div style={{ fontWeight: 700, marginBottom: 6 }}>Pool</div>
+                <div style={{ display: "grid", gap: 6, fontSize: 14 }}>
+                  <div>Fish Remaining: {totalFishRemaining}</div>
+                  <div>Chance Next Fish is Legendary: {legendaryChance.toFixed(1)}%</div>
+                  <div>
+                    Estimated Lures to Next Legendary:{" "}
+                    {expectedLuresNextLegendary !== null ? formatNumber(expectedLuresNextLegendary, 1) : "None in pool"}
                   </div>
-                  <div style={{ fontSize: 12, color: "var(--text-muted)" }}>
-                    Fish Remaining {remaining} • Legendary {odds.toFixed(1)}%
-                  </div>
-                  <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>
-                    Pools Cleared {entryState?.poolsCompleted ?? 0} • Legendaries {entryState?.legendaryCaught ?? 0}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div style={{ display: "grid", gap: 10 }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: 10 }}>
-            {data.fishTypes.map((fishType) => {
-              const fish = lake.fish.find((entry) => entry.typeId === fishType.typeId);
-              const remaining = lakeState.remainingByTypeId[fishType.typeId] ?? 0;
-              const typeLabel = getFishTypeLabel(fishType.typeId, fishType.rarity);
-              const displayName = fish?.name ?? typeLabel;
-              const rarityStyle =
-                fishType.rarity === "legendary"
-                  ? { background: "#F2A31A", border: "1px solid #E79A14" }
-                  : fishType.rarity === "epic"
-                    ? { background: "#9B6BFF", border: "1px solid #8D5CFA" }
-                    : { background: "#0E84FF", border: "1px solid #0A7CF2" };
-              return (
-                <button
-                  key={fishType.typeId}
-                  type="button"
-                  onClick={() => catchFish(fishType.typeId)}
-                  style={{
-                    border: rarityStyle.border,
-                    background: rarityStyle.background,
-                    borderRadius: 12,
-                    padding: "10px 8px",
-                    textAlign: "center",
-                    fontWeight: 600,
-                  }}
-                >
-                  {fish?.image ? (
-                    <img
-                      src={resolvePath(fish.image)}
-                      alt={fish?.name ?? fishType.label}
-                      style={{ width: 44, height: 44, objectFit: "contain", marginBottom: 6 }}
-                    />
-                  ) : (
-                    <div style={{ fontSize: 18, marginBottom: 6 }}>{typeLabel}</div>
-                  )}
-                  <div style={{ fontSize: 12, color: "#0A0A0A" }}>{displayName}</div>
-                  <div style={{ fontSize: 13, color: "#0A0A0A" }}>{remaining} left</div>
-                </button>
-              );
-            })}
-          </div>
-
-          <button type="button" className="secondary" onClick={catchWholePool}>
-            Catch Whole Pool
-          </button>
-
-          <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-            <button
-              type="button"
-              className="secondary"
-              onClick={() => resetLake(lake.lakeId)}
-              disabled={Object.entries(buildFullCounts(data, lake.lakeId)).every(([typeId, count]) => lakeState.remainingByTypeId[typeId] === count)}
-            >
-              Refill Lake
-            </button>
-            <button type="button" className="secondary" onClick={undoLast} disabled={!history.length}>
-              Undo Last
-            </button>
-          </div>
-
-          <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12 }}>
-            <div style={{ fontWeight: 700, marginBottom: 6 }}>Broken Lines</div>
-            <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-              <div style={{ fontWeight: 700 }}>
-                {toolState.brokenLines ?? 0}/{brokenLinesMax}
-              </div>
-              <DropdownButton
-                valueLabel={`+${breakStep}`}
-                options={[1, 2, 3, 5, 10].map((value) => ({ value: String(value), label: `+${value}` }))}
-                onSelect={(value) => setBreakStep(Number(value))}
-                minWidth={72}
-              />
-              <button
-                type="button"
-                className="secondary"
-                onClick={() => updateBrokenLines(breakStep)}
-                disabled={(toolState.brokenLines ?? 0) >= brokenLinesMax}
-              >
-                Add Breaks
-              </button>
-              <button type="button" className="secondary" onClick={() => updateBrokenLines(-breakStep)} disabled={(toolState.brokenLines ?? 0) <= 0}>
-                Remove Breaks
-              </button>
-              <button type="button" className="ghost" onClick={() => updateBrokenLines(-brokenLinesMax)} disabled={(toolState.brokenLines ?? 0) <= 0}>
-                Reset
-              </button>
-              <button type="button" className="ghost" onClick={() => setShowBreakOdds((prev) => !prev)}>
-                {showBreakOdds ? "Hide Odds" : "Show Odds"}
-              </button>
-            </div>
-            {showBreakOdds ? (
-              <div style={{ marginTop: 10, display: "grid", gap: 6, fontSize: 12, color: "var(--text-muted)" }}>
-                <div>Chance per break: {breakChance !== null ? `${(breakChance * 100).toFixed(1)}%` : "No legendary in pool"}</div>
-                <div>50% chance by: {breakLuresForChance(0.5) ?? "—"} breaks</div>
-                <div>90% chance by: {breakLuresForChance(0.9) ?? "—"} breaks</div>
-                <div>95% chance by: {breakLuresForChance(0.95) ?? "—"} breaks</div>
-              </div>
-            ) : null}
-          </div>
-        </div>
-
-        <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
-          <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12, background: "var(--surface-2)" }}>
-            <div style={{ fontWeight: 700, marginBottom: 6 }}>Pool</div>
-            <div style={{ display: "grid", gap: 6, fontSize: 14 }}>
-              <div>Fish Remaining: {totalFishRemaining}</div>
-              <div>Chance Next Fish is Legendary: {legendaryChance.toFixed(1)}%</div>
-              <div>
-                Estimated Lures to Next Legendary:{" "}
-                {expectedLuresNextLegendary !== null ? formatNumber(expectedLuresNextLegendary, 1) : "None in pool"}
-              </div>
-              <div>Estimated Weight Remaining: {formatNumber(weightRemaining, 1)} kg</div>
-              <div>Estimated Silver Tickets Remaining: {ticketsPerKg ? formatNumber(ticketsRemaining, 0) : "Add ticket data"}</div>
-            </div>
-          </div>
-          <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12, background: "var(--surface-2)" }}>
-            <div style={{ fontWeight: 700, marginBottom: 6 }}>Totals</div>
-            <div style={{ display: "grid", gap: 6, fontSize: 14 }}>
-              <div>Total Fish Caught: {totalFishCaught}</div>
-              <div>Total Legendary Fish Caught: {totalLegendaryCaught}</div>
-              <div>Estimated Weight Caught: {formatNumber(totalWeightCaught, 1)} kg</div>
-              <div>Estimated Silver Tickets Gained: {totalTicketsGained !== null ? formatNumber(totalTicketsGained, 0) : "Add ticket data"}</div>
-              <div>
-                Estimated Gems Spent: {estimatedGemsSpent !== null ? formatNumber(estimatedGemsSpent, 0) : "Add current lures + task progress"}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12 }}>
-          <div style={{ fontWeight: 700, marginBottom: 6 }}>Recent Catches</div>
-          {lastThree.length ? (
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              {lastThree.map((entry) => (
-                <div
-                  key={entry.entryId}
-                  style={{
-                    padding: "6px 10px",
-                    borderRadius: 999,
-                    background: "var(--surface-2)",
-                    border: "1px solid var(--border)",
-                    fontSize: 12,
-                  }}
-                >
-                  {entry.fishName}
+                  <div>Estimated Weight Remaining: {formatNumber(weightRemaining, 1)} kg</div>
+                  <div>Estimated Silver Tickets Remaining: {ticketsPerKg ? formatNumber(ticketsRemaining, 0) : "Add ticket data"}</div>
                 </div>
-              ))}
+              </div>
+              <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12, background: "var(--surface-2)" }}>
+                <div style={{ fontWeight: 700, marginBottom: 6 }}>Totals</div>
+                <div style={{ display: "grid", gap: 6, fontSize: 14 }}>
+                  <div>Total Fish Caught: {totalFishCaught}</div>
+                  <div>Total Legendary Fish Caught: {totalLegendaryCaught}</div>
+                  <div>Estimated Weight Caught: {formatNumber(totalWeightCaught, 1)} kg</div>
+                  <div>Estimated Silver Tickets Gained: {totalTicketsGained !== null ? formatNumber(totalTicketsGained, 0) : "Add ticket data"}</div>
+                  <div>
+                    Estimated Gems Spent: {estimatedGemsSpent !== null ? formatNumber(estimatedGemsSpent, 0) : "Add current lures + task progress"}
+                  </div>
+                </div>
+              </div>
             </div>
-          ) : (
-            <div style={{ color: "var(--text-muted)" }}>No catches yet.</div>
-          )}
-          <details style={{ marginTop: 10 }}>
-            <summary style={{ cursor: "pointer" }}>History ({historyVisible.length})</summary>
-            <div style={{ marginTop: 8, display: "grid", gap: 6, maxHeight: 180, overflow: "auto" }}>
-              {historyVisible
-                .slice()
-                .reverse()
-                .map((entry) => {
-                  const lakeLabel = set.lakes.find((l) => l.lakeId === entry.lakeId)?.label ?? entry.lakeId;
-                  return (
-                    <div key={entry.entryId} style={{ fontSize: 12, color: "var(--text-muted)" }}>
-                      {lakeLabel}: {entry.fishName}
+
+            <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12 }}>
+              <div style={{ fontWeight: 700, marginBottom: 6 }}>Recent Catches</div>
+              {lastThree.length ? (
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  {lastThree.map((entry) => (
+                    <div
+                      key={entry.entryId}
+                      style={{
+                        padding: "6px 10px",
+                        borderRadius: 999,
+                        background: "var(--surface-2)",
+                        border: "1px solid var(--border)",
+                        fontSize: 12,
+                      }}
+                    >
+                      {entry.fishName}
                     </div>
-                  );
-                })}
+                  ))}
+                </div>
+              ) : (
+                <div style={{ color: "var(--text-muted)" }}>No catches yet.</div>
+              )}
+              <details style={{ marginTop: 10 }}>
+                <summary style={{ cursor: "pointer" }}>History ({historyVisible.length})</summary>
+                <div style={{ marginTop: 8, display: "grid", gap: 6, maxHeight: 180, overflow: "auto" }}>
+                  {historyVisible
+                    .slice()
+                    .reverse()
+                    .map((entry) => {
+                      const lakeLabel = set.lakes.find((l) => l.lakeId === entry.lakeId)?.label ?? entry.lakeId;
+                      return (
+                        <div key={entry.entryId} style={{ fontSize: 12, color: "var(--text-muted)" }}>
+                          {lakeLabel}: {entry.fishName}
+                        </div>
+                      );
+                    })}
+                </div>
+              </details>
             </div>
-          </details>
-        </div>
           </div>
         </div>
       ) : null}
@@ -2087,7 +2119,9 @@ export default function FishingToolView({
                   </div>
                   <div>
                     Estimated silver tickets gained (expected):{" "}
-                    <b>{lakeRecommendations?.avgTicketsPerFish ? formatNumber(goldRange.expected * lakeRecommendations.avgTicketsPerFish, 0) : "—"}</b>
+                    <b>
+                      {lakeRecommendations?.avgTicketsPerFish ? formatNumber(goldRange.expected * lakeRecommendations.avgTicketsPerFish, 0) : "—"}
+                    </b>
                   </div>
                   {silverRemaining !== null ? (
                     <>

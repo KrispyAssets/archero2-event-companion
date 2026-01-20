@@ -8,7 +8,7 @@
   "options": [
     {
       "optionId": "option_1",
-      "title": "Option 1 (Maximize Silver Tickets)",
+      "title": "1. Maximize Silver Tickets",
       "summary": "This option is more expensive (20–30k gems) but yields more Silver Tickets.",
       "disclaimer": "If you have started fishing prior to this without tracking your fishes, this guide might not work correctly for you without spending more gems later on. If you are on an earlier lake, you can likely salvage your run by following the steps on your next lake unlock. Check your legendary tickets at the end of each lake to ensure you are matching the expected legendaries caught at that point, but if you are missing a legendary and haven't tracked anything at this point, DO NOT go back and try to get it as you likely don't know the current fish in the pools.",
       "steps": [
@@ -203,7 +203,7 @@
     },
     {
       "optionId": "option_2",
-      "title": "Option 2 (Maximize Golden Tickets)",
+      "title": "2. Maximize Golden Tickets",
       "summary": "This option is less expensive (5–15k gems) but requires more luck on line breaks.",
       "disclaimer": "If you have started fishing prior to this without tracking your fishes, this guide might not work correctly for you without spending more gems later on and it's likely better to just do option 1 if you have the gems available. If you are on an earlier lake, you can likely salvage your run by following the steps on your next lake unlock. Check your legendary tickets at the end of each lake to ensure you are matching the expected legendaries caught at that point, but if you are missing a legendary and haven't tracked anything at this point, DO NOT go back and try to get it as you likely don't know the current fish in the pools.",
       "steps": [

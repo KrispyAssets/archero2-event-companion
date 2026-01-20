@@ -45,10 +45,22 @@ export default function DropdownButton({
           alignItems: "center",
           justifyContent: "space-between",
           gap: 10,
+          flexWrap: "nowrap",
           textAlign: "left",
+          whiteSpace: "nowrap",
         }}
       >
-        <span style={{ flex: 1 }}>{valueLabel}</span>
+        <span
+          style={{
+            flex: 1,
+            minWidth: 0,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {valueLabel}
+        </span>
         <span aria-hidden="true" style={{ fontSize: 12, lineHeight: 1 }}>
           {open ? "▲" : "▼"}
         </span>
@@ -88,7 +100,16 @@ export default function DropdownButton({
                   setOpen(false);
                 }}
               >
-                {option.label}
+                <span
+                  style={{
+                    display: "block",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {option.label}
+                </span>
               </button>
             );
           })}
