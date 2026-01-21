@@ -254,6 +254,7 @@ export default function FishingToolView({
   const [taskTick, setTaskTick] = useState(0);
   const [resetMenuOpen, setResetMenuOpen] = useState(false);
   const [showBreakOdds, setShowBreakOdds] = useState(false);
+  const [openLakeInfoId, setOpenLakeInfoId] = useState<string | null>(null);
   const resetMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -460,6 +461,20 @@ export default function FishingToolView({
     document.addEventListener("click", handleClick);
     return () => document.removeEventListener("click", handleClick);
   }, []);
+
+  useEffect(() => {
+    if (!openLakeInfoId) return;
+    function handleClick(event: MouseEvent) {
+      const target = event.target as HTMLElement | null;
+      if (!target) return;
+      if (target.closest(".lakeInfoButton") || target.closest(".lakeInfoPopover")) {
+        return;
+      }
+      setOpenLakeInfoId(null);
+    }
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
+  }, [openLakeInfoId]);
 
   const derived = useMemo(() => {
     if (dataState.status !== "ready" || !toolState) return null;
@@ -1562,10 +1577,21 @@ export default function FishingToolView({
                   const odds = remaining > 0 ? (legendaryLeft / remaining) * 100 : 0;
                   const active = entry.lakeId === lake.lakeId;
                   return (
-                    <button
+                    <div
                       key={entry.lakeId}
-                      type="button"
-                      onClick={() => setActiveLake(entry.lakeId)}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => {
+                        setActiveLake(entry.lakeId);
+                        setOpenLakeInfoId(null);
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          setActiveLake(entry.lakeId);
+                          setOpenLakeInfoId(null);
+                        }
+                      }}
                       className="fishingLakeButton"
                       style={{
                         border: active ? "2px solid var(--accent)" : "1px solid var(--border)",
@@ -1573,25 +1599,37 @@ export default function FishingToolView({
                         color: "var(--text)",
                       }}
                     >
-                      <div className="lakeTitle" style={{ fontWeight: 700 }}>
-                        {entry.label}{" "}
-                        {entry.lakeId.endsWith("_1")
-                          ? "(Lake 1)"
-                          : entry.lakeId.endsWith("_2")
-                            ? "(Lake 2)"
-                            : entry.lakeId.endsWith("_3")
-                              ? "(Lake 3)"
-                              : entry.lakeId.endsWith("_4")
-                                ? "(Lake 4)"
-                                : ""}
+                      <div className="lakeTitleRow">
+                        <div className="lakeTitle" style={{ fontWeight: 700 }}>
+                        {entry.label}
+                        </div>
+                        <button
+                          type="button"
+                          className="lakeInfoButton"
+                          aria-label={`Show ${entry.label} details`}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setOpenLakeInfoId((prev) => (prev === entry.lakeId ? null : entry.lakeId));
+                          }}
+                        >
+                          ⓘ
+                        </button>
                       </div>
                       <div className="lakeMeta" style={{ color: "var(--text-muted)" }}>
-                        Fish Remaining {remaining} • Legendary {odds.toFixed(1)}%
+                        {remaining} fish
                       </div>
-                      <div className="lakeMeta" style={{ color: "var(--text-muted)", marginTop: 4 }}>
-                        Pools Cleared {entryState?.poolsCompleted ?? 0} • Legendaries {entryState?.legendaryCaught ?? 0}
+                      <div className="lakeMeta" style={{ color: "var(--text-muted)" }}>
+                        {odds.toFixed(1)}%
                       </div>
-                    </button>
+                      {openLakeInfoId === entry.lakeId ? (
+                        <div className="lakeInfoPopover">
+                          <div>Fish Remaining: {remaining}</div>
+                          <div>Legendary Chance: {odds.toFixed(1)}%</div>
+                          <div>Pools Cleared: {entryState?.poolsCompleted ?? 0}</div>
+                          <div>Legendaries: {entryState?.legendaryCaught ?? 0}</div>
+                        </div>
+                      ) : null}
+                    </div>
                   );
                 })}
               </div>
