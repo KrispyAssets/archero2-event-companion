@@ -1349,9 +1349,7 @@ export default function FishingToolView({
     });
   }
 
-  const outerCardStyle = showTitle
-    ? { border: "1px solid var(--border)", borderRadius: 16, padding: 16, background: "var(--surface)" }
-    : undefined;
+  const outerCardStyle = showTitle ? { border: "1px solid var(--border)", borderRadius: 16, padding: 16, background: "var(--surface)" } : undefined;
 
   return (
     <div style={{ display: "grid", gap: 12 }}>
@@ -1387,38 +1385,52 @@ export default function FishingToolView({
                     <div style={{ color: "var(--danger)" }}>Guided route error: {guidedState.error}</div>
                   ) : guidedOption ? (
                     <>
-                      <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-                        <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Option</label>
-                        <DropdownButton
-                          valueLabel={guidedOption.title}
-                          options={guidedState.data.options.map((option) => ({ value: option.optionId, label: option.title }))}
-                          onSelect={setGuidedOption}
-                          minWidth={200}
-                        />
-                        <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Auto Complete Steps</label>
-                        <button
-                          type="button"
-                          className={toolState.guidedAutoAdvance ? "secondary" : "ghost"}
-                          onClick={() => updateToolState((prev) => ({ ...prev, guidedAutoAdvance: !prev.guidedAutoAdvance }))}
-                        >
-                          {toolState.guidedAutoAdvance ? "On" : "Off"}
-                        </button>
-                        <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Current Weight</label>
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          placeholder="kg"
-                          value={toolState.guidedCurrentWeight === null ? "" : toolState.guidedCurrentWeight}
-                          onChange={(e) => {
-                            const raw = e.target.value.replace(/[^\d]/g, "");
-                            setGuidedWeight(raw ? Number(raw) : null);
-                          }}
-                          style={{ maxWidth: 120 }}
-                        />
+                      <div style={{ display: "grid", gap: 10 }}>
+                        <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+                          <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Option</label>
+                          <DropdownButton
+                            valueLabel={guidedOption.title}
+                            options={guidedState.data.options.map((option) => ({ value: option.optionId, label: option.title }))}
+                            onSelect={setGuidedOption}
+                            minWidth={120}
+                            fontSize={12}
+                          />
+                          <div style={{ marginLeft: "auto" }} />
+                          <button
+                            type="button"
+                            className="secondary"
+                            onClick={resetGuidedRoute}
+                            style={{ fontSize: 13, lineHeight: 1.1, padding: "8px 10px" }}
+                          >
+                            Reset Route
+                          </button>
+                        </div>
+                        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                          <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Auto Progress</label>
+                          <button
+                            type="button"
+                            className={toolState.guidedAutoAdvance ? "secondary" : "ghost"}
+                            onClick={() => updateToolState((prev) => ({ ...prev, guidedAutoAdvance: !prev.guidedAutoAdvance }))}
+                          >
+                            {toolState.guidedAutoAdvance ? "On" : "Off"}
+                          </button>
+                          <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Weight</label>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            placeholder="kg"
+                            value={toolState.guidedCurrentWeight === null ? "" : toolState.guidedCurrentWeight}
+                            onChange={(e) => {
+                              const raw = e.target.value.replace(/[^\d]/g, "");
+                              setGuidedWeight(raw ? Number(raw) : null);
+                            }}
+                            style={{ maxWidth: 120 }}
+                          />
+                        </div>
                       </div>
                       {guidedOption.summary ? <div style={{ fontSize: 13, color: "var(--text-muted)" }}>{guidedOption.summary}</div> : null}
                       {guidedOption.disclaimer ? <div style={{ fontSize: 12, color: "var(--text-muted)" }}>{guidedOption.disclaimer}</div> : null}
-                      {!toolState.guidedAutoAdvance ? <div style={{ fontSize: 12, color: "var(--warning)" }}>Auto Complete Steps is OFF.</div> : null}
+                      {!toolState.guidedAutoAdvance ? <div style={{ fontSize: 12, color: "var(--warning)" }}>Auto Progress is OFF.</div> : null}
                       {guidedStepData ? (
                         <div style={{ border: "1px solid var(--border)", borderRadius: 10, padding: 10, background: "var(--surface)" }}>
                           <div style={{ fontWeight: 700 }}>{guidedStepData.step.action}</div>
@@ -1443,8 +1455,8 @@ export default function FishingToolView({
                               You are on {set.lakes.find((entry) => entry.lakeId === guidedStepData.wrongLakeId)?.label ?? guidedStepData.wrongLakeId}
                               . Switch to{" "}
                               {set.lakes.find((entry) => entry.lakeId === guidedStepData.wrongLakeTargetId)?.label ??
-                                guidedStepData.wrongLakeTargetId}{" "}
-                              to follow this step.
+                                guidedStepData.wrongLakeTargetId}
+                              .
                             </div>
                           ) : guidedStepData.offPathWarning ? (
                             <div style={{ color: "var(--danger)", fontSize: 12, marginTop: 6 }}>{guidedStepData.offPathWarning}</div>
@@ -1466,15 +1478,13 @@ export default function FishingToolView({
                             >
                               Previous Step
                             </button>
-                            <button type="button" className="secondary" onClick={() => setActiveLake(guidedStepData.step.lakeId)}>
-                              Go to {set.lakes.find((entry) => entry.lakeId === guidedStepData.step.lakeId)?.label ?? guidedStepData.step.lakeId}
-                            </button>
                             <button
                               type="button"
                               className="secondary"
                               onClick={() => {
                                 const nextIndex = Math.min(guidedStepData.steps.length - 1, guidedStepData.stepIndex + 1);
                                 setGuidedStepIndex(nextIndex);
+                                updateToolState((prev) => ({ ...prev, guidedAutoAdvance: false }));
                                 const nextStep = guidedStepData.steps[nextIndex];
                                 if (nextStep && nextStep.lakeId && nextStep.lakeId !== lake.lakeId) {
                                   setActiveLake(nextStep.lakeId);
@@ -1483,9 +1493,8 @@ export default function FishingToolView({
                             >
                               {guidedStepData.shouldSkip ? "Skip Step" : "Next Step"}
                             </button>
-                            <div style={{ marginLeft: "auto" }} />
-                            <button type="button" className="ghost" onClick={resetGuidedRoute}>
-                              Reset Route
+                            <button type="button" className="secondary" onClick={() => setActiveLake(guidedStepData.step.lakeId)}>
+                              Go to {set.lakes.find((entry) => entry.lakeId === guidedStepData.step.lakeId)?.label ?? guidedStepData.step.lakeId}
                             </button>
                           </div>
                         </div>
@@ -1503,7 +1512,7 @@ export default function FishingToolView({
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-muted)" }}>Select a Lake</div>
                 <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-                  <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Set</label>
+                  {/* Set label removed */}
                   <DropdownButton
                     valueLabel={set.label}
                     options={data.sets.map((option) => ({ value: option.setId, label: option.label }))}
@@ -1641,11 +1650,7 @@ export default function FishingToolView({
                       }}
                     >
                       {fish?.image ? (
-                        <img
-                          src={resolvePath(fish.image)}
-                          alt={fish?.name ?? fishType.label}
-                          className="fishingFishImage"
-                        />
+                        <img src={resolvePath(fish.image)} alt={fish?.name ?? fishType.label} className="fishingFishImage" />
                       ) : (
                         <div style={{ fontSize: 18, marginBottom: 6 }}>{typeLabel}</div>
                       )}
@@ -1783,9 +1788,7 @@ export default function FishingToolView({
                     <div className="lakeInfoPopover lakeInfoGridPopover">
                       {set.lakes.map((entry) => {
                         const entryState = toolState.lakeStates[entry.lakeId];
-                        const remaining = entryState
-                          ? Object.values(entryState.remainingByTypeId).reduce((sum, count) => sum + count, 0)
-                          : 0;
+                        const remaining = entryState ? Object.values(entryState.remainingByTypeId).reduce((sum, count) => sum + count, 0) : 0;
                         const legendaryLeft = entryState?.remainingByTypeId[legendaryTypeId] ?? 0;
                         const odds = remaining > 0 ? (legendaryLeft / remaining) * 100 : 0;
                         return (

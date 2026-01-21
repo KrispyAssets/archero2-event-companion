@@ -10,12 +10,14 @@ export default function DropdownButton({
   options,
   onSelect,
   minWidth,
+  fontSize,
   align = "left",
 }: {
   valueLabel: string;
   options: DropdownOption[];
   onSelect: (value: string) => void;
   minWidth?: number;
+  fontSize?: number;
   align?: "left" | "right";
 }) {
   const [open, setOpen] = useState(false);
@@ -41,6 +43,7 @@ export default function DropdownButton({
         onClick={() => setOpen((prev) => !prev)}
         style={{
           minWidth,
+          fontSize: fontSize ? `${fontSize}px` : undefined,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
@@ -61,7 +64,7 @@ export default function DropdownButton({
         >
           {valueLabel}
         </span>
-        <span aria-hidden="true" style={{ fontSize: 12, lineHeight: 1 }}>
+        <span aria-hidden="true" style={{ fontSize: 11, lineHeight: 1 }}>
           {open ? "▲" : "▼"}
         </span>
       </button>
@@ -92,7 +95,7 @@ export default function DropdownButton({
                 className="ghost"
                 style={
                   isSelected
-                    ? { fontWeight: 700, color: "var(--accent)", background: "var(--highlight)" }
+                    ? { fontWeight: 700, color: "var(--accent)", background: "var(--highlight)", fontSize: fontSize ? `${fontSize}px` : undefined }
                     : undefined
                 }
                 onClick={() => {
@@ -103,6 +106,7 @@ export default function DropdownButton({
                 <span
                   style={{
                     display: "block",
+                    fontSize: fontSize ? `${fontSize}px` : undefined,
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
