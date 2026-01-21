@@ -314,6 +314,15 @@ export default function EventDetail() {
     );
   }
 
+  if (eventState.status === "ready" && eventState.event.status === "coming_soon") {
+    return (
+      <AppShell>
+        <h1>{eventState.event.title}</h1>
+        <p style={{ color: "var(--text-muted)" }}>Coming Soon</p>
+      </AppShell>
+    );
+  }
+
   return <EventDetailContent event={eventState.event} />;
 }
 

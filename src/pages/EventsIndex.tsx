@@ -20,13 +20,18 @@ export function EventCatalogList() {
       {catalog.status === "ready" && (
         <>
           <div style={{ display: "grid", gap: 12 }}>
-            {catalog.events.map((ev) => (
-              <Link
-                key={ev.eventId}
-                to={`/event/${encodeURIComponent(ev.eventId)}`}
-                style={{ color: "inherit", textDecoration: "none" }}
-              >
-                <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12, background: "var(--surface)" }}>
+            {catalog.events.map((ev) => {
+              const isComingSoon = ev.status === "coming_soon";
+              const card = (
+                <div
+                  style={{
+                    border: "1px solid var(--border)",
+                    borderRadius: 12,
+                    padding: 12,
+                    background: "var(--surface)",
+                    opacity: isComingSoon ? 0.6 : 1,
+                  }}
+                >
                   <div style={{ fontWeight: 700 }}>{ev.title}</div>
                   {ev.subtitle ? <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 4 }}>{ev.subtitle}</div> : null}
                   {ev.taskCosts && ev.taskCosts.length ? (
@@ -54,8 +59,22 @@ export function EventCatalogList() {
                     </div>
                   ) : null}
                 </div>
-              </Link>
-            ))}
+              );
+
+              if (isComingSoon) {
+                return <div key={ev.eventId}>{card}</div>;
+              }
+
+              return (
+                <Link
+                  key={ev.eventId}
+                  to={`/event/${encodeURIComponent(ev.eventId)}`}
+                  style={{ color: "inherit", textDecoration: "none" }}
+                >
+                  {card}
+                </Link>
+              );
+            })}
           </div>
         </>
       )}

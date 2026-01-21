@@ -275,6 +275,7 @@ function parseEventDocument(doc: Document, relPath?: string): EventCatalogFull {
     title: getAttr(eventEl, "title"),
     subtitle: eventEl.getAttribute("subtitle") ?? undefined,
     lastVerifiedDate: eventEl.getAttribute("last_verified_date") ?? undefined,
+    status: eventEl.getAttribute("status") ?? undefined,
     guidedRoutePath: guidedRouteRefEl ? getAttr(guidedRouteRefEl, "path") : undefined,
     sections: {
       taskCount: tasks.length,
@@ -350,6 +351,7 @@ export async function loadEventSummaries(eventPaths: string[]): Promise<EventCat
       title: getAttr(eventEl, "title"),
       subtitle: eventEl.getAttribute("subtitle") ?? undefined,
       lastVerifiedDate: eventEl.getAttribute("last_verified_date") ?? undefined,
+      status: eventEl.getAttribute("status") ?? undefined,
       sections: { taskCount, guideSectionCount, dataSectionCount, faqCount, toolCount },
       taskCosts,
     });

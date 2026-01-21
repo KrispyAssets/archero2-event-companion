@@ -115,6 +115,7 @@ export type EventCatalogItemFull = {
   title: string;
   subtitle?: string;
   lastVerifiedDate?: string;
+  status?: "coming_soon";
   sections: EventSectionSummary;
   taskCosts?: TaskCostItem[];
 };
