@@ -254,7 +254,7 @@ export default function FishingToolView({
   const [taskTick, setTaskTick] = useState(0);
   const [resetMenuOpen, setResetMenuOpen] = useState(false);
   const [showBreakOdds, setShowBreakOdds] = useState(false);
-  const [openLakeInfoId, setOpenLakeInfoId] = useState<string | null>(null);
+  const [openLakeInfoId, setOpenLakeInfoId] = useState<"pool" | "totals" | null>(null);
   const resetMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -1601,19 +1601,8 @@ export default function FishingToolView({
                     >
                       <div className="lakeTitleRow">
                         <div className="lakeTitle" style={{ fontWeight: 700 }}>
-                        {entry.label}
+                          {entry.label}
                         </div>
-                        <button
-                          type="button"
-                          className="lakeInfoButton"
-                          aria-label={`Show ${entry.label} details`}
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            setOpenLakeInfoId((prev) => (prev === entry.lakeId ? null : entry.lakeId));
-                          }}
-                        >
-                          ⓘ
-                        </button>
                       </div>
                       <div className="lakeMeta" style={{ color: "var(--text-muted)" }}>
                         {remaining} fish
@@ -1621,14 +1610,6 @@ export default function FishingToolView({
                       <div className="lakeMeta" style={{ color: "var(--text-muted)" }}>
                         {odds.toFixed(1)}%
                       </div>
-                      {openLakeInfoId === entry.lakeId ? (
-                        <div className="lakeInfoPopover">
-                          <div>Fish Remaining: {remaining}</div>
-                          <div>Legendary Chance: {odds.toFixed(1)}%</div>
-                          <div>Pools Cleared: {entryState?.poolsCompleted ?? 0}</div>
-                          <div>Legendaries: {entryState?.legendaryCaught ?? 0}</div>
-                        </div>
-                      ) : null}
                     </div>
                   );
                 })}
@@ -1752,7 +1733,25 @@ export default function FishingToolView({
 
             <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
               <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12, background: "var(--surface-2)" }}>
-                <div style={{ fontWeight: 700, marginBottom: 6 }}>Pool</div>
+                <div className="lakeInfoWrap" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                  <div style={{ fontWeight: 700 }}>Pool</div>
+                  <button
+                    type="button"
+                    className="lakeInfoButton"
+                    aria-label="Show pool details"
+                    onClick={() => setOpenLakeInfoId((prev) => (prev === "pool" ? null : "pool"))}
+                  >
+                    ⓘ
+                  </button>
+                  {openLakeInfoId === "pool" ? (
+                    <div className="lakeInfoPopover">
+                      <div style={{ fontWeight: 700 }}>{lake.label}</div>
+                      <div>Fish Caught: {lakeState.fishCaught}</div>
+                      <div>Pools Cleared: {lakeState.poolsCompleted}</div>
+                      <div>Legendaries: {lakeState.legendaryCaught}</div>
+                    </div>
+                  ) : null}
+                </div>
                 <div style={{ display: "grid", gap: 6, fontSize: 14 }}>
                   <div>Fish Remaining: {totalFishRemaining}</div>
                   <div>Chance Next Fish is Legendary: {legendaryChance.toFixed(1)}%</div>
@@ -1765,7 +1764,42 @@ export default function FishingToolView({
                 </div>
               </div>
               <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 12, background: "var(--surface-2)" }}>
-                <div style={{ fontWeight: 700, marginBottom: 6 }}>Totals</div>
+                <div className="lakeInfoWrap" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                  <div style={{ fontWeight: 700 }}>Totals</div>
+                  <button
+                    type="button"
+                    className="lakeInfoButton lakeInfoButtonGrid"
+                    aria-label="Show lake totals"
+                    onClick={() => setOpenLakeInfoId((prev) => (prev === "totals" ? null : "totals"))}
+                  >
+                    <span className="lakeInfoGridIcon" aria-hidden="true">
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                    </span>
+                  </button>
+                  {openLakeInfoId === "totals" ? (
+                    <div className="lakeInfoPopover lakeInfoGridPopover">
+                      {set.lakes.map((entry) => {
+                        const entryState = toolState.lakeStates[entry.lakeId];
+                        const remaining = entryState
+                          ? Object.values(entryState.remainingByTypeId).reduce((sum, count) => sum + count, 0)
+                          : 0;
+                        const legendaryLeft = entryState?.remainingByTypeId[legendaryTypeId] ?? 0;
+                        const odds = remaining > 0 ? (legendaryLeft / remaining) * 100 : 0;
+                        return (
+                          <div key={entry.lakeId} className="lakeInfoGridCell">
+                            <div style={{ fontWeight: 700 }}>{entry.label}</div>
+                            <div>Fish Caught: {entryState?.fishCaught ?? 0}</div>
+                            <div>Pools Cleared: {entryState?.poolsCompleted ?? 0}</div>
+                            <div>Legendaries: {entryState?.legendaryCaught ?? 0}</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : null}
+                </div>
                 <div style={{ display: "grid", gap: 6, fontSize: 14 }}>
                   <div>Total Fish Caught: {totalFishCaught}</div>
                   <div>Total Legendary Fish Caught: {totalLegendaryCaught}</div>
