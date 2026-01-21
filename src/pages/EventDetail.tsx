@@ -431,7 +431,7 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
   const lastHandledAnchorRef = useRef<string>("");
 
   const urlTab = useMemo(() => new URLSearchParams(location.search).get("tab") ?? "", [location.search]);
-  const isFreshEntry = navigationType === "PUSH" && !urlTab && !window.location.hash;
+  const isFreshEntry = navigationType === "PUSH" && !urlTab && !location.hash;
 
   const toolState = useToolsCatalog(event.toolRefs.map((ref) => ref.toolId));
   const guideImages = useMemo(() => collectGuideImages(event.guideSections), [event]);
@@ -613,7 +613,7 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
     if (nextTab) {
       setActiveTabId(nextTab);
     }
-  }, [activeAnchor]);
+  }, [activeAnchor, tasksOpen]);
 
   useEffect(() => {
     setLastActiveTabByEvent((prev) => {
@@ -630,6 +630,19 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
       return;
     }
     if (!activeAnchor) return;
+    if (activeAnchor.startsWith("task-")) {
+      if (!tasksOpen) {
+        openTasksSheet();
+        return;
+      }
+      if (lastHandledAnchorRef.current === activeAnchor) return;
+      lastHandledAnchorRef.current = activeAnchor;
+      const taskEl = document.getElementById(activeAnchor);
+      if (taskEl) {
+        taskEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      return;
+    }
     if (lastHandledAnchorRef.current === activeAnchor) return;
     lastHandledAnchorRef.current = activeAnchor;
     const anchorEl = document.getElementById(activeAnchor);
@@ -671,7 +684,7 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
         window.cancelAnimationFrame(scrollRetryRef.current);
       }
     };
-  }, [activeAnchor]);
+  }, [activeAnchor, tasksOpen]);
 
   function handleGuideImageClick(e: React.MouseEvent) {
     const target = e.target as HTMLElement | null;
@@ -717,6 +730,9 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
     setTasksSheetDragging(false);
     tasksSheetStartRef.current = null;
     tasksSheetStartOffsetRef.current = 0;
+    if (activeAnchor.startsWith("task-")) {
+      setActiveAnchor("");
+    }
     if (tasksSheetCloseTimerRef.current !== null) {
       window.clearTimeout(tasksSheetCloseTimerRef.current);
     }
@@ -740,6 +756,13 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
       pendingTabRef.current = null;
     }
 
+    if (nextTab) {
+      if (activeTabId !== nextTab) {
+        setActiveTabId(nextTab);
+      }
+      return;
+    }
+
     if (urlTab) {
       if (activeTabId !== urlTab) {
         setActiveTabId(urlTab);
@@ -759,10 +782,14 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
         setActiveTabId(next);
       }
     }
+  }, [activeAnchor, activeTabId, event.eventId, isFreshEntry, lastActiveTabByEvent, urlTab]);
+
+  useEffect(() => {
+    if (activeTabId === "faq") return;
     if (faqQuery) {
       setFaqQuery("");
     }
-  }, [activeAnchor, activeTabId, event.eventId, faqQuery, isFreshEntry, lastActiveTabByEvent, urlTab]);
+  }, [activeTabId, faqQuery]);
 
   useEffect(() => {
     return () => {

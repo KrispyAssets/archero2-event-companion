@@ -239,6 +239,11 @@
         <p>Its tickets per kg are lower than earlier lakes, but the average weight per lure is much higher, so you earn more silver tickets per lure overall.</p>
       </answer>
     </item>
+    <item faq_id="faq_line_breaks_pool" question="Does line breaking remove fish from the pool?">
+      <answer>
+        <p>No. Line breaking does not remove fish from the pool, so your pool counts stay the same while snapping lines.</p>
+      </answer>
+    </item>
   </faq>
   <tools>
     <tool_ref tool_id="archero2.tool.fishing_companion.v1" />

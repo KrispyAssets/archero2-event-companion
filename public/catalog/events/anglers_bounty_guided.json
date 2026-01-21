@@ -58,7 +58,7 @@
             "warnMessage": "You are over 25 snapped lines. Consider catching more fish to up your odds."
           },
           "action": "Break lines to catch the 2nd Legendary fish.",
-          "notes": "Ideally don't use more than 25 line breaks total; you can catch a few more fish to up your odds if need be."
+          "notes": "Ideally don't use more than 25 line breaks total; you can catch a few more fish to up your odds if need be. Line breaking does not remove fish from the pool."
         },
         {
           "stepId": "opt1_l1_unlock",
@@ -102,7 +102,7 @@
             "warnMessage": "You are over 50 snapped lines. Stop snapping lines and fish until the 3rd Legendary fish has been caught."
           },
           "action": "Break lines to catch the 3rd Legendary fish.",
-          "notes": "You can catch a few more fish to up your odds if need be."
+          "notes": "You can catch a few more fish to up your odds if need be. Line breaking does not remove fish from the pool."
         },
         {
           "stepId": "opt1_l2_unlock",
@@ -153,7 +153,7 @@
             "warnMessage": "You are over 75 snapped lines. Consider catching more fish to up your odds."
           },
           "action": "Break lines to catch the 3rd Legendary fish.",
-          "notes": "Ideally don't use more than 75 line breaks total; you can catch a few more fish to up your odds if need be."
+          "notes": "Ideally don't use more than 75 line breaks total; you can catch a few more fish to up your odds if need be. Line breaking does not remove fish from the pool."
         },
         {
           "stepId": "opt1_l3_unlock",
@@ -243,7 +243,7 @@
             "warnIfBrokenLinesOver": 75
           },
           "action": "Change to 1x multiplier and snap all lines except for the 3rd Legendary fish.",
-          "notes": "If you’re over 75 snapped lines and you haven’t caught the legendary, switch to option 1 if you have the gems. You most likely do not have the snaps left to finish option 2."
+          "notes": "If you’re over 75 snapped lines and you haven’t caught the legendary, switch to option 1 if you have the gems. You most likely do not have the snaps left to finish option 2. Line breaking does not remove fish from the pool."
         },
         {
           "stepId": "opt2_l1_unlock",
@@ -287,7 +287,7 @@
             "warnMessage": "You are over 50 snapped lines. Stop snapping lines and fish until the 3rd Legendary fish has been caught."
           },
           "action": "Break lines to catch the 3rd Legendary fish.",
-          "notes": "You can catch a few more fish to up your odds if need be."
+          "notes": "You can catch a few more fish to up your odds if need be. Line breaking does not remove fish from the pool."
         },
         {
           "stepId": "opt2_l2_unlock",
@@ -327,7 +327,8 @@
             "count": 4,
             "scope": "lake"
           },
-          "action": "Change to 1x multiplier and snap all lines except for the 4th Legendary fish."
+          "action": "Change to 1x multiplier and snap all lines except for the 4th Legendary fish.",
+          "notes": "Line breaking does not remove fish from the pool."
         },
         {
           "stepId": "opt2_l3_unlock",
@@ -364,7 +365,7 @@
             "warnMessage": "You are out of line breaks! Use your remaining lures then buy more if needed."
           },
           "action": "Line break until you catch the last 2 Legendary fish.",
-          "notes": "If you run out of line breaks, you will likely have to spend more gems to continue trying."
+          "notes": "If you run out of line breaks, you will likely have to spend more gems to continue trying. Line breaking does not remove fish from the pool."
         },
         {
           "stepId": "opt2_l4_finish",
