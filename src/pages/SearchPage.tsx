@@ -196,6 +196,30 @@ function getActionLabel(kind: SearchItem["kind"]): string {
   }
 }
 
+function getTabForKind(kind: SearchItem["kind"]): string | null {
+  switch (kind) {
+    case "guide":
+      return "guide";
+    case "faq":
+      return "faq";
+    case "task":
+      return "tasks";
+    default:
+      return null;
+  }
+}
+
+function buildSearchResultUrl(item: SearchItem): string {
+  const tab = getTabForKind(item.kind);
+  const params = new URLSearchParams();
+  if (tab) {
+    params.set("tab", tab);
+  }
+  const search = params.toString();
+  const hash = item.anchor ? `#${encodeURIComponent(item.anchor)}` : "";
+  return `/event/${encodeURIComponent(item.eventId)}${search ? `?${search}` : ""}${hash}`;
+}
+
 export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [state, setState] = useState<SearchState>({ status: "loading" });
@@ -337,9 +361,7 @@ export default function SearchPage() {
                       </div>
                     ) : null}
                 <div style={{ marginTop: 8 }}>
-                  <Link to={`/event/${encodeURIComponent(item.eventId)}${item.anchor ? `#${encodeURIComponent(item.anchor)}` : ""}`}>
-                    {getActionLabel(item.kind)}
-                  </Link>
+                  <Link to={buildSearchResultUrl(item)}>{getActionLabel(item.kind)}</Link>
                 </div>
               </div>
             ))}
