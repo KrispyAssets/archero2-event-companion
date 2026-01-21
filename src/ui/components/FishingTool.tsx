@@ -1316,6 +1316,7 @@ export default function FishingToolView({
         ...prev,
         guidedStepIndex: 0,
         guidedCurrentWeight: null,
+        guidedAutoAdvance: true,
       };
     });
   }
@@ -1370,7 +1371,10 @@ export default function FishingToolView({
         brokenLines: 0,
         history: nextHistory.slice(-100),
         guidedCurrentWeight: null,
+        guidedStepIndex: 0,
+        guidedAutoAdvance: true,
         resetHistoryEpoch: resetEpoch,
+        activeLakeId: set.lakes[0]?.lakeId ?? prev.activeLakeId,
       };
     });
   }
@@ -1631,7 +1635,7 @@ export default function FishingToolView({
                           zIndex: 5,
                         }}
                       >
-                        {set.lakes.map((entry, index) => (
+                        {set.lakes.map((entry) => (
                           <button
                             key={entry.lakeId}
                             type="button"
@@ -1641,7 +1645,7 @@ export default function FishingToolView({
                               closeResetMenu();
                             }}
                           >
-                            Reset Lake {index + 1}
+                            Reset {entry.label}
                           </button>
                         ))}
                         <button
@@ -1886,9 +1890,6 @@ export default function FishingToolView({
                     <div className="lakeInfoPopover lakeInfoGridPopover">
                       {set.lakes.map((entry) => {
                         const entryState = toolState.lakeStates[entry.lakeId];
-                        const remaining = entryState ? Object.values(entryState.remainingByTypeId).reduce((sum, count) => sum + count, 0) : 0;
-                        const legendaryLeft = entryState?.remainingByTypeId[legendaryTypeId] ?? 0;
-                        const odds = remaining > 0 ? (legendaryLeft / remaining) * 100 : 0;
                         return (
                           <div key={entry.lakeId} className="lakeInfoGridCell">
                             <div style={{ fontWeight: 700 }}>{entry.label}</div>
