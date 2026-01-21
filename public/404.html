@@ -2,9 +2,24 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="refresh" content="0; url=./" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Redirecting…</title>
   </head>
-  <body></body>
+  <body>
+    <script>
+      (function () {
+        var base = "/archero2-companion";
+        var l = window.location;
+        var path = l.pathname.replace(base, "");
+        var search = l.search.slice(1).replace(/&/g, "~and~");
+        var newUrl =
+          base +
+          "/?/" +
+          path.replace(/^\/+/, "") +
+          (search ? "&" + search : "") +
+          l.hash;
+        l.replace(newUrl);
+      })();
+    </script>
+  </body>
 </html>
