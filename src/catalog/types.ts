@@ -116,6 +116,7 @@ export type EventCatalogItemFull = {
   subtitle?: string;
   lastVerifiedDate?: string;
   sections: EventSectionSummary;
+  taskCosts?: TaskCostItem[];
 };
 
 /** Full (used for Event Detail) */
@@ -126,4 +127,10 @@ export type EventCatalogFull = EventCatalogItemFull & {
   faqItems: FaqItem[];
   toolRefs: ToolRef[];
   guidedRoutePath?: string;
+};
+
+export type TaskCostItem = {
+  key: string;
+  label: string;
+  amount: number;
 };

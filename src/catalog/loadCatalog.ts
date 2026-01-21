@@ -13,6 +13,7 @@ import type {
   ToolPriorityList,
   ToolRef,
   ToolStaticText,
+  TaskCostItem,
 } from "./types";
 import { parseXmlString, getAttr, getAttrInt } from "./parseXml";
 
@@ -184,6 +185,59 @@ function parseToolDefinition(doc: Document): ToolDefinition | null {
   };
 }
 
+const COST_LABELS: Record<string, string> = {
+  gems: "Gems",
+  keys: "Keys",
+  shovels: "Shovels",
+};
+const COST_ORDER = ["gems", "keys", "shovels"];
+const COST_ACTIONS = new Set(["use", "buy", "spend"]);
+
+function formatLabel(value: string): string {
+  return value
+    .split("_")
+    .filter((part) => part.length > 0)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function computeTaskCosts(tasks: TaskDefinition[]): TaskCostItem[] {
+  const totals = new Map<string, number>();
+  for (const task of tasks) {
+    if (!COST_ACTIONS.has(task.requirementAction)) continue;
+    if (task.requirementScope !== "total") continue;
+    const key = task.requirementObject;
+    if (!COST_LABELS[key]) continue;
+    const current = totals.get(key) ?? 0;
+    if (task.requirementTargetValue > current) {
+      totals.set(key, task.requirementTargetValue);
+    }
+  }
+
+  const orderedKeys = [...COST_ORDER.filter((key) => totals.has(key))];
+  const extraKeys = [...totals.keys()].filter((key) => !COST_ORDER.includes(key)).sort();
+  return [...orderedKeys, ...extraKeys].map((key) => ({
+    key,
+    label: COST_LABELS[key] ?? formatLabel(key),
+    amount: totals.get(key) ?? 0,
+  }));
+}
+
+function parseTaskDefinition(el: Element): TaskDefinition {
+  return {
+    taskId: getAttr(el, "task_id"),
+    displayOrder: getAttrInt(el, "display_order"),
+
+    requirementAction: getAttr(el, "requirement_action"),
+    requirementObject: getAttr(el, "requirement_object"),
+    requirementScope: getAttr(el, "requirement_scope"),
+    requirementTargetValue: getAttrInt(el, "requirement_target_value"),
+
+    rewardType: getAttr(el, "reward_type"),
+    rewardAmount: getAttrInt(el, "reward_amount"),
+  };
+}
+
 function parseEventDocument(doc: Document, relPath?: string): EventCatalogFull {
   const eventEl = doc.getElementsByTagName("event")[0];
   if (!eventEl) {
@@ -198,20 +252,8 @@ function parseEventDocument(doc: Document, relPath?: string): EventCatalogFull {
   const guidedRouteRefEl = eventEl.getElementsByTagName("guided_route_ref")[0];
 
   const taskNodes = tasksEl ? Array.from(tasksEl.getElementsByTagName("task")) : [];
-  const tasks: TaskDefinition[] = taskNodes
-    .map((t) => ({
-      taskId: getAttr(t, "task_id"),
-      displayOrder: getAttrInt(t, "display_order"),
-
-      requirementAction: getAttr(t, "requirement_action"),
-      requirementObject: getAttr(t, "requirement_object"),
-      requirementScope: getAttr(t, "requirement_scope"),
-      requirementTargetValue: getAttrInt(t, "requirement_target_value"),
-
-      rewardType: getAttr(t, "reward_type"),
-      rewardAmount: getAttrInt(t, "reward_amount"),
-    }))
-    .sort((a, b) => a.displayOrder - b.displayOrder);
+  const tasks: TaskDefinition[] = taskNodes.map((t) => parseTaskDefinition(t)).sort((a, b) => a.displayOrder - b.displayOrder);
+  const taskCosts = computeTaskCosts(tasks);
 
   const guideSections = guideEl ? getDirectChildElements(guideEl, "section").map((section) => parseGuideSection(section)) : [];
   const dataSections: DataSection[] = dataEl ? getDirectChildElements(dataEl, "section").map((section) => parseGuideSection(section)) : [];
@@ -241,6 +283,7 @@ function parseEventDocument(doc: Document, relPath?: string): EventCatalogFull {
       faqCount,
       toolCount,
     },
+    taskCosts,
     tasks,
     guideSections,
     dataSections,
@@ -291,7 +334,11 @@ export async function loadEventSummaries(eventPaths: string[]): Promise<EventCat
     const faqEl = eventEl.getElementsByTagName("faq")[0];
     const toolsEl = eventEl.getElementsByTagName("tools")[0];
 
-    const taskCount = tasksEl ? tasksEl.getElementsByTagName("task").length : 0;
+    const taskNodes = tasksEl ? Array.from(tasksEl.getElementsByTagName("task")) : [];
+    const taskCount = taskNodes.length;
+    const taskCosts = taskNodes.length
+      ? computeTaskCosts(taskNodes.map((node) => parseTaskDefinition(node)))
+      : [];
     const guideSectionCount = guideEl ? getDirectChildElements(guideEl, "section").length : 0;
     const dataSectionCount = dataEl ? getDirectChildElements(dataEl, "section").length : 0;
     const faqCount = faqEl ? faqEl.getElementsByTagName("item").length : 0;
@@ -304,6 +351,7 @@ export async function loadEventSummaries(eventPaths: string[]): Promise<EventCat
       subtitle: eventEl.getAttribute("subtitle") ?? undefined,
       lastVerifiedDate: eventEl.getAttribute("last_verified_date") ?? undefined,
       sections: { taskCount, guideSectionCount, dataSectionCount, faqCount, toolCount },
+      taskCosts,
     });
   }
 

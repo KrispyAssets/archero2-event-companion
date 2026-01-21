@@ -1118,7 +1118,43 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
   return (
     <AppShell>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-        <h1>{ev.title}</h1>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <h1>{ev.title}</h1>
+          {ev.taskCosts && ev.taskCosts.length ? (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {ev.taskCosts.map((cost) => (
+                <span
+                  key={cost.key}
+                  style={{
+                    border: "1px solid var(--border)",
+                    borderRadius: 999,
+                    padding: "2px 8px",
+                    fontSize: 12,
+                    background: "var(--surface-2)",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                  }}
+                >
+                  <img
+                    src={`${import.meta.env.BASE_URL}catalog/shared/misc/${
+                      cost.key === "gems"
+                        ? "36px-Gem.png"
+                        : cost.key === "keys"
+                          ? "24px-Chromatic_Chest_Key.png"
+                          : "24px-Shovel.png"
+                    }`}
+                    alt=""
+                    width={16}
+                    height={16}
+                    style={{ display: "block" }}
+                  />
+                  {cost.amount.toLocaleString()}
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </div>
         <button type="button" className="secondary" onClick={openTasksSheet}>
           Tasks
         </button>
