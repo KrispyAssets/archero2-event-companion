@@ -8,7 +8,9 @@ export function EventCatalogList() {
   const iconBase = `${import.meta.env.BASE_URL}catalog/shared/misc/`;
   const costIcons: Record<string, string> = {
     gems: `${iconBase}36px-Gem.png`,
-    keys: `${iconBase}24px-Chromatic_Chest_Key.png`,
+    chromatic_keys: `${iconBase}24px-Chromatic_Chest_Key.png`,
+    obsidian_keys: `${iconBase}24px-Obsidian_Chest_Key.png`,
+    wish_tokens: `${iconBase}24px-Wish_Token.png`,
     shovels: `${iconBase}24px-Shovel.png`,
   };
 

@@ -1149,9 +1149,13 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
                     src={`${import.meta.env.BASE_URL}catalog/shared/misc/${
                       cost.key === "gems"
                         ? "36px-Gem.png"
-                        : cost.key === "keys"
+                        : cost.key === "chromatic_keys"
                           ? "24px-Chromatic_Chest_Key.png"
-                          : "24px-Shovel.png"
+                          : cost.key === "obsidian_keys"
+                            ? "24px-Obsidian_Chest_Key.png"
+                            : cost.key === "wish_tokens"
+                              ? "24px-Wish_Token.png"
+                              : "24px-Shovel.png"
                     }`}
                     alt=""
                     width={16}

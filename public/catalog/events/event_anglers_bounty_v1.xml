@@ -59,11 +59,11 @@
     <task task_id="fight_arena_total_tier_3" display_order="820" requirement_action="fight" requirement_object="arena" requirement_scope="total" requirement_target_value="15" reward_type="lures" reward_amount="5" />
     <task task_id="fight_arena_total_tier_4" display_order="830" requirement_action="fight" requirement_object="arena" requirement_scope="total" requirement_target_value="20" reward_type="lures" reward_amount="5" />
 
-    <task task_id="use_keys_total_tier_1" display_order="900" requirement_action="use" requirement_object="keys" requirement_scope="total" requirement_target_value="10" reward_type="lures" reward_amount="5" />
-    <task task_id="use_keys_total_tier_2" display_order="910" requirement_action="use" requirement_object="keys" requirement_scope="total" requirement_target_value="20" reward_type="lures" reward_amount="5" />
-    <task task_id="use_keys_total_tier_3" display_order="920" requirement_action="use" requirement_object="keys" requirement_scope="total" requirement_target_value="30" reward_type="lures" reward_amount="5" />
-    <task task_id="use_keys_total_tier_4" display_order="930" requirement_action="use" requirement_object="keys" requirement_scope="total" requirement_target_value="40" reward_type="lures" reward_amount="5" />
-    <task task_id="use_keys_total_tier_5" display_order="940" requirement_action="use" requirement_object="keys" requirement_scope="total" requirement_target_value="50" reward_type="lures" reward_amount="5" />
+    <task task_id="use_chromatic_keys_total_tier_1" display_order="900" requirement_action="use" requirement_object="chromatic_keys" requirement_scope="total" requirement_target_value="10" reward_type="lures" reward_amount="5" />
+    <task task_id="use_chromatic_keys_total_tier_2" display_order="910" requirement_action="use" requirement_object="chromatic_keys" requirement_scope="total" requirement_target_value="20" reward_type="lures" reward_amount="5" />
+    <task task_id="use_chromatic_keys_total_tier_3" display_order="920" requirement_action="use" requirement_object="chromatic_keys" requirement_scope="total" requirement_target_value="30" reward_type="lures" reward_amount="5" />
+    <task task_id="use_chromatic_keys_total_tier_4" display_order="930" requirement_action="use" requirement_object="chromatic_keys" requirement_scope="total" requirement_target_value="40" reward_type="lures" reward_amount="5" />
+    <task task_id="use_chromatic_keys_total_tier_5" display_order="940" requirement_action="use" requirement_object="chromatic_keys" requirement_scope="total" requirement_target_value="50" reward_type="lures" reward_amount="5" />
 
     <task task_id="use_gems_total_tier_1" display_order="1000" requirement_action="use" requirement_object="gems" requirement_scope="total" requirement_target_value="200" reward_type="lures" reward_amount="5" />
     <task task_id="use_gems_total_tier_2" display_order="1010" requirement_action="use" requirement_object="gems" requirement_scope="total" requirement_target_value="500" reward_type="lures" reward_amount="5" />

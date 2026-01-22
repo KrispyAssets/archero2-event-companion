@@ -8,16 +8,19 @@ export type TaskGroup = {
 };
 
 const GROUP_LABELS: Record<string, string> = {
-  "buy__silver_tickets__total": "Silver Tickets",
-  "buy__pack__total": "Pack",
-  "login__days__total": "Daily Login",
+  "buy__silver_tickets__total": "Buy Silver Tickets",
+  "buy__pack__total": "Buy Free Pack",
+  "login__days__total": "Login",
   "fight__gold_cave__total": "Gold Cave",
   "kill__minions__total": "Kill Minions",
   "fight__seal_battle__total": "Seal Battle",
   "kill__bosses__total": "Kill Bosses",
   "claim__afk_rewards__total": "Claim AFK Rewards",
   "fight__arena__total": "Arena",
-  "use__keys__total": "Use Keys",
+  "use__chromatic_keys__total": "Use Chromatic Keys",
+  "use__obsidian_keys__total": "Use Obsidian Keys",
+  "use__wish_tokens__total": "Use Wishes",
+  "use__dice__total": "Roll Dice",
   "use__gems__total": "Use Gems",
   "use__shovels__total": "Use Shovels",
 };

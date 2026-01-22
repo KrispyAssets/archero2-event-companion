@@ -187,10 +187,12 @@ function parseToolDefinition(doc: Document): ToolDefinition | null {
 
 const COST_LABELS: Record<string, string> = {
   gems: "Gems",
-  keys: "Keys",
+  chromatic_keys: "Chromatic Keys",
+  obsidian_keys: "Obsidian Keys",
+  wish_tokens: "Wish Tokens",
   shovels: "Shovels",
 };
-const COST_ORDER = ["gems", "keys", "shovels"];
+const COST_ORDER = ["gems", "chromatic_keys", "obsidian_keys", "wish_tokens", "shovels"];
 const COST_ACTIONS = new Set(["use", "buy", "spend"]);
 
 function formatLabel(value: string): string {
