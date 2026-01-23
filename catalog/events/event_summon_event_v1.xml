@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<event
+  event_id="archero2.event.summon_event.v1"
+  event_version="1"
+  title="Summon Event"
+  subtitle="Event guide and tasks"
+  last_verified_date="2026-01-17"
+  active="true"
+>
+  <task_group_labels>
+    <label group_key="win__trial_battle__total" title="Trial Battle Won" />
+  </task_group_labels>
+  <tasks>
+    <task task_id="win_trial_battle_total_tier_1" display_order="5" requirement_action="win" requirement_object="trial_battle" requirement_scope="total" requirement_target_value="1" reward_type="badges" reward_amount="300" />
+
+    <task task_id="collect_free_fund_total_tier_1" display_order="10" requirement_action="collect" requirement_object="free_fund" requirement_scope="total" requirement_target_value="1" reward_type="tickets" reward_amount="1" />
+    <task task_id="collect_free_fund_total_tier_2" display_order="20" requirement_action="collect" requirement_object="free_fund" requirement_scope="total" requirement_target_value="2" reward_type="tickets" reward_amount="1" />
+    <task task_id="collect_free_fund_total_tier_3" display_order="30" requirement_action="collect" requirement_object="free_fund" requirement_scope="total" requirement_target_value="3" reward_type="tickets" reward_amount="1" />
+    <task task_id="collect_free_fund_total_tier_4" display_order="40" requirement_action="collect" requirement_object="free_fund" requirement_scope="total" requirement_target_value="4" reward_type="tickets" reward_amount="2" />
+    <task task_id="collect_free_fund_total_tier_5" display_order="50" requirement_action="collect" requirement_object="free_fund" requirement_scope="total" requirement_target_value="5" reward_type="tickets" reward_amount="2" />
+    <task task_id="collect_free_fund_total_tier_6" display_order="60" requirement_action="collect" requirement_object="free_fund" requirement_scope="total" requirement_target_value="6" reward_type="tickets" reward_amount="2" />
+    <task task_id="collect_free_fund_total_tier_7" display_order="70" requirement_action="collect" requirement_object="free_fund" requirement_scope="total" requirement_target_value="7" reward_type="tickets" reward_amount="2" />
+
+    <task task_id="buy_free_pack_total_tier_1" display_order="80" requirement_action="buy" requirement_object="free_pack" requirement_scope="total" requirement_target_value="1" reward_type="tickets" reward_amount="1" />
+    <task task_id="buy_free_pack_total_tier_2" display_order="90" requirement_action="buy" requirement_object="free_pack" requirement_scope="total" requirement_target_value="2" reward_type="tickets" reward_amount="1" />
+    <task task_id="buy_free_pack_total_tier_3" display_order="100" requirement_action="buy" requirement_object="free_pack" requirement_scope="total" requirement_target_value="3" reward_type="tickets" reward_amount="1" />
+    <task task_id="buy_free_pack_total_tier_4" display_order="110" requirement_action="buy" requirement_object="free_pack" requirement_scope="total" requirement_target_value="4" reward_type="tickets" reward_amount="1" />
+    <task task_id="buy_free_pack_total_tier_5" display_order="120" requirement_action="buy" requirement_object="free_pack" requirement_scope="total" requirement_target_value="5" reward_type="tickets" reward_amount="1" />
+    <task task_id="buy_free_pack_total_tier_6" display_order="130" requirement_action="buy" requirement_object="free_pack" requirement_scope="total" requirement_target_value="6" reward_type="tickets" reward_amount="1" />
+    <task task_id="buy_free_pack_total_tier_7" display_order="140" requirement_action="buy" requirement_object="free_pack" requirement_scope="total" requirement_target_value="7" reward_type="tickets" reward_amount="1" />
+
+    <task task_id="login_days_total_tier_1" display_order="150" requirement_action="login" requirement_object="days" requirement_scope="total" requirement_target_value="1" reward_type="tickets" reward_amount="1" />
+    <task task_id="login_days_total_tier_2" display_order="160" requirement_action="login" requirement_object="days" requirement_scope="total" requirement_target_value="2" reward_type="tickets" reward_amount="1" />
+    <task task_id="login_days_total_tier_3" display_order="170" requirement_action="login" requirement_object="days" requirement_scope="total" requirement_target_value="3" reward_type="tickets" reward_amount="1" />
+    <task task_id="login_days_total_tier_4" display_order="180" requirement_action="login" requirement_object="days" requirement_scope="total" requirement_target_value="5" reward_type="tickets" reward_amount="1" />
+
+    <task task_id="fight_seal_battle_total_tier_1" display_order="200" requirement_action="fight" requirement_object="seal_battle" requirement_scope="total" requirement_target_value="2" reward_type="tickets" reward_amount="1" />
+    <task task_id="fight_seal_battle_total_tier_2" display_order="210" requirement_action="fight" requirement_object="seal_battle" requirement_scope="total" requirement_target_value="4" reward_type="tickets" reward_amount="1" />
+    <task task_id="fight_seal_battle_total_tier_3" display_order="220" requirement_action="fight" requirement_object="seal_battle" requirement_scope="total" requirement_target_value="6" reward_type="tickets" reward_amount="1" />
+
+    <task task_id="fight_gold_cave_total_tier_1" display_order="300" requirement_action="fight" requirement_object="gold_cave" requirement_scope="total" requirement_target_value="2" reward_type="tickets" reward_amount="1" />
+    <task task_id="fight_gold_cave_total_tier_2" display_order="310" requirement_action="fight" requirement_object="gold_cave" requirement_scope="total" requirement_target_value="4" reward_type="tickets" reward_amount="1" />
+    <task task_id="fight_gold_cave_total_tier_3" display_order="320" requirement_action="fight" requirement_object="gold_cave" requirement_scope="total" requirement_target_value="8" reward_type="tickets" reward_amount="1" />
+
+    <task task_id="claim_afk_rewards_total_tier_1" display_order="400" requirement_action="claim" requirement_object="afk_rewards" requirement_scope="total" requirement_target_value="5" reward_type="tickets" reward_amount="1" />
+    <task task_id="claim_afk_rewards_total_tier_2" display_order="410" requirement_action="claim" requirement_object="afk_rewards" requirement_scope="total" requirement_target_value="8" reward_type="tickets" reward_amount="1" />
+    <task task_id="claim_afk_rewards_total_tier_3" display_order="420" requirement_action="claim" requirement_object="afk_rewards" requirement_scope="total" requirement_target_value="10" reward_type="tickets" reward_amount="1" />
+    <task task_id="claim_afk_rewards_total_tier_4" display_order="430" requirement_action="claim" requirement_object="afk_rewards" requirement_scope="total" requirement_target_value="15" reward_type="tickets" reward_amount="1" />
+
+    <task task_id="fight_arena_total_tier_1" display_order="500" requirement_action="fight" requirement_object="arena" requirement_scope="total" requirement_target_value="2" reward_type="tickets" reward_amount="1" />
+    <task task_id="fight_arena_total_tier_2" display_order="510" requirement_action="fight" requirement_object="arena" requirement_scope="total" requirement_target_value="4" reward_type="tickets" reward_amount="1" />
+    <task task_id="fight_arena_total_tier_3" display_order="520" requirement_action="fight" requirement_object="arena" requirement_scope="total" requirement_target_value="8" reward_type="tickets" reward_amount="1" />
+
+    <task task_id="kill_bosses_total_tier_1" display_order="600" requirement_action="kill" requirement_object="bosses" requirement_scope="total" requirement_target_value="5" reward_type="tickets" reward_amount="1" />
+    <task task_id="kill_bosses_total_tier_2" display_order="610" requirement_action="kill" requirement_object="bosses" requirement_scope="total" requirement_target_value="10" reward_type="tickets" reward_amount="1" />
+    <task task_id="kill_bosses_total_tier_3" display_order="620" requirement_action="kill" requirement_object="bosses" requirement_scope="total" requirement_target_value="20" reward_type="tickets" reward_amount="1" />
+
+    <task task_id="kill_minions_total_tier_1" display_order="700" requirement_action="kill" requirement_object="minions" requirement_scope="total" requirement_target_value="500" reward_type="tickets" reward_amount="1" />
+    <task task_id="kill_minions_total_tier_2" display_order="710" requirement_action="kill" requirement_object="minions" requirement_scope="total" requirement_target_value="1000" reward_type="tickets" reward_amount="1" />
+    <task task_id="kill_minions_total_tier_3" display_order="720" requirement_action="kill" requirement_object="minions" requirement_scope="total" requirement_target_value="1500" reward_type="tickets" reward_amount="1" />
+
+    <task task_id="use_chromatic_keys_total_tier_1" display_order="800" requirement_action="use" requirement_object="chromatic_keys" requirement_scope="total" requirement_target_value="5" reward_type="tickets" reward_amount="1" />
+    <task task_id="use_chromatic_keys_total_tier_2" display_order="810" requirement_action="use" requirement_object="chromatic_keys" requirement_scope="total" requirement_target_value="10" reward_type="tickets" reward_amount="1" />
+
+    <task task_id="use_wish_tokens_total_tier_1" display_order="900" requirement_action="use" requirement_object="wish_tokens" requirement_scope="total" requirement_target_value="5" reward_type="tickets" reward_amount="1" />
+    <task task_id="use_wish_tokens_total_tier_2" display_order="910" requirement_action="use" requirement_object="wish_tokens" requirement_scope="total" requirement_target_value="10" reward_type="tickets" reward_amount="1" />
+
+    <task task_id="use_shovels_total_tier_1" display_order="1000" requirement_action="use" requirement_object="shovels" requirement_scope="total" requirement_target_value="10" reward_type="tickets" reward_amount="1" />
+    <task task_id="use_shovels_total_tier_2" display_order="1010" requirement_action="use" requirement_object="shovels" requirement_scope="total" requirement_target_value="20" reward_type="tickets" reward_amount="1" />
+
+    <task task_id="use_gems_total_tier_1" display_order="1100" requirement_action="use" requirement_object="gems" requirement_scope="total" requirement_target_value="1000" reward_type="tickets" reward_amount="1" />
+    <task task_id="use_gems_total_tier_2" display_order="1110" requirement_action="use" requirement_object="gems" requirement_scope="total" requirement_target_value="3000" reward_type="tickets" reward_amount="1" />
+    <task task_id="use_gems_total_tier_3" display_order="1120" requirement_action="use" requirement_object="gems" requirement_scope="total" requirement_target_value="5000" reward_type="tickets" reward_amount="1" />
+    <task task_id="use_gems_total_tier_4" display_order="1130" requirement_action="use" requirement_object="gems" requirement_scope="total" requirement_target_value="8000" reward_type="tickets" reward_amount="1" />
+    <task task_id="use_gems_total_tier_5" display_order="1140" requirement_action="use" requirement_object="gems" requirement_scope="total" requirement_target_value="10000" reward_type="tickets" reward_amount="2" />
+    <task task_id="use_gems_total_tier_6" display_order="1150" requirement_action="use" requirement_object="gems" requirement_scope="total" requirement_target_value="15000" reward_type="tickets" reward_amount="2" />
+  </tasks>
+
+  <guide>
+    <section section_id="general_guide" title="General Guide">
+      <p>• Play Trial Battle (lv4).</p>
+      <p>• Complete All Tasks.</p>
+      <p>• Use Tickets to gain Event Currency.</p>
+      <p>• Spend Event Currency in the Event Shop.</p>
+      <p>• Spend {item:aeon_core}s on [Legendary Characters](#faq-legendary_character_choice).</p>
+    </section>
+    <section section_id="shop_economy" title="Shop Economy">
+      <p>Keys: Generally most efficient and therefore recommended.</p>
+      <p>Here are some other options.</p>
+      <p>Legendary Artifact: If you can complete an artifact set. [explained here](#faq-legendary_artifact)</p>
+      <p>Discounted S-Tier Gear: It changes between events. If you use them, you might want to get them.</p>
+      <p>Character Shards: Not efficient, but if you can unlock or star-up a character, it's not a completely bad option.</p>
+    </section>
+  </guide>
+
+  <faq>
+    <item faq_id="aeon_core_intro" question="What are {item:aeon_core|nolink}s?">
+      <answer>
+        <p>{item:aeon_core|nolink}s are an extremely rare Summon Event currency gained through luck or [pity](#faq-aeon_core_odds) when using Tickets.</p>
+        <p>They are used in the event shop to buy Legendary Characters and Artifacts.</p>
+      </answer>
+    </item>
+    <item faq_id="aeon_core_odds" question="What are the odds of getting an {item:aeon_core} before pity?">
+      <answer>
+        <p>Assuming a 0.12% chance per pull and pity at 400 pulls, the average is about 317.8 pulls.</p>
+        <p>Before pity, the cumulative odds are roughly:</p>
+        <p>• 25% at 240 pulls.</p>
+        <p>• 50% at 577 pulls.</p>
+        <p>• 90% at 1,918 pulls.</p>
+        <p>• 99% at 3,835 pulls.</p>
+        <p>Since pity guarantees an {item:aeon_core} by 400 pulls, anything above 38% happens after pity, not before it.</p>
+      </answer>
+    </item>
+     <item faq_id="legendary_character_choice" question="What Legendary Character should I buy?">
+      <answer>
+        <p>It depends on your needs and preferences, but generally:</p>
+        <p>• For PvE, Thor is considered the best and most game changing for most players.</p>
+        <p>• For PvP, Cleo is generally considered best for her damage output.</p>
+        <p>• For PvP, Atreus is the tankier option, but usually considered the worst of the three if you do not already own the others.</p>
+      </answer>
+    </item>
+    <item faq_id="legendary_artifact" question="When is a Legendary Artifact worth it?">
+      <answer>
+        <p>If you can complete an artifact set, it is generally worth it.</p>
+        <p>For example, purchasing the feather would activate the set bonus, resulting in a 4% increase to Attack Power and Max Health.</p>
+        <image
+          src="catalog/shared/misc/legendary_artifact_example.png"
+          alt="Artifact set bonus example showing +4% ATK PWR and +4% Max HP"
+          caption="Completing a set activates the bonus."
+        />
+      </answer>
+    </item>
+  </faq>
+</event>

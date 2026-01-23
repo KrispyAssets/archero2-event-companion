@@ -2,6 +2,11 @@
 <catalog_index catalog_schema_version="1">
     <events>
         <event_ref path="catalog/events/event_anglers_bounty_v1.xml" />
+        <event_ref path="catalog/events/event_island_treasure_hunt_v1.xml" />
+        <event_ref path="catalog/events/event_summon_event_v1.xml" />
+        <event_ref path="catalog/events/event_vibrant_voyage_v1.xml" />
+        <event_ref path="catalog/events/event_godforge_genesis_v1.xml" />
+        <event_ref path="catalog/events/event_eternal_lode_v1.xml" />
     </events>
 
     <tools>
@@ -15,6 +20,6 @@
     </progression_models>
 
     <shared>
-        <!-- Add shared enums/copy here later -->
+        <shared_ref path="catalog/shared/items.xml" />
     </shared>
 </catalog_index>
