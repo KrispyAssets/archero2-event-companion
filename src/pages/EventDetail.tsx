@@ -1127,6 +1127,7 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
           eventVersion={ev.eventVersion}
           tasks={ev.tasks}
           taskGroupLabels={ev.taskGroupLabels}
+          rewardAssets={ev.rewardAssets}
         />
       ),
     },
@@ -1437,6 +1438,7 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
               eventVersion={ev.eventVersion}
               tasks={ev.tasks}
               taskGroupLabels={ev.taskGroupLabels}
+              rewardAssets={ev.rewardAssets}
               scrollContainerRef={tasksScrollRef}
             />
           </div>

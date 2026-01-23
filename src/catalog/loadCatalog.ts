@@ -14,6 +14,7 @@ import type {
   ToolRef,
   ToolStaticText,
   TaskCostItem,
+  RewardAsset,
 } from "./types";
 import { parseXmlString, getAttr, getAttrInt } from "./parseXml";
 
@@ -253,6 +254,20 @@ function parseTaskGroupLabels(eventEl: Element): Record<string, string> | undefi
   return Object.keys(labels).length > 0 ? labels : undefined;
 }
 
+function parseRewardAssets(eventEl: Element): Record<string, RewardAsset> | undefined {
+  const assetsEl = eventEl.getElementsByTagName("reward_assets")[0];
+  if (!assetsEl) return undefined;
+  const rewardEls = getDirectChildElements(assetsEl, "reward");
+  const assets: Record<string, RewardAsset> = {};
+  for (const rewardEl of rewardEls) {
+    const key = getAttr(rewardEl, "key");
+    const label = getAttr(rewardEl, "label");
+    const icon = rewardEl.getAttribute("icon") ?? undefined;
+    assets[key] = { label, icon };
+  }
+  return Object.keys(assets).length > 0 ? assets : undefined;
+}
+
 function parseEventDocument(doc: Document, relPath?: string): EventCatalogFull {
   const eventEl = doc.getElementsByTagName("event")[0];
   if (!eventEl) {
@@ -270,6 +285,7 @@ function parseEventDocument(doc: Document, relPath?: string): EventCatalogFull {
   const tasks: TaskDefinition[] = taskNodes.map((t) => parseTaskDefinition(t)).sort((a, b) => a.displayOrder - b.displayOrder);
   const taskCosts = computeTaskCosts(tasks);
   const taskGroupLabels = parseTaskGroupLabels(eventEl);
+  const rewardAssets = parseRewardAssets(eventEl);
 
   const guideSections = guideEl ? getDirectChildElements(guideEl, "section").map((section) => parseGuideSection(section)) : [];
   const dataSections: DataSection[] = dataEl ? getDirectChildElements(dataEl, "section").map((section) => parseGuideSection(section)) : [];
@@ -294,6 +310,7 @@ function parseEventDocument(doc: Document, relPath?: string): EventCatalogFull {
     status: eventEl.getAttribute("status") ?? undefined,
     guidedRoutePath: guidedRouteRefEl ? getAttr(guidedRouteRefEl, "path") : undefined,
     taskGroupLabels,
+    rewardAssets,
     sections: {
       taskCount: tasks.length,
       guideSectionCount,

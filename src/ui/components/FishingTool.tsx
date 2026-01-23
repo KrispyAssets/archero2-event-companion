@@ -223,6 +223,7 @@ export default function FishingToolView({
   eventVersion,
   tasks,
   taskGroupLabels,
+  rewardAssets: _rewardAssets,
   guidedRoutePath,
   variant = "companion",
   showTitle = true,
@@ -232,6 +233,7 @@ export default function FishingToolView({
   eventVersion?: number;
   tasks?: TaskDefinition[];
   taskGroupLabels?: TaskGroupLabelMap;
+  rewardAssets?: Record<string, RewardAsset>;
   guidedRoutePath?: string;
   variant?: "companion" | "purchase";
   showTitle?: boolean;

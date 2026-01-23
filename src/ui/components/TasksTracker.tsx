@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import type { TaskDefinition, TaskGroupLabelMap } from "../../catalog/types";
+import type { TaskDefinition, TaskGroupLabelMap, RewardAsset } from "../../catalog/types";
+import { getRewardAsset } from "../../catalog/rewards";
 import { buildTaskGroups, computeEarned, computeRemaining, getGroupPlaceholder } from "../../catalog/taskGrouping";
 import { getEventProgressState, upsertTaskState } from "../../state/userStateStore";
 
@@ -8,9 +9,10 @@ export default function TasksTracker(props: {
   eventVersion: number;
   tasks: TaskDefinition[];
   taskGroupLabels?: TaskGroupLabelMap;
+  rewardAssets?: Record<string, RewardAsset>;
   scrollContainerRef?: React.Ref<HTMLDivElement>;
 }) {
-  const { eventId, eventVersion, tasks, taskGroupLabels } = props;
+  const { eventId, eventVersion, tasks, taskGroupLabels, rewardAssets } = props;
   const [tick, setTick] = useState(0);
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
 
@@ -42,22 +44,53 @@ export default function TasksTracker(props: {
     setTick((x) => x + 1);
   }
 
-  const totals = groups.reduce(
-    (acc, group) => {
-      const state = progressState.tasks[group.groupId] ?? { progressValue: 0, flags: { isCompleted: false, isClaimed: false } };
-      acc.earned += computeEarned(group.tiers, state.progressValue);
-      acc.remaining += computeRemaining(group.tiers, state.progressValue);
-      return acc;
-    },
-    { earned: 0, remaining: 0 }
-  );
+  const totalsByReward = groups.reduce<Record<string, { earned: number; remaining: number }>>((acc, group) => {
+    const state = progressState.tasks[group.groupId] ?? { progressValue: 0, flags: { isCompleted: false, isClaimed: false } };
+    const rewardType = group.tiers[0]?.rewardType ?? "reward";
+    const entry = acc[rewardType] ?? { earned: 0, remaining: 0 };
+    entry.earned += computeEarned(group.tiers, state.progressValue);
+    entry.remaining += computeRemaining(group.tiers, state.progressValue);
+    acc[rewardType] = entry;
+    return acc;
+  }, {});
+  const rewardTypes = Object.keys(totalsByReward);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12, height: "100%", minHeight: 0 }}>
       <div style={{ display: "flex", justifyContent: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{ fontWeight: 700 }}>
-            {totals.earned} Lures Earned | {totals.remaining} Lures Remaining
+            {rewardTypes.length <= 1 ? (
+              (() => {
+                const rewardType = rewardTypes[0] ?? "reward";
+                const reward = totalsByReward[rewardType] ?? { earned: 0, remaining: 0 };
+                const asset = getRewardAsset(rewardType, rewardAssets);
+                return (
+                  <>
+                    {reward.earned} {asset.label} Earned | {reward.remaining} {asset.label} Remaining
+                  </>
+                );
+              })()
+            ) : (
+              <>
+                Earned:{" "}
+                {rewardTypes
+                  .map((rewardType) => {
+                    const reward = totalsByReward[rewardType];
+                    const asset = getRewardAsset(rewardType, rewardAssets);
+                    return `${reward.earned} ${asset.label}`;
+                  })
+                  .join(", ")}{" "}
+                | Remaining:{" "}
+                {rewardTypes
+                  .map((rewardType) => {
+                    const reward = totalsByReward[rewardType];
+                    const asset = getRewardAsset(rewardType, rewardAssets);
+                    return `${reward.remaining} ${asset.label}`;
+                  })
+                  .join(", ")}
+              </>
+            )}
           </div>
           <button type="button" className="secondary" onClick={clearAll}>
             Clear
@@ -86,6 +119,8 @@ export default function TasksTracker(props: {
           const maxValue = Math.max(...group.tiers.map((t) => t.requirementTargetValue));
           const earned = computeEarned(group.tiers, state.progressValue);
           const remaining = computeRemaining(group.tiers, state.progressValue);
+          const groupRewardType = group.tiers[0]?.rewardType ?? "reward";
+          const groupRewardAsset = getRewardAsset(groupRewardType, rewardAssets);
           const inputValue =
             inputValues[group.groupId] ?? (state.progressValue === 0 ? "" : String(state.progressValue));
           const placeholder = getGroupPlaceholder(
@@ -116,7 +151,7 @@ export default function TasksTracker(props: {
               >
                 <div style={{ fontWeight: 800 }}>{group.title}</div>
                 <div style={{ fontSize: 13, color: "var(--text-muted)" }}>
-                  Earned: <b>{earned}</b> | Remaining: <b>{remaining}</b> lures
+                  Earned: <b>{earned}</b> | Remaining: <b>{remaining}</b> {groupRewardAsset.label}
                 </div>
               </div>
 
@@ -197,8 +232,27 @@ export default function TasksTracker(props: {
                       }}
                     >
                       <span>{tier.requirementTargetValue}</span>
-                      <span style={{ marginLeft: 4, color: "var(--success)", fontSize: 12 }}>
-                        +{tier.rewardAmount}L
+                      <span
+                        style={{
+                          marginLeft: 4,
+                          color: "var(--success)",
+                          fontSize: 12,
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 4,
+                        }}
+                      >
+                        +{tier.rewardAmount}
+                        {groupRewardAsset.icon ? (
+                          <img
+                            src={`${import.meta.env.BASE_URL}${groupRewardAsset.icon}`}
+                            alt=""
+                            aria-hidden="true"
+                            style={{ width: 12, height: 12 }}
+                          />
+                        ) : (
+                          <span style={{ fontWeight: 700 }}>{groupRewardAsset.label.charAt(0).toUpperCase()}</span>
+                        )}
                       </span>
                     </button>
                   );

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type {
+  RewardAsset,
   TaskDefinition,
   TaskGroupLabelMap,
   ToolDefinition,
@@ -50,6 +51,7 @@ export default function ToolsHost({
   eventVersion,
   tasks,
   taskGroupLabels,
+  rewardAssets,
   guidedRoutePath,
 }: {
   tools: ToolDefinition[];
@@ -57,6 +59,7 @@ export default function ToolsHost({
   eventVersion?: number;
   tasks?: TaskDefinition[];
   taskGroupLabels?: TaskGroupLabelMap;
+  rewardAssets?: Record<string, RewardAsset>;
   guidedRoutePath?: string;
 }) {
   const [openById, setOpenById] = useState<Record<string, boolean>>({});
@@ -89,6 +92,7 @@ export default function ToolsHost({
               eventVersion={eventVersion}
               tasks={tasks}
               taskGroupLabels={taskGroupLabels}
+              rewardAssets={rewardAssets}
               guidedRoutePath={guidedRoutePath}
               variant="companion"
               showTitle={false}
@@ -102,6 +106,7 @@ export default function ToolsHost({
               eventVersion={eventVersion}
               tasks={tasks}
               taskGroupLabels={taskGroupLabels}
+              rewardAssets={rewardAssets}
               guidedRoutePath={guidedRoutePath}
               variant="purchase"
               showTitle={false}

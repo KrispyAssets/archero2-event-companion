@@ -4,6 +4,7 @@ import AppShell from "../ui/AppShell";
 import DropdownButton from "../ui/components/DropdownButton";
 import { loadAllEventsFull, loadCatalogIndex } from "../catalog/loadCatalog";
 import type { EventCatalogFull, GuideContentBlock, GuideSection } from "../catalog/types";
+import { getRewardAsset } from "../catalog/rewards";
 import { buildTaskGroups, getGroupTitle } from "../catalog/taskGrouping";
 
 type SearchItem = {
@@ -106,6 +107,8 @@ function buildSearchItems(events: EventCatalogFull[]): SearchItem[] {
     const taskGroups = buildTaskGroups(event.tasks, event.taskGroupLabels);
     for (const group of taskGroups) {
       const rewardTotal = group.tiers.reduce((sum, tier) => sum + tier.rewardAmount, 0);
+      const rewardType = group.tiers[0]?.rewardType ?? "reward";
+      const reward = getRewardAsset(rewardType, event.rewardAssets);
       items.push({
         id: `task:${eventId}:${group.groupId}`,
         eventId,
@@ -117,8 +120,8 @@ function buildSearchItems(events: EventCatalogFull[]): SearchItem[] {
           group.tiers[0].requirementScope,
           event.taskGroupLabels
         ),
-        content: [group.title, `${rewardTotal} lures total`].join(" ").trim(),
-        description: `Total reward: ${rewardTotal} lures`,
+        content: [group.title, `${rewardTotal} ${reward.label} total`].join(" ").trim(),
+        description: `Total reward: ${rewardTotal} ${reward.label}`,
         anchor: `task-${group.groupId}`,
       });
     }
