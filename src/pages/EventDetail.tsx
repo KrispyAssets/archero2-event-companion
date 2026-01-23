@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import { useLocation, useNavigate, useNavigationType, useParams } from "react-router-dom";
 import AppShell from "../ui/AppShell";
 import Tabs from "../ui/Tabs";
@@ -80,7 +81,7 @@ function renderTextSegmentWithAnchors(
       );
     }
     const tokenParts = part.split(/\{item:([A-Za-z0-9_-]+(?:\|nolink)?)\}/g);
-    const nodes: JSX.Element[] = [];
+    const nodes: ReactNode[] = [];
     for (let tokenIndex = 0; tokenIndex < tokenParts.length; tokenIndex += 1) {
       const tokenPart = tokenParts[tokenIndex];
       if (tokenIndex % 2 === 1) {
@@ -152,7 +153,7 @@ function renderParagraphWithLinks(
   sharedItems: Record<string, { label: string }>,
   keyPrefix: string
 ) {
-  const nodes: Array<JSX.Element> = [];
+  const nodes: ReactNode[] = [];
   const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
   let cursor = 0;
   let match = linkRegex.exec(paragraph);

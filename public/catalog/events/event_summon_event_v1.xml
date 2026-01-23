@@ -80,9 +80,9 @@
     <section section_id="general_guide" title="General Guide">
       <p>• Play Trial Battle (lv4).</p>
       <p>• Complete All Tasks.</p>
-      <p>• Use Tickets.</p>
-      <p>• Spend Currency in Shop. [shop guide](#guide-shop_economy)</p>
-      <p>• Spend {item:aeon_core}s on Legendary Characters.</p>
+      <p>• Use Tickets to gain Event Currency.</p>
+      <p>• Spend Event Currency in the Event Shop.</p>
+      <p>• Spend {item:aeon_core}s on [Legendary Characters](#faq-legendary_character_choice).</p>
     </section>
     <section section_id="shop_economy" title="Shop Economy">
       <p>Keys: Generally most efficient and therefore recommended.</p>
@@ -96,19 +96,8 @@
   <faq>
     <item faq_id="aeon_core_intro" question="What are {item:aeon_core|nolink}s?">
       <answer>
-        <p>{item:aeon_core|nolink}s are the Summon Event currency you keep in your inventory between events.</p>
-        <p>They are used in the event shop to buy Legendary Characters.</p>
-      </answer>
-    </item>
-    <item faq_id="legendary_artifact" question="When is a Legendary Artifact worth it?">
-      <answer>
-        <p>If you can complete an artifact set, it is generally worth it.</p>
-        <p>For example, purchasing the feather would activate the set bonus, resulting in a 4% increase to Attack Power and Max Health.</p>
-        <image
-          src="catalog/shared/misc/legendary_artifact_example.png"
-          alt="Artifact set bonus example showing +4% ATK PWR and +4% Max HP"
-          caption="Completing a set activates the bonus."
-        />
+        <p>{item:aeon_core|nolink}s are an extremely rare Summon Event currency gained through luck or [pity](#faq-aeon_core_odds) when using Tickets.</p>
+        <p>They are used in the event shop to buy Legendary Characters and Artifacts.</p>
       </answer>
     </item>
     <item faq_id="aeon_core_odds" question="What are the odds of getting an {item:aeon_core} before pity?">
@@ -122,12 +111,23 @@
         <p>Since pity guarantees an {item:aeon_core} by 400 pulls, anything above 38% happens after pity, not before it.</p>
       </answer>
     </item>
-    <item faq_id="legendary_character_choice" question="What Legendary Character should I buy?">
+     <item faq_id="legendary_character_choice" question="What Legendary Character should I buy?">
       <answer>
         <p>It depends on your needs and preferences, but generally:</p>
         <p>• For PvE, Thor is considered the best and most game changing for most players.</p>
         <p>• For PvP, Cleo is generally considered best for her damage output.</p>
         <p>• For PvP, Atreus is the tankier option, but usually considered the worst of the three if you do not already own the others.</p>
+      </answer>
+    </item>
+    <item faq_id="legendary_artifact" question="When is a Legendary Artifact worth it?">
+      <answer>
+        <p>If you can complete an artifact set, it is generally worth it.</p>
+        <p>For example, purchasing the feather would activate the set bonus, resulting in a 4% increase to Attack Power and Max Health.</p>
+        <image
+          src="catalog/shared/misc/legendary_artifact_example.png"
+          alt="Artifact set bonus example showing +4% ATK PWR and +4% Max HP"
+          caption="Completing a set activates the bonus."
+        />
       </answer>
     </item>
   </faq>

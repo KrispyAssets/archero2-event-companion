@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { TaskDefinition, TaskGroupLabelMap, ToolFishingCalculator, ToolPurchaseGoals } from "../../catalog/types";
+import type { RewardAsset, TaskDefinition, TaskGroupLabelMap, ToolFishingCalculator, ToolPurchaseGoals } from "../../catalog/types";
 import { buildTaskGroups, computeEarned, computeRemaining } from "../../catalog/taskGrouping";
 import "./fishingTool.css";
 import { getEventProgressState } from "../../state/userStateStore";

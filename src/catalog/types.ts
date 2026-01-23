@@ -133,7 +133,7 @@ export type EventCatalogItemFull = {
   subtitle?: string;
   lastVerifiedDate?: string;
   isActive?: boolean;
-  status?: "coming_soon";
+  status?: string;
   sections: EventSectionSummary;
   taskCosts?: TaskCostItem[];
 };

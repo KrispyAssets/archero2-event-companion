@@ -14,10 +14,11 @@ export function EventCatalogList() {
     wish_tokens: `${iconBase}24px-Wish_Token.png`,
     shovels: `${iconBase}24px-Shovel.png`,
   };
+  const events = catalog.status === "ready" ? catalog.events : [];
   const sortedEvents = useMemo(() => {
     if (catalog.status !== "ready") return [];
-    const events = [...catalog.events];
-    events.sort((a, b) => {
+    const eventsCopy = [...events];
+    eventsCopy.sort((a, b) => {
       const aActive = a.isActive ? 1 : 0;
       const bActive = b.isActive ? 1 : 0;
       if (aActive !== bActive) return bActive - aActive;
@@ -26,8 +27,8 @@ export function EventCatalogList() {
       if (aComing !== bComing) return aComing - bComing;
       return a.title.localeCompare(b.title);
     });
-    return events;
-  }, [catalog.status, catalog.events]);
+    return eventsCopy;
+  }, [catalog.status, events]);
 
   return (
     <>
