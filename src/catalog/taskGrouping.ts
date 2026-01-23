@@ -19,6 +19,7 @@ const GROUP_LABELS: Record<string, string> = {
   "kill__bosses__total": "Kill Bosses",
   "claim__afk_rewards__total": "Claim AFK Rewards",
   "fight__arena__total": "Arena",
+  "collect__free_fund__total": "Daily Fund",
   "use__chromatic_keys__total": "Use Chromatic Keys",
   "use__obsidian_keys__total": "Use Obsidian Keys",
   "use__wish_tokens__total": "Use Wishes",
