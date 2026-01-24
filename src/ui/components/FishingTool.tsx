@@ -270,6 +270,10 @@ export default function FishingToolView({
   const guidedWeightEditingRef = useRef(false);
   const [guidedInfoOpen, setGuidedInfoOpen] = useState(false);
   const [guidedMediaOpen, setGuidedMediaOpen] = useState(false);
+  const [guidedMediaLightbox, setGuidedMediaLightbox] = useState<{
+    images: Array<{ src: string; alt?: string; caption?: string }>;
+    index: number;
+  } | null>(null);
   const resetMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -470,6 +474,16 @@ export default function FishingToolView({
       body.style.overflow = prevOverflow;
     };
   }, [confirmResetOpen]);
+
+  useEffect(() => {
+    if (!guidedMediaLightbox) return;
+    const { body } = document;
+    const prevOverflow = body.style.overflow;
+    body.style.overflow = "hidden";
+    return () => {
+      body.style.overflow = prevOverflow;
+    };
+  }, [guidedMediaLightbox]);
 
   useEffect(() => {
     function handleToolStateEvent(event: Event) {
@@ -1616,11 +1630,19 @@ export default function FishingToolView({
                                 <div style={{ display: "grid", gap: 8, gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
                                   {guidedStepData.step.media.images.map((image) => (
                                     <figure key={image.src} style={{ margin: 0, display: "grid", gap: 4, justifyItems: "center" }}>
-                                      <img
-                                        src={resolvePath(image.src)}
-                                        alt={image.alt ?? ""}
-                                        style={{ width: 72, height: 72, objectFit: "contain" }}
-                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          setGuidedMediaLightbox({ images: guidedStepData.step.media?.images ?? [], index: guidedStepData.step.media?.images.indexOf(image) ?? 0 })
+                                        }
+                                        style={{ background: "transparent", border: "none", padding: 0, cursor: "pointer" }}
+                                      >
+                                        <img
+                                          src={resolvePath(image.src)}
+                                          alt={image.alt ?? ""}
+                                          style={{ width: 72, height: 72, objectFit: "contain" }}
+                                        />
+                                      </button>
                                       {image.caption ? (
                                         <figcaption style={{ fontSize: 11, color: "var(--text-subtle)" }}>{image.caption}</figcaption>
                                       ) : null}
@@ -2360,6 +2382,83 @@ export default function FishingToolView({
                 </div>
               ) : null}
             </div>
+          </div>
+        </div>
+      ) : null}
+
+      {guidedMediaLightbox ? (
+        <div
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setGuidedMediaLightbox(null)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0, 0, 0, 0.72)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 20,
+            padding: 16,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 12,
+              maxWidth: "90vw",
+              maxHeight: "90vh",
+            }}
+          >
+            <img
+              src={resolvePath(guidedMediaLightbox.images[guidedMediaLightbox.index]?.src ?? "")}
+              alt={guidedMediaLightbox.images[guidedMediaLightbox.index]?.alt ?? ""}
+              style={{ maxWidth: "90vw", maxHeight: "70vh", objectFit: "contain" }}
+            />
+            {guidedMediaLightbox.images[guidedMediaLightbox.index]?.caption ? (
+              <div style={{ color: "var(--text-muted)", fontSize: 13, textAlign: "center" }}>
+                {guidedMediaLightbox.images[guidedMediaLightbox.index]?.caption}
+              </div>
+            ) : null}
+            {guidedMediaLightbox.images.length > 1 ? (
+              <div style={{ display: "flex", gap: 10 }}>
+                <button
+                  type="button"
+                  className="ghost"
+                  onClick={() =>
+                    setGuidedMediaLightbox((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            index: (prev.index - 1 + prev.images.length) % prev.images.length,
+                          }
+                        : prev,
+                    )
+                  }
+                >
+                  Prev
+                </button>
+                <button
+                  type="button"
+                  className="ghost"
+                  onClick={() =>
+                    setGuidedMediaLightbox((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            index: (prev.index + 1) % prev.images.length,
+                          }
+                        : prev,
+                    )
+                  }
+                >
+                  Next
+                </button>
+              </div>
+            ) : null}
           </div>
         </div>
       ) : null}

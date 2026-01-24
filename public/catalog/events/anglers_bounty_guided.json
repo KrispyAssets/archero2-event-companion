@@ -250,7 +250,27 @@
             "warnMessage": "You are out of line breaks! Use your remaining lures then buy more if needed to reach 16 Golden Tickets."
           },
           "action": "At this point, decide how to finish your last 2 legendaries.",
-          "notes": "If you need more Silver Tickets and have the gems for more lures worst case scenario, you can catch Epics while hunting the legendaries. If you’re low on gems, only catch the legendaries. Keep tracking every fish to ensure accurate progress."
+          "notes": "If you need more Silver Tickets and have the gems for more lures worst case scenario, you can catch Epics while hunting the legendaries. If you’re low on gems, only catch the legendaries. Keep tracking every fish to ensure accurate progress.",
+          "media": {
+            "label": "Media",
+            "images": [
+              {
+                "src": "catalog/shared/fishing/images/current_lake_tension/zone_4-1.png",
+                "alt": "Polar Glacier rare tension pattern",
+                "caption": "Rare"
+              },
+              {
+                "src": "catalog/shared/fishing/images/current_lake_tension/zone_4-2.png",
+                "alt": "Polar Glacier epic tension pattern",
+                "caption": "Epic"
+              },
+              {
+                "src": "catalog/shared/fishing/images/current_lake_tension/zone_4-3.png",
+                "alt": "Polar Glacier legendary tension pattern",
+                "caption": "Legendary"
+              }
+            ]
+          }
         },
         {
           "stepId": "opt1_l4_finish",
