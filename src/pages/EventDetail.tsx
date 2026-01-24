@@ -525,6 +525,7 @@ export default function EventDetail() {
       return eventId ?? "";
     }
   }, [eventId]);
+  const devModeEnabled = useMemo(() => import.meta.env.DEV && localStorage.getItem("dev_mode") === "1", []);
   const eventState = useEventCatalog(decodedEventId);
 
   if (eventState.status === "idle" || eventState.status === "loading") {
@@ -545,7 +546,7 @@ export default function EventDetail() {
     );
   }
 
-  if (eventState.status === "ready" && eventState.event.status === "coming_soon") {
+  if (eventState.status === "ready" && eventState.event.status === "coming_soon" && !devModeEnabled) {
     return (
       <AppShell>
         <h1>{eventState.event.title}</h1>

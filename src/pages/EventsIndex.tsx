@@ -5,6 +5,7 @@ import { useCatalogIndex } from "../catalog/useCatalogIndex";
 
 export function EventCatalogList() {
   const catalog = useCatalogIndex();
+  const devModeEnabled = useMemo(() => import.meta.env.DEV && localStorage.getItem("dev_mode") === "1", []);
   const formatAmount = (value: number) => value.toLocaleString();
   const iconBase = `${import.meta.env.BASE_URL}catalog/shared/misc/`;
   const costIcons: Record<string, string> = {
@@ -97,7 +98,7 @@ export function EventCatalogList() {
                 </div>
               );
 
-              if (isComingSoon) {
+              if (isComingSoon && !devModeEnabled) {
                 return <div key={ev.eventId}>{card}</div>;
               }
 

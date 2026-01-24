@@ -6,6 +6,7 @@
   subtitle="Coming Soon"
   last_verified_date="2026-01-24"
   active="false"
+  status="coming_soon"
 >
   <task_group_labels>
     <label group_key="charge__expedition_stars__total" title="Charge Expedition Stars" />
@@ -91,12 +92,17 @@
   </tasks>
   <guide>
     <section section_id="overview" title="Overview">
-      <p>• Goal: reach at least 500 depth.</p>
+      <p>• Goal: reach at least 550 depth.</p>
       <p>• Tools: Pickaxe mines 1 block, Drill mines a full line, Bomb clears 5 wide and 5 tall, plus the four corner blocks.</p>
       <p>• You can find gems, extra tools, lucky chests (with durability), and event currency while mining.</p>
-      <p>• Shop costs: Pickaxe 30, Drill 90, Bomb 90 (currency).</p>
+      <p>• Shop costs: Pickaxe 30, Drill 90, Bomb 90.</p>
       <p>• Recommendation: buy pickaxes only, and save drills/bombs for stone or when they can earn tools or currency back.</p>
-      <p>• Use drills/bombs to break through stone (2 hits) and save pickaxes for dirt (1 hit).</p>
+      <p>• Use drills/bombs to collect multiple treasures at once and break through stone (2 hits).</p>
+      <p>• Use pickaxes for dirt (1 hit) or easy to grab treasures worth more than a pickaxe.</p>
+      <p>• Always open the lucky chests, it's a good source of extra tools and currency for free.</p>
+      <p>• Complete tasks to earn extra tools.</p>
+      <p>• Don't go for every bit of treasure you see, make sure the value outweights the cost.</p>
+      <p>• Dig down, buy pickaxes, ???, profit!</p>
     </section>
   </guide>
 </event>

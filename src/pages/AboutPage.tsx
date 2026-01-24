@@ -6,6 +6,9 @@ export default function AboutPage() {
   const [exportCode, setExportCode] = useState("");
   const [importCode, setImportCode] = useState("");
   const [status, setStatus] = useState<string | null>(null);
+  const [devMode, setDevMode] = useState(
+    () => import.meta.env.DEV && localStorage.getItem("dev_mode") === "1"
+  );
 
   function handleExport() {
     const code = exportSaveCode();
@@ -59,7 +62,36 @@ export default function AboutPage() {
       </p>
       <p style={{ color: "var(--text-subtle)" }}>All guides and data come from resources gathered by the Archero 2 Discord community.</p>
       <div style={{ marginTop: 24, display: "flex", flexDirection: "column", gap: 4 }}>
-        <p style={{ color: "var(--text-subtle)", margin: 0 }}>Created by Zerkzis.</p>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <p style={{ color: "var(--text-subtle)", margin: 0 }}>Created by Zerkzis.</p>
+          {import.meta.env.DEV ? (
+            <button
+              type="button"
+              onClick={() => {
+                const next = !devMode;
+                setDevMode(next);
+                if (next) {
+                  localStorage.setItem("dev_mode", "1");
+                } else {
+                  localStorage.removeItem("dev_mode");
+                }
+                window.location.reload();
+              }}
+              style={{
+                borderRadius: 999,
+                border: "1px solid var(--border)",
+                background: "var(--surface-2)",
+                color: "var(--text)",
+                padding: "2px 6px",
+                fontSize: 10,
+                lineHeight: 1,
+                height: 20,
+              }}
+            >
+              Dev Mode: {devMode ? "On" : "Off"}
+            </button>
+          ) : null}
+        </div>
         <p style={{ color: "var(--text-subtle)", margin: 0 }}>GitHub: KrispyAssets</p>
         <p style={{ color: "var(--text-subtle)", margin: 0 }}>In-game: KrisFromBali (User ID 115838558).</p>
       </div>
