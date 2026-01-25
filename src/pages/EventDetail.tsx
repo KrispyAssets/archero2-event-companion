@@ -152,7 +152,8 @@ function renderParagraphWithLinks(
   onAnchorClick: (anchorId: string) => void,
   sharedItems: Record<string, { label: string }>,
   keyPrefix: string,
-  onImageClick?: (src: string) => void
+  onImageClick?: (src: string) => void,
+  onImagePreview?: (src: string) => void
 ) {
   const nodes: ReactNode[] = [];
   const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
@@ -175,13 +176,21 @@ function renderParagraphWithLinks(
     }
 
     if (href.startsWith("image:")) {
-      const imageSrc = href.slice("image:".length);
+      const raw = href.slice("image:".length);
+      const [imageSrc, ...flags] = raw.split("|");
+      const wantsPreview = flags.includes("preview");
       nodes.push(
         <button
           key={`${keyPrefix}-link-${start}`}
           type="button"
           className="ghost"
-          onClick={() => onImageClick?.(imageSrc)}
+          onClick={() => {
+            if (wantsPreview) {
+              onImagePreview?.(imageSrc);
+              return;
+            }
+            onImageClick?.(imageSrc);
+          }}
           style={{ padding: 0, fontSize: "inherit" }}
         >
           {label}
@@ -234,7 +243,8 @@ function renderParagraphOrImage(
   onAnchorClick: (anchorId: string) => void,
   sharedItems: Record<string, { label: string }>,
   keyPrefix: string,
-  onImageClick?: (src: string) => void
+  onImageClick?: (src: string) => void,
+  onImagePreview?: (src: string) => void
 ) {
   const trimmed = paragraph.trim();
   const imageMatch = trimmed.match(/^!\[([^\]]*)\]\(([^)\s]+)(?:\s+\"([^\"]+)\")?\)$/);
@@ -268,7 +278,7 @@ function renderParagraphOrImage(
   }
   return (
     <p key={`${keyPrefix}-text`} style={{ margin: "8px 0" }}>
-      {renderParagraphWithLinks(paragraph, dataTitles, onAnchorClick, sharedItems, keyPrefix, onImageClick)}
+      {renderParagraphWithLinks(paragraph, dataTitles, onAnchorClick, sharedItems, keyPrefix, onImageClick, onImagePreview)}
     </p>
   );
 }
@@ -278,16 +288,17 @@ function renderFaqAnswer(
   dataTitles: Map<string, string>,
   onAnchorClick: (anchorId: string) => void,
   sharedItems: Record<string, { label: string }>,
-  onImageClick?: (src: string) => void
+  onImageClick?: (src: string) => void,
+  onImagePreview?: (src: string) => void
 ) {
   if (item.answerBlocks?.length) {
-    return renderGuideBlocks(item.answerBlocks, dataTitles, onAnchorClick, sharedItems, onImageClick);
+    return renderGuideBlocks(item.answerBlocks, dataTitles, onAnchorClick, sharedItems, onImageClick, onImagePreview);
   }
   if (!item.answer) return null;
   return item.answer
     .split(/\n{2,}/)
     .map((paragraph, index) =>
-      renderParagraphOrImage(paragraph, dataTitles, onAnchorClick, sharedItems, `faq-${index}`, onImageClick)
+      renderParagraphOrImage(paragraph, dataTitles, onAnchorClick, sharedItems, `faq-${index}`, onImageClick, onImagePreview)
     );
 }
 
@@ -304,12 +315,21 @@ function renderGuideBlocks(
   dataTitles: Map<string, string>,
   onAnchorClick: (anchorId: string) => void,
   sharedItems: Record<string, { label: string }>,
-  onImageClick?: (src: string) => void
+  onImageClick?: (src: string) => void,
+  onImagePreview?: (src: string) => void
 ) {
   if (!blocks.length) return null;
   return blocks.map((block, index) => {
     if (block.type === "paragraph") {
-      return renderParagraphOrImage(block.text, dataTitles, onAnchorClick, sharedItems, `guide-${index}`, onImageClick);
+      return renderParagraphOrImage(
+        block.text,
+        dataTitles,
+        onAnchorClick,
+        sharedItems,
+        `guide-${index}`,
+        onImageClick,
+        onImagePreview
+      );
     }
     if (block.type === "image") {
       return (
@@ -397,18 +417,19 @@ function collectGuideImages(sections: GuideSection[], out: GuideImageItem[] = []
             caption: image.caption,
           });
         }
-      } else if (block.type === "paragraph") {
-        const inlineMatches = [...block.text.matchAll(/\[([^\]]+)\]\(image:([^)]+)\)/g)];
-        for (const match of inlineMatches) {
-          const alt = match[1] ?? "";
-          const src = match[2] ?? "";
-          if (!src) continue;
-          out.push({
-            src: resolveImageSrc(src),
-            alt,
-          });
+        } else if (block.type === "paragraph") {
+          const inlineMatches = [...block.text.matchAll(/\[([^\]]+)\]\(image:([^)]+)\)/g)];
+          for (const match of inlineMatches) {
+            const alt = match[1] ?? "";
+            const raw = match[2] ?? "";
+            const [src] = raw.split("|");
+            if (!src) continue;
+            out.push({
+              src: resolveImageSrc(src),
+              alt,
+            });
+          }
         }
-      }
     }
     if (section.subsections?.length) {
       collectGuideImages(section.subsections, out);
@@ -450,7 +471,8 @@ function collectFaqImages(items: FaqItem[]): GuideImageItem[] {
           const inlineMatches = [...block.text.matchAll(/\[([^\]]+)\]\(image:([^)]+)\)/g)];
           for (const match of inlineMatches) {
             const alt = match[1] ?? "";
-            const src = match[2] ?? "";
+            const raw = match[2] ?? "";
+            const [src] = raw.split("|");
             if (!src) continue;
             images.push({
               src: resolveImageSrc(src),
@@ -479,7 +501,8 @@ function collectFaqImages(items: FaqItem[]): GuideImageItem[] {
     const inlineMatches = [...item.answer.matchAll(/\[([^\]]+)\]\(image:([^)]+)\)/g)];
     for (const match of inlineMatches) {
       const alt = match[1] ?? "";
-      const src = match[2] ?? "";
+      const raw = match[2] ?? "";
+      const [src] = raw.split("|");
       if (!src) continue;
       images.push({
         src: resolveImageSrc(src),
@@ -511,6 +534,7 @@ function GuideSectionView({
   dataTitles,
   sharedItems,
   onImageClick,
+  onImagePreview,
 }: {
   section: GuideSection;
   copiedAnchor: string;
@@ -522,6 +546,7 @@ function GuideSectionView({
   dataTitles: Map<string, string>;
   sharedItems: Record<string, { label: string }>;
   onImageClick?: (src: string) => void;
+  onImagePreview?: (src: string) => void;
 }) {
   const anchorId = getGuideAnchorId(section.sectionId);
   return (
@@ -546,7 +571,9 @@ function GuideSectionView({
           <LinkIcon />
         </button>
       </summary>
-      <div style={{ marginTop: 8 }}>{renderGuideBlocks(section.blocks, dataTitles, onAnchorClick, sharedItems, onImageClick)}</div>
+      <div style={{ marginTop: 8 }}>
+        {renderGuideBlocks(section.blocks, dataTitles, onAnchorClick, sharedItems, onImageClick, onImagePreview)}
+      </div>
       {section.subsections && section.subsections.length > 0 ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
           {section.subsections.map((child) => (
@@ -562,6 +589,7 @@ function GuideSectionView({
               dataTitles={dataTitles}
               sharedItems={sharedItems}
               onImageClick={onImageClick}
+              onImagePreview={onImagePreview}
             />
           ))}
         </div>
@@ -623,6 +651,7 @@ function DataSectionView({
   dataTitles,
   sharedItems,
   onImageClick,
+  onImagePreview,
 }: {
   section: DataSection;
   copiedAnchor: string;
@@ -634,6 +663,7 @@ function DataSectionView({
   dataTitles: Map<string, string>;
   sharedItems: Record<string, { label: string }>;
   onImageClick?: (src: string) => void;
+  onImagePreview?: (src: string) => void;
 }) {
   const anchorId = getDataAnchorId(section.sectionId);
   return (
@@ -658,7 +688,9 @@ function DataSectionView({
           <LinkIcon />
         </button>
       </summary>
-      <div style={{ marginTop: 8 }}>{renderGuideBlocks(section.blocks, dataTitles, onAnchorClick, sharedItems, onImageClick)}</div>
+      <div style={{ marginTop: 8 }}>
+        {renderGuideBlocks(section.blocks, dataTitles, onAnchorClick, sharedItems, onImageClick, onImagePreview)}
+      </div>
       {section.subsections && section.subsections.length > 0 ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
           {section.subsections.map((child) => (
@@ -674,6 +706,7 @@ function DataSectionView({
               dataTitles={dataTitles}
               sharedItems={sharedItems}
               onImageClick={onImageClick}
+              onImagePreview={onImagePreview}
             />
           ))}
         </div>
@@ -701,6 +734,7 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
   const [copiedAnchor, setCopiedAnchor] = useState("");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [lightboxScale, setLightboxScale] = useState(1);
+  const [inlinePreviewSrc, setInlinePreviewSrc] = useState<string | null>(null);
   const [tasksOpen, setTasksOpen] = useState(false);
   const [tasksSheetOffset, setTasksSheetOffset] = useState(0);
   const [tasksSheetDragging, setTasksSheetDragging] = useState(false);
@@ -758,6 +792,15 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
     touchDeltaXRef.current = 0;
     pinchStartDistanceRef.current = null;
     pinchStartScaleRef.current = 1;
+  }
+
+  function openInlinePreview(src: string) {
+    if (!src) return;
+    setInlinePreviewSrc(resolveImageSrc(src));
+  }
+
+  function closeInlinePreview() {
+    setInlinePreviewSrc(null);
   }
 
   useEffect(() => {
@@ -1134,7 +1177,7 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
   }, [tasksOpen]);
 
   useEffect(() => {
-    const shouldLock = tasksOpen || lightboxIndex !== null;
+    const shouldLock = tasksOpen || lightboxIndex !== null || inlinePreviewSrc !== null;
     if (!shouldLock) {
       if (scrollLockRef.current) {
         const lockedScrollY = scrollLockRef.current.scrollY;
@@ -1169,7 +1212,7 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
     document.body.style.position = "fixed";
     document.body.style.top = `-${scrollLockRef.current.scrollY}px`;
     document.body.style.width = "100%";
-  }, [tasksOpen, lightboxIndex]);
+  }, [tasksOpen, lightboxIndex, inlinePreviewSrc]);
 
   function openTasksSheet() {
     const height = Math.round(window.innerHeight * 0.8);
@@ -1338,6 +1381,7 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
               dataTitles={dataTitles}
               sharedItems={sharedItems}
               onImageClick={openGuideImageBySrc}
+              onImagePreview={openInlinePreview}
             />
           ))}
         </div>
@@ -1394,7 +1438,9 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
                       <LinkIcon />
                     </button>
                   </summary>
-                  <div style={{ marginTop: 8 }}>{renderFaqAnswer(item, dataTitles, navigateToAnchor, sharedItems, openGuideImageBySrc)}</div>
+                  <div style={{ marginTop: 8 }}>
+                    {renderFaqAnswer(item, dataTitles, navigateToAnchor, sharedItems, openGuideImageBySrc, openInlinePreview)}
+                  </div>
                   {item.tags && item.tags.length > 0 ? (
                     <div style={{ marginTop: 8, fontSize: 12, color: "var(--text-subtle)" }}>Tags: {item.tags.join(", ")}</div>
                   ) : null}
@@ -1440,6 +1486,7 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
               dataTitles={dataTitles}
               sharedItems={sharedItems}
               onImageClick={openGuideImageBySrc}
+              onImagePreview={openInlinePreview}
             />
           ))}
         </div>
@@ -1562,6 +1609,38 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
           cursor: pointer;
           z-index: 51;
         }
+        .inlinePreviewOverlay {
+          position: fixed;
+          inset: 0;
+          background: var(--overlay);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 24px;
+          z-index: 45;
+        }
+        .inlinePreviewCard {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          padding: 12px;
+          max-width: min(360px, 85vw);
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        .inlinePreviewImage {
+          width: 100%;
+          max-height: 45vh;
+          object-fit: contain;
+          border-radius: 10px;
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          cursor: pointer;
+          display: block;
+        }
+        .inlinePreviewActions {
+          display: flex;
+          justify-content: flex-end;
+          margin-top: 8px;
+        }
         .tasksModalOverlay {
           position: fixed;
           inset: 0;
@@ -1683,6 +1762,35 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
             Close
           </button>
         </>
+      ) : null}
+
+      {inlinePreviewSrc ? (
+        <div
+          className="inlinePreviewOverlay"
+          role="dialog"
+          aria-modal="true"
+          tabIndex={-1}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) closeInlinePreview();
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") closeInlinePreview();
+          }}
+        >
+          <div className="inlinePreviewCard">
+            <img
+              src={inlinePreviewSrc}
+              alt=""
+              className="inlinePreviewImage"
+              onClick={() => openGuideImageBySrc(inlinePreviewSrc)}
+            />
+            <div className="inlinePreviewActions">
+              <button type="button" className="secondary" onClick={closeInlinePreview}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
       ) : null}
 
       {tasksOpen ? (
