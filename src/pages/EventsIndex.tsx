@@ -41,6 +41,7 @@ export function EventCatalogList() {
           <div style={{ display: "grid", gap: 12 }}>
             {sortedEvents.map((ev) => {
               const isComingSoon = ev.status === "coming_soon";
+              const subtitleText = isComingSoon ? "Coming Soon" : ev.subtitle;
               const card = (
                 <div
                   style={{
@@ -70,7 +71,7 @@ export function EventCatalogList() {
                       </span>
                     ) : null}
                   </div>
-                  {ev.subtitle ? <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 4 }}>{ev.subtitle}</div> : null}
+                  {subtitleText ? <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 4 }}>{subtitleText}</div> : null}
                   {ev.taskCosts && ev.taskCosts.length ? (
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
                       {ev.taskCosts.map((cost) => (

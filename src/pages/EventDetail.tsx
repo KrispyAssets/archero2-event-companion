@@ -1440,7 +1440,9 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
           Tasks
         </button>
       </div>
-      {ev.subtitle ? <p style={{ marginTop: 8 }}>{ev.subtitle}</p> : null}
+      {(ev.status === "coming_soon" ? "Coming Soon" : ev.subtitle) ? (
+        <p style={{ marginTop: 8 }}>{ev.status === "coming_soon" ? "Coming Soon" : ev.subtitle}</p>
+      ) : null}
       {ev.lastVerifiedDate ? <p style={{ fontSize: 13 }}>Last verified: {ev.lastVerifiedDate}</p> : null}
 
       <style>{`
