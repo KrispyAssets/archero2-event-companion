@@ -479,6 +479,18 @@ function collectFaqImages(items: FaqItem[]): GuideImageItem[] {
               alt,
             });
           }
+          const markdownMatches = [...block.text.matchAll(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+\"([^\"]+)\")?\)/g)];
+          for (const match of markdownMatches) {
+            const alt = match[1] ?? "";
+            const src = match[2];
+            const caption = match[3];
+            if (!src) continue;
+            images.push({
+              src: resolveImageSrc(src),
+              alt,
+              caption,
+            });
+          }
         }
       }
       continue;
@@ -507,6 +519,18 @@ function collectFaqImages(items: FaqItem[]): GuideImageItem[] {
       images.push({
         src: resolveImageSrc(src),
         alt,
+      });
+    }
+    const markdownMatches = [...item.answer.matchAll(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+\"([^\"]+)\")?\)/g)];
+    for (const match of markdownMatches) {
+      const alt = match[1] ?? "";
+      const src = match[2];
+      const caption = match[3];
+      if (!src) continue;
+      images.push({
+        src: resolveImageSrc(src),
+        alt,
+        caption,
       });
     }
   }

@@ -238,6 +238,12 @@
         <p>No. Line breaking does not remove fish from the pool, so your pool counts stay the same while snapping lines.</p>
       </answer>
     </item>
+    <item faq_id="faq_pack_value" question="What packs give the most value?">
+      <answer>
+        <p>The table below compares each pack by price and lure value.</p>
+        <p>![Fishing event pack value comparison](catalog/shared/fishing_event/images/Prices.png "Pack value comparison for Fishing Event.")</p>
+      </answer>
+    </item>
     <item faq_id="faq_what_to_buy" question="What should I buy in the event shop?">
       <answer>
         <p>Always buy the lures available for silver tickets. They are worth more than they cost every time.</p>

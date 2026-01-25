@@ -126,6 +126,12 @@
         <p>The Fund is the best value per ticket (50 tickets), followed by the daily packs.</p>
       </answer>
     </item>
+    <item faq_id="faq_pack_value" question="What packs give the most value?">
+      <answer>
+        <p>The Fund is considered the best value per ticket.</p>
+        <p>![Summon event pack value comparison](catalog/shared/summon_event/Prices.png "Pack value comparison for Summon Event.")</p>
+      </answer>
+    </item>
     <item faq_id="progress_carry_over" question="Does progress save between events?">
       <answer>
         <p>Only your luck/pity carries over to the next event. Make sure to spend your tickets and currency before the event ends.</p>
