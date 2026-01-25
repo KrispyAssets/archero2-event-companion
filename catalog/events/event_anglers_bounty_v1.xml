@@ -3,8 +3,9 @@
   event_id="archero2.event.anglers_bounty.v1"
   event_version="1"
   title="Angler's Bounty"
-  subtitle="Fishing event guide, tasks, and strategy reference."
-  last_verified_date="2026-01-24">
+  subtitle="Fishing tools, event guide, tasks, and strategy reference."
+  last_verified_date="2026-01-24"
+  tier="primary">
   <guided_route_ref path="catalog/events/anglers_bounty_guided.json" />
   <task_group_labels>
     <label group_key="buy__silver_tickets__total" title="Buy Silver Tickets" />
@@ -174,17 +175,17 @@
       <p>Example tension patterns for Lake 1 in the current lake.</p>
       <image_row>
         <image
-          src="catalog/shared/fishing/images/current_lake_tension/zone_1-1.png"
+          src="catalog/shared/fishing_event/images/current_lake_tension/zone_1-1.png"
           alt="Lake 1 rare tension pattern (current lake)"
           caption="Rare"
         />
         <image
-          src="catalog/shared/fishing/images/current_lake_tension/zone_1-2.png"
+          src="catalog/shared/fishing_event/images/current_lake_tension/zone_1-2.png"
           alt="Lake 1 epic tension pattern (current lake)"
           caption="Epic"
         />
         <image
-          src="catalog/shared/fishing/images/current_lake_tension/zone_1-3.png"
+          src="catalog/shared/fishing_event/images/current_lake_tension/zone_1-3.png"
           alt="Lake 1 legendary tension pattern (current lake)"
           caption="Legendary"
         />
@@ -227,6 +228,23 @@
     </section>
   </data>
   <faq>
+    <item faq_id="faq_best_silver_lake" question="Which lake should I fish for the most silver tickets?">
+      <answer>
+        <p>Lake 4 (Polar Glacier) gives the most silver tickets per lure on average (~390 per lure). #data-lake_averages</p>
+        <p>Its tickets per kg are lower than earlier lakes, but the average weight per lure is much higher, so you earn more silver tickets per lure overall.</p>
+      </answer>
+    </item>
+    <item faq_id="faq_line_breaks_pool" question="Does line breaking remove fish from the pool?">
+      <answer>
+        <p>No. Line breaking does not remove fish from the pool, so your pool counts stay the same while snapping lines.</p>
+      </answer>
+    </item>
+    <item faq_id="faq_pack_value" question="What packs give the most value?">
+      <answer>
+        <p>The table below compares each pack by price and lure value.</p>
+        <p>![Fishing event pack value comparison](catalog/shared/fishing_event/images/Prices.png "Pack value comparison for Fishing Event.")</p>
+      </answer>
+    </item>
     <item faq_id="faq_what_to_buy" question="What should I buy in the event shop?">
       <answer>
         <p>Always buy the lures available for silver tickets. They are worth more than they cost every time.</p>
@@ -245,17 +263,6 @@
         <p>Between 230kg-500kg: first place gains 300 gems.</p>
         <p>Between 500kg-1000kg: first place gains 400 gems.</p>
         <p>Above 1000kg: first place gains 500 gems.</p>
-      </answer>
-    </item>
-    <item faq_id="faq_best_silver_lake" question="Which lake should I fish for the most silver tickets?">
-      <answer>
-        <p>Lake 4 (Polar Glacier) gives the most silver tickets per lure on average (~390 per lure). #data-lake_averages</p>
-        <p>Its tickets per kg are lower than earlier lakes, but the average weight per lure is much higher, so you earn more silver tickets per lure overall.</p>
-      </answer>
-    </item>
-    <item faq_id="faq_line_breaks_pool" question="Does line breaking remove fish from the pool?">
-      <answer>
-        <p>No. Line breaking does not remove fish from the pool, so your pool counts stay the same while snapping lines.</p>
       </answer>
     </item>
   </faq>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<event
+  event_id="archero2.event.divine_forging.v1"
+  event_version="1"
+  title="Divine Forging"
+  subtitle="Forging event guide and tasks"
+  tier="secondary"
+  status="coming_soon"
+>
+  <tasks />
+
+  <guide>
+    <section section_id="overview" title="Overview">
+      <p>Coming soon.</p>
+    </section>
+  </guide>
+
+  <faq />
+
+  <data />
+</event>

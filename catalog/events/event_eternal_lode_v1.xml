@@ -3,10 +3,9 @@
   event_id="archero2.event.eternal_lode.v1"
   event_version="1"
   title="Eternal Lode"
-  subtitle="Coming Soon"
+  subtitle="Mining event guide and tasks"
   last_verified_date="2026-01-24"
-  active="false"
-  status="coming_soon"
+  tier="secondary"
 >
   <task_group_labels>
     <label group_key="charge__expedition_stars__total" title="Charge Expedition Stars" />
@@ -102,15 +101,15 @@
     </section>
   </guide>
   <faq>
-    <item faq_id="what_should_i_buy" question="What should I buy?">
-      <answer>
-        <p>From experience, it is best to only buy pickaxes and save drills/bombs for drops or task rewards.</p>
-      </answer>
-    </item>
     <item faq_id="lucky_chests" question="How do lucky chests work?">
       <answer>
         <p>Lucky chests have limited durability. Each click gives tools, event currency, or gems until it runs out, then the chest disappears.</p>
         <p>It does not cost anything to open them, so always open them.</p>
+      </answer>
+    </item>
+    <item faq_id="what_should_i_buy" question="What should I buy?">
+      <answer>
+        <p>From experience, it is best to only buy pickaxes and save drills/bombs for drops or task rewards.</p>
       </answer>
     </item>
     <item faq_id="depth_goal" question="What depth should I aim for?">

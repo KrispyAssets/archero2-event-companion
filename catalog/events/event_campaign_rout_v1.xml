@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<event
+  event_id="archero2.event.campaign_rout.v1"
+  event_version="1"
+  title="Campaign Rout"
+  subtitle="Campaign bonus event guide and tasks"
+  tier="secondary"
+  status="coming_soon"
+>
+  <tasks />
+
+  <guide>
+    <section section_id="overview" title="Overview">
+      <p>Coming soon.</p>
+    </section>
+  </guide>
+
+  <faq />
+
+  <data />
+</event>

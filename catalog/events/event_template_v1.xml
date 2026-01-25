@@ -5,7 +5,6 @@
   title="Example Event"
   subtitle="Event guide and tasks"
   last_verified_date="YYYY-MM-DD"
-  active="false"
   status="coming_soon"
 >
   <task_group_labels>

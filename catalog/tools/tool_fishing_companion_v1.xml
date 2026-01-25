@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tool tool_id="archero2.tool.fishing_companion.v1" tool_type="fishing_calculator" title="Fishing Companion">
   <description>Track pool counts, legendary odds, and line breaks.</description>
-  <data_ref path="catalog/shared/fishing/fishing_tool_data_v1.json" />
+  <data_ref path="catalog/shared/fishing_event/fishing_tool_data_v1.json" />
   <settings default_set_id="set_1" />
 </tool>

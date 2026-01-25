@@ -3,9 +3,9 @@
   event_id="archero2.event.vibrant_voyage.v1"
   event_version="1"
   title="Vibrant Voyage"
-  subtitle="Coming Soon"
+  subtitle="Bingo event guide and tasks"
   last_verified_date="2026-01-24"
-  status="coming_soon"
+  tier="primary"
 >
   <tasks>
     <task task_id="buy_free_pack_total_tier_1" display_order="10" requirement_action="buy" requirement_object="free_pack" requirement_scope="total" requirement_target_value="1" reward_type="tickets" reward_amount="1" />
@@ -88,4 +88,44 @@
     <task task_id="use_gems_total_tier_4" display_order="1130" requirement_action="use" requirement_object="gems" requirement_scope="total" requirement_target_value="4000" reward_type="tickets" reward_amount="2" />
     <task task_id="use_gems_total_tier_5" display_order="1140" requirement_action="use" requirement_object="gems" requirement_scope="total" requirement_target_value="5000" reward_type="tickets" reward_amount="2" />
   </tasks>
+  <guide>
+    <section section_id="general_guide" title="General Guide">
+      <p>• Complete all tasks.</p>
+      <p>• Use Goldwind Tickets to draw (long press; results are RNG).</p>
+      <p>• A jackpot triggers if you get all 3 balloon tickets on one board. It does not carry to the next board.</p>
+      <p>• Spend currency in the shop (keys recommended).</p>
+    </section>
+  </guide>
+  <faq>
+    <item faq_id="row_prize" question="How do I get a prize?">
+      <answer>
+        <p>Complete any line of 5 to get the reward at the end of that line (horizontal, vertical, or diagonal).</p>
+      </answer>
+    </item>
+    <item faq_id="board_clear" question="What clears a board?">
+      <answer>
+        <p>Completing 3 lines (five in a row) clears the board.</p>
+      </answer>
+    </item>
+    <item faq_id="grand_prize" question="How do I trigger the Grand Prize?">
+      <answer>
+        <p>Getting 3 balloon tickets in a row triggers the Grand Prize.</p>
+      </answer>
+    </item>
+    <item faq_id="buy_tickets_with_gems" question="Can I buy tickets with gems?">
+      <answer>
+        <p>Yes. Extra tickets cost 150 gems each.</p>
+      </answer>
+    </item>
+    <item faq_id="worth_buying_tickets" question="Is it worth buying extra tickets?">
+      <answer>
+        <p>It is generally worth buying extra tickets up to the 125 ticket reward for the extra keys, or if you are close to a major purchase (e.g., Starcores).</p>
+      </answer>
+    </item>
+    <item faq_id="balloon_pity" question="Is there a pity system for balloon rides?">
+      <answer>
+        <p>Yes, there appears to be a hidden pity system. You are guaranteed at least one ride.</p>
+      </answer>
+    </item>
+  </faq>
 </event>

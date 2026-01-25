@@ -1,0 +1,25 @@
+{
+  "timeZone": "UTC",
+  "events": [
+    {
+      "eventId": "archero2.event.summon_event.v1",
+      "start": "2026-01-24",
+      "end": "2026-01-30"
+    },
+    {
+      "eventId": "archero2.event.vibrant_voyage.v1",
+      "start": "2026-01-31",
+      "end": "2026-02-06"
+    },
+    {
+      "eventId": "archero2.event.eternal_lode.v1",
+      "start": "2026-01-31",
+      "end": "2026-02-06"
+    },
+    {
+      "eventId": "archero2.event.campaign_rout.v1",
+      "start": "2026-01-24",
+      "end": "2026-01-30"
+    }
+  ]
+}

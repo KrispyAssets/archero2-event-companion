@@ -63,17 +63,17 @@
             "label": "Media",
             "images": [
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_1-1.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_1-1.png",
                 "alt": "Lakehouse rare tension pattern",
                 "caption": "Rare"
               },
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_1-2.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_1-2.png",
                 "alt": "Lakehouse epic tension pattern",
                 "caption": "Epic"
               },
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_1-3.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_1-3.png",
                 "alt": "Lakehouse legendary tension pattern",
                 "caption": "Legendary"
               }
@@ -127,17 +127,17 @@
             "label": "Media",
             "images": [
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_2-1.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_2-1.png",
                 "alt": "Sunset Coast rare tension pattern",
                 "caption": "Rare"
               },
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_2-2.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_2-2.png",
                 "alt": "Sunset Coast epic tension pattern",
                 "caption": "Epic"
               },
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_2-3.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_2-3.png",
                 "alt": "Sunset Coast legendary tension pattern",
                 "caption": "Legendary"
               }
@@ -198,17 +198,17 @@
             "label": "Media",
             "images": [
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_3-1.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_3-1.png",
                 "alt": "Oceanic Abyss rare tension pattern",
                 "caption": "Rare"
               },
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_3-2.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_3-2.png",
                 "alt": "Oceanic Abyss epic tension pattern",
                 "caption": "Epic"
               },
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_3-3.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_3-3.png",
                 "alt": "Oceanic Abyss legendary tension pattern",
                 "caption": "Legendary"
               }
@@ -255,17 +255,17 @@
             "label": "Media",
             "images": [
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_4-1.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_4-1.png",
                 "alt": "Polar Glacier rare tension pattern",
                 "caption": "Rare"
               },
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_4-2.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_4-2.png",
                 "alt": "Polar Glacier epic tension pattern",
                 "caption": "Epic"
               },
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_4-3.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_4-3.png",
                 "alt": "Polar Glacier legendary tension pattern",
                 "caption": "Legendary"
               }
@@ -328,17 +328,17 @@
             "label": "Media",
             "images": [
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_1-1.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_1-1.png",
                 "alt": "Lakehouse rare tension pattern",
                 "caption": "Rare"
               },
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_1-2.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_1-2.png",
                 "alt": "Lakehouse epic tension pattern",
                 "caption": "Epic"
               },
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_1-3.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_1-3.png",
                 "alt": "Lakehouse legendary tension pattern",
                 "caption": "Legendary"
               }
@@ -392,17 +392,17 @@
             "label": "Media",
             "images": [
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_2-1.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_2-1.png",
                 "alt": "Sunset Coast rare tension pattern",
                 "caption": "Rare"
               },
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_2-2.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_2-2.png",
                 "alt": "Sunset Coast epic tension pattern",
                 "caption": "Epic"
               },
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_2-3.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_2-3.png",
                 "alt": "Sunset Coast legendary tension pattern",
                 "caption": "Legendary"
               }
@@ -453,17 +453,17 @@
             "label": "Media",
             "images": [
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_3-1.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_3-1.png",
                 "alt": "Oceanic Abyss rare tension pattern",
                 "caption": "Rare"
               },
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_3-2.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_3-2.png",
                 "alt": "Oceanic Abyss epic tension pattern",
                 "caption": "Epic"
               },
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_3-3.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_3-3.png",
                 "alt": "Oceanic Abyss legendary tension pattern",
                 "caption": "Legendary"
               }
@@ -510,17 +510,17 @@
             "label": "Media",
             "images": [
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_4-1.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_4-1.png",
                 "alt": "Polar Glacier rare tension pattern",
                 "caption": "Rare"
               },
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_4-2.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_4-2.png",
                 "alt": "Polar Glacier epic tension pattern",
                 "caption": "Epic"
               },
               {
-                "src": "catalog/shared/fishing/images/current_lake_tension/zone_4-3.png",
+                "src": "catalog/shared/fishing_event/images/current_lake_tension/zone_4-3.png",
                 "alt": "Polar Glacier legendary tension pattern",
                 "caption": "Legendary"
               }

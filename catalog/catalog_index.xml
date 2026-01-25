@@ -7,6 +7,10 @@
         <event_ref path="catalog/events/event_vibrant_voyage_v1.xml" />
         <event_ref path="catalog/events/event_godforge_genesis_v1.xml" />
         <event_ref path="catalog/events/event_eternal_lode_v1.xml" />
+        <event_ref path="catalog/events/event_campaign_rout_v1.xml" />
+        <event_ref path="catalog/events/event_cave_rout_v1.xml" />
+        <event_ref path="catalog/events/event_divine_forging_v1.xml" />
+        <event_ref path="catalog/events/event_seal_rout_v1.xml" />
     </events>
 
     <tools>
