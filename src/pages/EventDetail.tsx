@@ -1969,6 +1969,11 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
                       const costShared = sharedItems[item.costItemId];
                       const maxQty = item.maxQty ?? null;
                       const canIncrement = maxQty === null || qty < maxQty;
+                      const fallbackLabel = shared?.fallbackLabel ?? shared?.label ?? label;
+                      const shortLabel = shared?.shortLabel ?? fallbackLabel?.slice(0, 1) ?? label.slice(0, 1);
+                      const costFallbackLabel = costShared?.fallbackLabel ?? costShared?.label ?? item.costItemId;
+                      const costShortLabel = costShared?.shortLabel ?? costFallbackLabel.slice(0, 1);
+
                       return (
                         <div
                           key={item.shopItemId}
@@ -2016,7 +2021,7 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
                                     background: "var(--surface)",
                                   }}
                                 >
-                                  {label.slice(0, 1)}
+                                  {shortLabel}
                                 </div>
                               )}
                             </button>
@@ -2033,7 +2038,7 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
                                   style={{ display: "block" }}
                                 />
                               ) : (
-                                <span style={{ fontWeight: 700 }}>{(costShared?.label ?? item.costItemId).slice(0, 1)}</span>
+                                <span style={{ fontWeight: 700 }}>{costShortLabel}</span>
                               )}
                               {item.cost.toLocaleString()}
                             </div>
@@ -2098,6 +2103,7 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
                   {Object.entries(shopTotals).map(([itemId, amount]) => {
                     const item = sharedItems[itemId];
                     const label = item?.label ?? itemId.replace(/_/g, " ");
+                    const fallbackLabel = item?.fallbackLabel ?? label;
                     return (
                       <div
                         key={itemId}
@@ -2121,7 +2127,7 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
                             style={{ display: "block" }}
                           />
                         ) : (
-                          <span style={{ fontWeight: 700 }}>{label.slice(0, 1)}</span>
+                          <span style={{ fontWeight: 700 }}>{fallbackLabel}</span>
                         )}
                         {amount.toLocaleString()}
                       </div>

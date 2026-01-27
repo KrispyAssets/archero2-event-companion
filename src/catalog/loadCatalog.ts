@@ -539,6 +539,8 @@ export async function loadSharedItems(sharedPaths: string[]): Promise<Record<str
       const label = getAttr(itemEl, "label");
       const icon = itemEl.getAttribute("icon") ?? undefined;
       const aliasesAttr = itemEl.getAttribute("aliases");
+      const fallbackLabel = itemEl.getAttribute("fallback_label") ?? undefined;
+      const shortLabel = itemEl.getAttribute("short_label") ?? undefined;
       const link = itemEl.getAttribute("link") ?? undefined;
       const linkEnabledAttr = itemEl.getAttribute("link_enabled");
       const linkEnabled = linkEnabledAttr === null ? undefined : linkEnabledAttr !== "false";
@@ -549,7 +551,7 @@ export async function loadSharedItems(sharedPaths: string[]): Promise<Record<str
             .filter((alias) => alias.length > 0)
         : undefined;
 
-      const item: SharedItem = { itemId, label, icon, aliases, link, linkEnabled };
+      const item: SharedItem = { itemId, label, icon, fallbackLabel, shortLabel, aliases, link, linkEnabled };
       items[itemId] = item;
       if (aliases) {
         for (const alias of aliases) {

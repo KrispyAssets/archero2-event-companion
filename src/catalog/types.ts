@@ -38,6 +38,8 @@ export type SharedItem = {
   itemId: string;
   label: string;
   icon?: string;
+  fallbackLabel?: string;
+  shortLabel?: string;
   aliases?: string[];
   link?: string;
   linkEnabled?: boolean;
