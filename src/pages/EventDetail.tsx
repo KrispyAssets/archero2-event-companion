@@ -1640,16 +1640,16 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
                   }}
                 >
                   <img
-                    src={`${import.meta.env.BASE_URL}catalog/shared/misc/${
+                    src={`${import.meta.env.BASE_URL}catalog/shared/items/misc/${
                       cost.key === "gems"
-                        ? "36px-Gem.png"
+                        ? "icon_gem.png"
                         : cost.key === "chromatic_keys"
-                          ? "24px-Chromatic_Chest_Key.png"
+                          ? "icon_chromatic_key.png"
                           : cost.key === "obsidian_keys"
-                            ? "24px-Obsidian_Chest_Key.png"
+                            ? "icon_obsidian_key.png"
                             : cost.key === "wish_tokens"
-                              ? "24px-Wish_Token.png"
-                              : "24px-Shovel.png"
+                              ? "icon_wish_coin.png"
+                              : "icon_shovel.png"
                     }`}
                     alt=""
                     width={16}

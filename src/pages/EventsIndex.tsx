@@ -7,13 +7,13 @@ export function EventCatalogList() {
   const catalog = useCatalogIndex();
   const devModeEnabled = useMemo(() => import.meta.env.DEV && localStorage.getItem("dev_mode") === "1", []);
   const formatAmount = (value: number) => value.toLocaleString();
-  const iconBase = `${import.meta.env.BASE_URL}catalog/shared/misc/`;
+  const iconBase = `${import.meta.env.BASE_URL}catalog/shared/items/misc/`;
   const costIcons: Record<string, string> = {
-    gems: `${iconBase}36px-Gem.png`,
-    chromatic_keys: `${iconBase}24px-Chromatic_Chest_Key.png`,
-    obsidian_keys: `${iconBase}24px-Obsidian_Chest_Key.png`,
-    wish_tokens: `${iconBase}24px-Wish_Token.png`,
-    shovels: `${iconBase}24px-Shovel.png`,
+    gems: `${iconBase}icon_gem.png`,
+    chromatic_keys: `${iconBase}icon_chromatic_key.png`,
+    obsidian_keys: `${iconBase}icon_obsidian_key.png`,
+    wish_tokens: `${iconBase}icon_wish_coin.png`,
+    shovels: `${iconBase}icon_shovel.png`,
   };
   const events = catalog.status === "ready" ? catalog.events : [];
   const sortedEvents = useMemo(() => {

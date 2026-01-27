@@ -150,7 +150,7 @@
         <p>If you can complete an artifact set, it is generally worth it.</p>
         <p>For example, purchasing the feather would activate the set bonus, resulting in a 4% increase to Attack Power and Max Health.</p>
         <image
-          src="catalog/shared/misc/legendary_artifact_example.png"
+          src="catalog/shared/misc/images/legendary_artifact_example.png"
           alt="Artifact set bonus example showing +4% ATK PWR and +4% Max HP"
           caption="Completing a set activates the bonus."
         />
