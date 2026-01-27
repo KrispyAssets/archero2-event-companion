@@ -7,7 +7,7 @@ export function EventCatalogList() {
   const catalog = useCatalogIndex();
   const devModeEnabled = useMemo(() => import.meta.env.DEV && localStorage.getItem("dev_mode") === "1", []);
   const formatAmount = (value: number) => value.toLocaleString();
-  const iconBase = `${import.meta.env.BASE_URL}catalog/shared/items/misc/`;
+  const iconBase = `${import.meta.env.BASE_URL}catalog/shared/items/currencies/`;
   const costIcons: Record<string, string> = {
     gems: `${iconBase}icon_gem.png`,
     chromatic_keys: `${iconBase}icon_chromatic_key.png`,

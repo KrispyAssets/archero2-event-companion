@@ -190,17 +190,17 @@
       <p>Example tension patterns for Lake 1 in the current lake.</p>
       <image_row>
         <image
-          src="catalog/shared/fishing_event/images/current_lake_tension/zone_1-1.png"
+          src="catalog/shared/fishing_event/media/current_lake_tension/zone_1-1.png"
           alt="Lake 1 rare tension pattern (current lake)"
           caption="Rare"
         />
         <image
-          src="catalog/shared/fishing_event/images/current_lake_tension/zone_1-2.png"
+          src="catalog/shared/fishing_event/media/current_lake_tension/zone_1-2.png"
           alt="Lake 1 epic tension pattern (current lake)"
           caption="Epic"
         />
         <image
-          src="catalog/shared/fishing_event/images/current_lake_tension/zone_1-3.png"
+          src="catalog/shared/fishing_event/media/current_lake_tension/zone_1-3.png"
           alt="Lake 1 legendary tension pattern (current lake)"
           caption="Legendary"
         />
@@ -257,7 +257,7 @@
     <item faq_id="faq_pack_value" question="What packs give the most value?">
       <answer>
         <p>The table below compares each pack by price and lure value.</p>
-        <p>![Fishing event pack value comparison](catalog/shared/fishing_event/images/Prices.png "Pack value comparison for Fishing Event.")</p>
+        <p>![Fishing event pack value comparison](catalog/shared/fishing_event/media/Prices.png "Pack value comparison for Fishing Event.")</p>
       </answer>
     </item>
     <item faq_id="faq_what_to_buy" question="What should I buy in the event shop?">

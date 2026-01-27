@@ -10,10 +10,10 @@
   <item item_id="blessed_rune" label="Blessed Rune" />
   <item item_id="artifact" label="Artifact" />
   <item item_id="advanced_enchantium" label="Advanced Enchantium" />
-  <item item_id="promised_shovels" label="Promised Shovels" icon="catalog/shared/items/misc/icon_promised_shovel.png" />
-  <item item_id="gems" label="Gems" icon="catalog/shared/items/misc/icon_gem.png" />
-  <item item_id="chromatic_keys" label="Chromatic Keys" icon="catalog/shared/items/misc/icon_chromatic_key.png" />
-  <item item_id="obsidian_keys" label="Obsidian Keys" icon="catalog/shared/items/misc/icon_obsidian_key.png" />
-  <item item_id="wish_tokens" label="Wish Tokens" icon="catalog/shared/items/misc/icon_wish_coin.png" />
-  <item item_id="shovels" label="Shovels" icon="catalog/shared/items/misc/icon_shovel.png" />
+  <item item_id="promised_shovels" label="Promised Shovels" icon="catalog/shared/items/currencies/icon_promised_shovel.png" />
+  <item item_id="gems" label="Gems" icon="catalog/shared/items/currencies/icon_gem.png" />
+  <item item_id="chromatic_keys" label="Chromatic Keys" icon="catalog/shared/items/currencies/icon_chromatic_key.png" />
+  <item item_id="obsidian_keys" label="Obsidian Keys" icon="catalog/shared/items/currencies/icon_obsidian_key.png" />
+  <item item_id="wish_tokens" label="Wish Tokens" icon="catalog/shared/items/currencies/icon_wish_coin.png" />
+  <item item_id="shovels" label="Shovels" icon="catalog/shared/items/currencies/icon_shovel.png" />
 </items>

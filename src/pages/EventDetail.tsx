@@ -1640,7 +1640,7 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
                   }}
                 >
                   <img
-                    src={`${import.meta.env.BASE_URL}catalog/shared/items/misc/${
+                    src={`${import.meta.env.BASE_URL}catalog/shared/items/currencies/${
                       cost.key === "gems"
                         ? "icon_gem.png"
                         : cost.key === "chromatic_keys"
