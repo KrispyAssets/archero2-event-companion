@@ -171,6 +171,7 @@ export type EventShopItem = {
   cost: number;
   costItemId: string;
   bundleSize?: number;
+  frame?: string;
   maxQty?: number;
   goalGroup?: "silver" | "gold";
   goalKey?: string;

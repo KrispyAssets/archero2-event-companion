@@ -1990,7 +1990,19 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
                           }}
                         >
                           <div style={{ display: "grid", gap: 8, justifyItems: "center", textAlign: "center" }}>
-                            <div style={{ fontWeight: 700 }}>{label}</div>
+                            <div
+                              style={{
+                                fontWeight: 700,
+                                minHeight: 36,
+                                lineHeight: 1.15,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                textAlign: "center",
+                              }}
+                            >
+                              {label}
+                            </div>
                             <button
                               type="button"
                               className="ghost"
@@ -2000,30 +2012,64 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
                               style={{ padding: 0, border: "none", background: "transparent" }}
                               aria-label={`Show details for ${label}`}
                             >
-                              {shared?.icon ? (
-                                <img
-                                  src={`${import.meta.env.BASE_URL}${shared.icon}`}
-                                  alt=""
-                                  width={40}
-                                  height={40}
-                                  style={{ display: "block" }}
-                                />
-                              ) : (
-                                <div
-                                  style={{
-                                    width: 40,
-                                    height: 40,
-                                    borderRadius: 10,
-                                    border: "1px solid var(--border)",
-                                    display: "grid",
-                                    placeItems: "center",
-                                    fontWeight: 700,
-                                    background: "var(--surface)",
-                                  }}
-                                >
-                                  {shortLabel}
-                                </div>
-                              )}
+                              <div style={{ position: "relative", width: 48, height: 48 }}>
+                                {item.frame ? (
+                                  <img
+                                    src={`${import.meta.env.BASE_URL}catalog/shared/items/frames/Frame_Quality_${item.frame}.png`}
+                                    alt=""
+                                    width={48}
+                                    height={48}
+                                    style={{ position: "absolute", inset: 0, display: "block" }}
+                                  />
+                                ) : null}
+                                {shared?.icon ? (
+                                  <img
+                                    src={`${import.meta.env.BASE_URL}${shared.icon}`}
+                                    alt=""
+                                    width={32}
+                                    height={32}
+                                    style={{
+                                      position: "absolute",
+                                      inset: 8,
+                                      display: "block",
+                                      borderRadius: 8,
+                                    }}
+                                  />
+                                ) : (
+                                  <div
+                                    style={{
+                                      position: "absolute",
+                                      inset: 8,
+                                      borderRadius: 8,
+                                      border: "1px solid var(--border)",
+                                      display: "grid",
+                                      placeItems: "center",
+                                      fontWeight: 700,
+                                      background: "var(--surface)",
+                                    }}
+                                  >
+                                    {shortLabel}
+                                  </div>
+                                )}
+                                {item.bundleSize && item.bundleSize > 1 ? (
+                                  <div
+                                    style={{
+                                      position: "absolute",
+                                      right: -2,
+                                      bottom: -2,
+                                      background: "var(--surface-2)",
+                                      border: "1px solid var(--border)",
+                                      borderRadius: 10,
+                                      padding: "1px 4px",
+                                      fontSize: 10,
+                                      fontWeight: 700,
+                                      lineHeight: 1,
+                                    }}
+                                  >
+                                    {item.bundleSize}
+                                  </div>
+                                ) : null}
+                              </div>
                             </button>
                             <div style={{ fontSize: 12, color: "var(--text-muted)" }}>
                               Purchases left: {maxQty ?? 999}

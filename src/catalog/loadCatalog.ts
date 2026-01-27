@@ -421,6 +421,7 @@ function parseShop(eventEl: Element): EventShop | undefined {
       cost: getAttrInt(itemEl, "cost"),
       costItemId: getAttr(itemEl, "cost_item"),
       bundleSize: itemEl.getAttribute("bundle") ? getAttrInt(itemEl, "bundle") : undefined,
+      frame: itemEl.getAttribute("frame") ?? undefined,
       maxQty: itemEl.getAttribute("max_qty") ? getAttrInt(itemEl, "max_qty") : undefined,
       goalGroup: (itemEl.getAttribute("goal_group") as "silver" | "gold" | null) ?? undefined,
       goalKey: itemEl.getAttribute("goal_key") ?? undefined,
