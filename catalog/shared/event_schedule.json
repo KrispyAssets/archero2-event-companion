@@ -2,6 +2,16 @@
   "timeZone": "UTC",
   "events": [
     {
+      "eventId": "archero2.event.anglers_bounty.v1",
+      "start": "2026-01-10",
+      "end": "2026-01-16"
+    },
+    {
+      "eventId": "archero2.event.cave_rout.v1",
+      "start": "2026-01-10",
+      "end": "2026-01-16"
+    },
+    {
       "eventId": "archero2.event.summon_event.v1",
       "start": "2026-01-24",
       "end": "2026-01-30"

@@ -157,4 +157,12 @@
       </answer>
     </item>
   </faq>
+
+  <shop>
+    <section section_id="summon_shop" title="Summon Shop (Placeholder)">
+      <item item_id="aeon_core" label="Aeon Core" cost="0" cost_item="summon_tickets" description="Placeholder cost. Update with real value." />
+      <item item_id="legendary_character" label="Legendary Character" cost="0" cost_item="summon_tickets" description="Placeholder cost. Update with real value." />
+      <item item_id="artifact" label="Artifact" cost="0" cost_item="summon_tickets" description="Placeholder cost. Update with real value." />
+    </section>
+  </shop>
 </event>

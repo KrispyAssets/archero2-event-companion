@@ -2,6 +2,15 @@
 <items>
   <item item_id="aeon_core" label="Aeon Core" aliases="eon_core, aeoncore, eoncore" link="#faq-aeon_core_intro" />
   <item item_id="dice" label="Dice" />
+  <item item_id="summon_tickets" label="Summon Tickets" />
+  <item item_id="silver_tickets" label="Silver Tickets" />
+  <item item_id="golden_tickets" label="Golden Tickets" />
+  <item item_id="lures" label="Lures" />
+  <item item_id="etched_rune" label="Etched Rune" />
+  <item item_id="blessed_rune" label="Blessed Rune" />
+  <item item_id="artifact" label="Artifact" />
+  <item item_id="advanced_enchantium" label="Advanced Enchantium" />
+  <item item_id="promised_shovels" label="Promised Shovels" icon="catalog/shared/misc/24px-Shovel.png" />
   <item item_id="gems" label="Gems" icon="catalog/shared/misc/36px-Gem.png" />
   <item item_id="chromatic_keys" label="Chromatic Keys" icon="catalog/shared/misc/24px-Chromatic_Chest_Key.png" />
   <item item_id="obsidian_keys" label="Obsidian Keys" icon="catalog/shared/misc/24px-Obsidian_Chest_Key.png" />
