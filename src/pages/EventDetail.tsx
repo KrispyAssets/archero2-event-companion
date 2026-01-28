@@ -1973,6 +1973,7 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
                       const shortLabel = shared?.shortLabel ?? fallbackLabel?.slice(0, 1) ?? label.slice(0, 1);
                       const costFallbackLabel = costShared?.fallbackLabel ?? costShared?.label ?? item.costItemId;
                       const costShortLabel = costShared?.shortLabel ?? costFallbackLabel.slice(0, 1);
+                      const frame = item.frame ?? shared?.frame;
 
                       return (
                         <div
@@ -2013,9 +2014,9 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
                               aria-label={`Show details for ${label}`}
                             >
                               <div style={{ position: "relative", width: 48, height: 48 }}>
-                                {item.frame ? (
+                                {frame ? (
                                   <img
-                                    src={`${import.meta.env.BASE_URL}catalog/shared/items/frames/Frame_Quality_${item.frame}.png`}
+                                    src={`${import.meta.env.BASE_URL}catalog/shared/items/frames/Frame_Quality_${frame}.png`}
                                     alt=""
                                     width={48}
                                     height={48}
@@ -2030,7 +2031,9 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
                                     height={32}
                                     style={{
                                       position: "absolute",
-                                      inset: 8,
+                                      left: "50%",
+                                      top: "50%",
+                                      transform: "translate(-50%, -50%)",
                                       display: "block",
                                       borderRadius: 8,
                                     }}
@@ -2039,7 +2042,11 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
                                   <div
                                     style={{
                                       position: "absolute",
-                                      inset: 8,
+                                      left: "50%",
+                                      top: "50%",
+                                      transform: "translate(-50%, -50%)",
+                                      width: 32,
+                                      height: 32,
                                       borderRadius: 8,
                                       border: "1px solid var(--border)",
                                       display: "grid",

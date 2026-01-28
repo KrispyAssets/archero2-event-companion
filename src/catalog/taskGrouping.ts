@@ -20,7 +20,7 @@ const GROUP_LABELS: Record<string, string> = {
   "claim__afk_rewards__total": "Claim AFK Rewards",
   "fight__arena__total": "Arena",
   "collect__free_fund__total": "Daily Fund",
-  "use__chromatic_keys__total": "Use Chromatic Keys",
+  "use__chromatic_keys__total": "Use Chromatic Key",
   "use__obsidian_keys__total": "Use Obsidian Keys",
   "use__wish_tokens__total": "Use Wishes",
   "use__gems__total": "Use Gems",

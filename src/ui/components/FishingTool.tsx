@@ -2126,7 +2126,7 @@ export default function FishingToolView({
                 <div style={{ fontWeight: 600, fontSize: 12 }}>Silver Ticket Shop</div>
                 <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))" }}>
                   <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
-                    Etched Rune (32,400)
+                    Epic Etched Rune (32,400)
                     <input
                       type="text"
                       inputMode="numeric"
@@ -2139,7 +2139,7 @@ export default function FishingToolView({
                     />
                   </label>
                   <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
-                    Blessed Rune (4,050)
+                    Epic Blessing Rune (4,050)
                     <input
                       type="text"
                       inputMode="numeric"
@@ -2168,7 +2168,7 @@ export default function FishingToolView({
                 <div style={{ fontWeight: 600, fontSize: 12 }}>Golden Ticket Shop</div>
                 <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))" }}>
                   <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
-                    Etched Rune (16 gold)
+                    Epic Etched Rune (16 gold)
                     <input
                       type="text"
                       inputMode="numeric"
@@ -2194,7 +2194,7 @@ export default function FishingToolView({
                     />
                   </label>
                   <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
-                    Ruin Shovels (3 for 1 gold)
+                    Ruin Shovel (3 for 1 gold)
                     <input
                       type="text"
                       inputMode="numeric"
@@ -2207,7 +2207,7 @@ export default function FishingToolView({
                     />
                   </label>
                   <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
-                    Promised Shovels (2 for 1 gold)
+                    Promised Shovel (2 for 1 gold)
                     <input
                       type="text"
                       inputMode="numeric"
@@ -2220,7 +2220,7 @@ export default function FishingToolView({
                     />
                   </label>
                   <label style={{ display: "grid", gap: 4, fontSize: 12 }}>
-                    Chromatic Keys (5 for 4 gold)
+                    Chromatic Key (5 for 4 gold)
                     <input
                       type="text"
                       inputMode="numeric"

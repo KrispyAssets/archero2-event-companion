@@ -327,7 +327,7 @@ function parseToolDefinition(doc: Document): ToolDefinition | null {
 
 const COST_LABELS: Record<string, string> = {
   gems: "Gems",
-  chromatic_keys: "Chromatic Keys",
+  chromatic_keys: "Chromatic Key",
   obsidian_keys: "Obsidian Keys",
   wish_tokens: "Wish Tokens",
   shovels: "Shovels",
@@ -542,6 +542,7 @@ export async function loadSharedItems(sharedPaths: string[]): Promise<Record<str
       const aliasesAttr = itemEl.getAttribute("aliases");
       const fallbackLabel = itemEl.getAttribute("fallback_label") ?? undefined;
       const shortLabel = itemEl.getAttribute("short_label") ?? undefined;
+      const frame = itemEl.getAttribute("frame") ?? undefined;
       const link = itemEl.getAttribute("link") ?? undefined;
       const linkEnabledAttr = itemEl.getAttribute("link_enabled");
       const linkEnabled = linkEnabledAttr === null ? undefined : linkEnabledAttr !== "false";
@@ -552,7 +553,7 @@ export async function loadSharedItems(sharedPaths: string[]): Promise<Record<str
             .filter((alias) => alias.length > 0)
         : undefined;
 
-      const item: SharedItem = { itemId, label, icon, fallbackLabel, shortLabel, aliases, link, linkEnabled };
+      const item: SharedItem = { itemId, label, icon, fallbackLabel, shortLabel, frame, aliases, link, linkEnabled };
       items[itemId] = item;
       if (aliases) {
         for (const alias of aliases) {
