@@ -7,6 +7,8 @@ type ScheduleEntry = {
   start: string;
   end: string;
   label?: string;
+  icon?: string;
+  accent?: string;
 };
 
 type ScheduleFile = {
@@ -15,15 +17,15 @@ type ScheduleFile = {
 
 type ScheduleState = { status: "loading" } | { status: "error"; error: string } | { status: "ready"; entries: ScheduleEntry[] };
 
-type DayCell = {
-  date: Date;
-  entries: ScheduleEntryView[];
-};
-
 type ScheduleEntryView = ScheduleEntry & {
   title: string;
   startMs: number;
   endMs: number;
+};
+
+type WeekRow = {
+  start: Date;
+  dates: Date[];
 };
 
 function parseUtcDate(dateStr: string): { year: number; month: number; day: number } | null {
@@ -45,6 +47,27 @@ function toUtcMs(parts: { year: number; month: number; day: number }, endOfDay =
 
 function formatRange(start: string, end: string): string {
   return `${start} → ${end}`;
+}
+
+function formatShortRange(start: string, end: string): string {
+  const startParts = parseUtcDate(start);
+  const endParts = parseUtcDate(end);
+  if (!startParts || !endParts) return formatRange(start, end);
+  return `${startParts.month}/${startParts.day} - ${endParts.month}/${endParts.day}`;
+}
+
+function hashHue(value: string): number {
+  let hash = 0;
+  for (let i = 0; i < value.length; i += 1) {
+    hash = (hash * 31 + value.charCodeAt(i)) % 360;
+  }
+  return hash;
+}
+
+function buildInitials(label: string): string {
+  const parts = label.split(" ").filter((part) => part.length > 0);
+  const letters = parts.slice(0, 2).map((part) => part.charAt(0));
+  return letters.join("").toUpperCase() || label.slice(0, 2).toUpperCase();
 }
 
 function isSameUtcDay(date: Date, now: Date): boolean {
@@ -111,30 +134,21 @@ export default function EventSchedule() {
     const year = monthCursor.getUTCFullYear();
     const month = monthCursor.getUTCMonth();
     const firstDay = new Date(Date.UTC(year, month, 1));
-    const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
-    const startWeekday = firstDay.getUTCDay();
+    const lastDay = new Date(Date.UTC(year, month + 1, 0));
+    const start = new Date(Date.UTC(year, month, 1 - firstDay.getUTCDay()));
+    const end = new Date(Date.UTC(year, month, lastDay.getUTCDate() + (6 - lastDay.getUTCDay())));
+    const weeks: WeekRow[] = [];
+    const dayMs = 24 * 60 * 60 * 1000;
 
-    const cells: DayCell[] = [];
-    for (let i = 0; i < startWeekday; i += 1) {
-      const date = new Date(Date.UTC(year, month, i - startWeekday + 1));
-      cells.push({ date, entries: [] });
+    for (let time = start.getTime(); time <= end.getTime(); time += 7 * dayMs) {
+      const dates: Date[] = [];
+      for (let i = 0; i < 7; i += 1) {
+        dates.push(new Date(time + i * dayMs));
+      }
+      weeks.push({ start: new Date(time), dates });
     }
 
-    for (let day = 1; day <= daysInMonth; day += 1) {
-      const date = new Date(Date.UTC(year, month, day));
-      const dayStart = Date.UTC(year, month, day, 0, 0, 0, 0);
-      const dayEnd = Date.UTC(year, month, day, 23, 59, 59, 999);
-      const entries = scheduleEntries.filter((entry) => entry.startMs <= dayEnd && entry.endMs >= dayStart);
-      cells.push({ date, entries });
-    }
-
-    const totalCells = Math.ceil(cells.length / 7) * 7;
-    for (let i = cells.length; i < totalCells; i += 1) {
-      const date = new Date(Date.UTC(year, month, daysInMonth + (i - cells.length) + 1));
-      cells.push({ date, entries: [] });
-    }
-
-    return { year, month, cells };
+    return { year, month, weeks };
   }, [monthCursor, scheduleEntries]);
 
   const history = useMemo(() => {
@@ -174,59 +188,154 @@ export default function EventSchedule() {
       {scheduleState.status === "error" && <div style={{ color: "crimson" }}>Error: {scheduleState.error}</div>}
 
       {scheduleState.status === "ready" ? (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, minmax(0, 1fr))", gap: 8 }}>
-          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-            <div key={day} style={{ fontSize: 12, color: "var(--text-subtle)", textAlign: "center" }}>
-              {day}
-            </div>
-          ))}
-          {calendar.cells.map((cell, index) => {
-            const isCurrentMonth = cell.date.getUTCMonth() === calendar.month;
-            const isToday = isSameUtcDay(cell.date, now);
-            const displayEntries = cell.entries.slice(0, 2);
-            const extraCount = cell.entries.length - displayEntries.length;
-            return (
+        <div style={{ display: "grid", gap: 10 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(7, minmax(0, 1fr))", gap: 6 }}>
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
               <div
-                key={`${cell.date.toISOString()}-${index}`}
+                key={day}
                 style={{
+                  fontSize: 12,
+                  color: "var(--text-subtle)",
+                  textAlign: "center",
+                  padding: "4px 0",
+                  background: "var(--surface-2)",
+                  borderRadius: 8,
                   border: "1px solid var(--border)",
-                  borderRadius: 10,
-                  padding: 8,
-                  minHeight: 86,
-                  background: isToday ? "var(--highlight)" : "var(--surface)",
-                  opacity: isCurrentMonth ? 1 : 0.45,
-                  display: "grid",
-                  gap: 6,
                 }}
               >
-                <div style={{ fontWeight: 700, fontSize: 12 }}>{cell.date.getUTCDate()}</div>
-                {displayEntries.length ? (
-                  <div style={{ display: "grid", gap: 4 }}>
-                    {displayEntries.map((entry) => (
-                      <Link
-                        key={`${entry.eventId}-${entry.start}`}
-                        to={`/event/${encodeURIComponent(entry.eventId)}`}
+                {day}
+              </div>
+            ))}
+          </div>
+
+          {calendar.weeks.map((week) => {
+            const weekStartMs = week.dates[0].getTime();
+            const weekEndMs = week.dates[6].getTime() + 24 * 60 * 60 * 1000 - 1;
+            const weekEntries = scheduleEntries.filter((entry) => entry.startMs <= weekEndMs && entry.endMs >= weekStartMs);
+
+            return (
+              <div key={week.start.toISOString()} style={{ display: "grid", gap: 6 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(7, minmax(0, 1fr))", gap: 6 }}>
+                  {week.dates.map((date) => {
+                    const isCurrentMonth = date.getUTCMonth() === calendar.month;
+                    const isToday = isSameUtcDay(date, now);
+                    return (
+                      <div
+                        key={date.toISOString()}
                         style={{
-                          fontSize: 11,
-                          color: "var(--text)",
-                          background: "var(--surface-2)",
+                          padding: "6px 8px",
+                          borderRadius: 8,
                           border: "1px solid var(--border)",
-                          borderRadius: 6,
-                          padding: "2px 6px",
-                          textDecoration: "none",
-                          display: "block",
+                          background: isToday ? "var(--highlight)" : "var(--surface)",
+                          opacity: isCurrentMonth ? 1 : 0.45,
+                          fontSize: 12,
+                          fontWeight: 700,
+                          textAlign: "right",
                         }}
                       >
-                        {entry.label ?? entry.title}
-                      </Link>
-                    ))}
-                    {extraCount > 0 ? (
-                      <div style={{ fontSize: 11, color: "var(--text-muted)" }}>+{extraCount} more</div>
-                    ) : null}
-                  </div>
-                ) : (
-                  <div style={{ fontSize: 11, color: "var(--text-subtle)" }}>No events</div>
-                )}
+                        {date.getUTCDate()}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
+                    gap: 6,
+                    gridAutoRows: "minmax(30px, auto)",
+                  }}
+                >
+                  {weekEntries.length ? (
+                    weekEntries.map((entry) => {
+                      const dayMs = 24 * 60 * 60 * 1000;
+                      const rawStart = Math.floor((entry.startMs - weekStartMs) / dayMs);
+                      const rawEnd = Math.floor((entry.endMs - weekStartMs) / dayMs);
+                      const startIndex = Math.max(0, Math.min(6, rawStart));
+                      const endIndex = Math.max(0, Math.min(6, rawEnd));
+                      const continuesLeft = entry.startMs < weekStartMs;
+                      const continuesRight = entry.endMs > weekEndMs;
+                      const hue = hashHue(entry.eventId);
+                      const baseColor = entry.accent ?? `hsla(${hue}, 70%, 70%, 0.78)`;
+                      const edgeColor = entry.accent ? "transparent" : `hsla(${hue}, 70%, 70%, 0)`;
+                      const background = `linear-gradient(90deg, ${
+                        continuesLeft ? edgeColor : baseColor
+                      } 0%, ${baseColor} 12%, ${baseColor} 88%, ${continuesRight ? edgeColor : baseColor} 100%)`;
+                      const borderColor = entry.accent ?? `hsla(${hue}, 55%, 45%, 0.55)`;
+                      const title = entry.label ?? entry.title;
+                      const initials = buildInitials(title);
+
+                      return (
+                        <Link
+                          key={`${entry.eventId}-${entry.start}-${week.start.toISOString()}`}
+                          to={`/event/${encodeURIComponent(entry.eventId)}`}
+                          title={`${title} (${formatShortRange(entry.start, entry.end)})`}
+                          style={{
+                            gridColumn: `${startIndex + 1} / ${endIndex + 2}`,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 8,
+                            padding: "6px 8px",
+                            borderRadius: 10,
+                            border: `1px solid ${borderColor}`,
+                            background,
+                            color: "var(--text)",
+                            textDecoration: "none",
+                            overflow: "hidden",
+                            minHeight: 30,
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: 24,
+                              height: 24,
+                              borderRadius: 6,
+                              background: "rgba(255,255,255,0.65)",
+                              border: "1px solid rgba(0,0,0,0.08)",
+                              display: "grid",
+                              placeItems: "center",
+                              fontSize: 11,
+                              fontWeight: 700,
+                              flexShrink: 0,
+                            }}
+                          >
+                            {entry.icon ? (
+                              <img
+                                src={`${import.meta.env.BASE_URL}${entry.icon}`}
+                                alt=""
+                                width={18}
+                                height={18}
+                                style={{ display: "block" }}
+                              />
+                            ) : (
+                              initials
+                            )}
+                          </div>
+                          <div style={{ minWidth: 0, display: "flex", flexDirection: "column" }}>
+                            <span style={{ fontSize: 12, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                              {title}
+                            </span>
+                            <span style={{ fontSize: 11, color: "var(--text-muted)" }}>{formatShortRange(entry.start, entry.end)}</span>
+                          </div>
+                        </Link>
+                      );
+                    })
+                  ) : (
+                    <div
+                      style={{
+                        gridColumn: "1 / -1",
+                        border: "1px dashed var(--border)",
+                        borderRadius: 10,
+                        padding: "6px 10px",
+                        fontSize: 12,
+                        color: "var(--text-subtle)",
+                      }}
+                    >
+                      No events this week.
+                    </div>
+                  )}
+                </div>
               </div>
             );
           })}
