@@ -89,16 +89,17 @@
 
   <shop>
     <section section_id="silver_shop" title="Silver Ticket Shop">
-      <item shop_item_id="silver_etched_rune" item_id="etched_rune" label="Etched Rune" cost="32400" cost_item="silver_tickets" goal_group="silver" goal_key="etchedRune" description="Purchase 1 Etched Rune with Silver Tickets." />
-      <item shop_item_id="silver_blessed_rune" item_id="blessed_rune" label="Blessed Rune" cost="4050" cost_item="silver_tickets" goal_group="silver" goal_key="blessedRune" description="Purchase 1 Blessed Rune with Silver Tickets." />
-      <item shop_item_id="silver_artifact" item_id="artifact" label="Artifact" cost="184000" cost_item="silver_tickets" goal_group="silver" goal_key="artifact" description="Purchase 1 Artifact with Silver Tickets." />
+      <item shop_item_id="silver_etched_rune" item_id="etched_rune" rarity_override="Epic" cost="32400" cost_item="silver_tickets" goal_group="silver" goal_key="etchedRune" description="Purchase 1 Etched Rune with Silver Tickets." />
+      <item shop_item_id="silver_etched_rune_rare" item_id="etched_rune" rarity_override="Rare" cost="9000" cost_item="silver_tickets" goal_group="silver" goal_key="etchedRune" description="Purchase 1 Rare Etched Rune with Silver Tickets." />
+      <item shop_item_id="silver_blessing_rune" item_id="blessing_rune" rarity_override="Epic" cost="4050" cost_item="silver_tickets" goal_group="silver" goal_key="blessingRune" description="Purchase 1 Blessing Rune with Silver Tickets." />
+      <item shop_item_id="silver_artifact" item_id="artifact" rarity_override="Mythic" cost="184000" cost_item="silver_tickets" goal_group="silver" goal_key="artifact" description="Purchase 1 Artifact with Silver Tickets." />
     </section>
     <section section_id="gold_shop" title="Golden Ticket Shop">
-      <item shop_item_id="gold_etched_rune" item_id="etched_rune" label="Etched Rune" cost="16" cost_item="golden_tickets" goal_group="gold" goal_key="etchedRune" description="Purchase 1 Etched Rune with Golden Tickets." />
-      <item shop_item_id="gold_advanced_enchantium" item_id="advanced_enchantium" label="Advanced Enchantium" cost="18" cost_item="golden_tickets" goal_group="gold" goal_key="advancedEnchantium" description="Purchase 1 Advanced Enchantium with Golden Tickets." />
-      <item shop_item_id="gold_ruin_shovels" item_id="shovels" label="Ruin Shovels" cost="1" cost_item="golden_tickets" bundle="3" goal_group="gold" goal_key="ruinShovelBundle" description="Bundle of 3 Ruin Shovels." />
-      <item shop_item_id="gold_promised_shovels" item_id="promised_shovels" label="Promised Shovels" cost="1" cost_item="golden_tickets" bundle="2" goal_group="gold" goal_key="promisedShovelBundle" description="Bundle of 2 Promised Shovels." />
-      <item shop_item_id="gold_chromatic_keys" item_id="chromatic_keys" label="Chromatic Keys" cost="4" cost_item="golden_tickets" bundle="5" goal_group="gold" goal_key="chromaticKeyBundle" description="Bundle of 5 Chromatic Keys." />
+      <item shop_item_id="gold_etched_rune" item_id="etched_rune" rarity_override="Epic" cost="16" cost_item="golden_tickets" goal_group="gold" goal_key="etchedRune" description="Purchase 1 Etched Rune with Golden Tickets." />
+      <item shop_item_id="gold_advanced_enchantium" item_id="advanced_enchantium" rarity_override="Mythic" cost="18" cost_item="golden_tickets" goal_group="gold" goal_key="advancedEnchantium" description="Purchase 1 Advanced Enchantium with Golden Tickets." />
+      <item shop_item_id="gold_ruin_shovels" item_id="shovels" cost="1" cost_item="golden_tickets" bundle="3" goal_group="gold" goal_key="ruinShovelBundle" description="Bundle of 3 Ruin Shovels." />
+      <item shop_item_id="gold_promised_shovels" item_id="promised_shovels" cost="1" cost_item="golden_tickets" bundle="2" goal_group="gold" goal_key="promisedShovelBundle" description="Bundle of 2 Promised Shovels." />
+      <item shop_item_id="gold_chromatic_keys" item_id="chromatic_keys" cost="4" cost_item="golden_tickets" bundle="10" max_qty="10" goal_group="gold" goal_key="chromaticKeyBundle" description="Bundle of 10 Chromatic Keys." />
     </section>
   </shop>
 
@@ -190,17 +191,17 @@
       <p>Example tension patterns for Lake 1 in the current lake.</p>
       <image_row>
         <image
-          src="catalog/shared/fishing_event/images/current_lake_tension/zone_1-1.png"
+          src="catalog/shared/fishing_event/media/current_lake_tension/zone_1-1.png"
           alt="Lake 1 rare tension pattern (current lake)"
           caption="Rare"
         />
         <image
-          src="catalog/shared/fishing_event/images/current_lake_tension/zone_1-2.png"
+          src="catalog/shared/fishing_event/media/current_lake_tension/zone_1-2.png"
           alt="Lake 1 epic tension pattern (current lake)"
           caption="Epic"
         />
         <image
-          src="catalog/shared/fishing_event/images/current_lake_tension/zone_1-3.png"
+          src="catalog/shared/fishing_event/media/current_lake_tension/zone_1-3.png"
           alt="Lake 1 legendary tension pattern (current lake)"
           caption="Legendary"
         />
@@ -257,7 +258,7 @@
     <item faq_id="faq_pack_value" question="What packs give the most value?">
       <answer>
         <p>The table below compares each pack by price and lure value.</p>
-        <p>![Fishing event pack value comparison](catalog/shared/fishing_event/images/Prices.png "Pack value comparison for Fishing Event.")</p>
+        <p>![Fishing event pack value comparison](catalog/shared/fishing_event/media/Prices.png "Pack value comparison for Fishing Event.")</p>
       </answer>
     </item>
     <item faq_id="faq_what_to_buy" question="What should I buy in the event shop?">
