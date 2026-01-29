@@ -1,6 +1,7 @@
 import AppShell from "../ui/AppShell";
 import Tabs from "../ui/Tabs";
 import { EventCatalogList } from "./EventsIndex";
+import EventSchedule from "./EventSchedule";
 
 function ComingSoon({ title, description }: { title: string; description: string }) {
   return (
@@ -23,6 +24,11 @@ export default function ContentIndex() {
             id: "events",
             label: "Events",
             content: <EventCatalogList />,
+          },
+          {
+            id: "schedule",
+            label: "Schedule",
+            content: <EventSchedule />,
           },
           {
             id: "gear",
