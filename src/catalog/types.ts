@@ -41,6 +41,7 @@ export type SharedItem = {
   fallbackLabel?: string;
   shortLabel?: string;
   rarity?: string;
+  showRarity?: boolean;
   aliases?: string[];
   link?: string;
   linkEnabled?: boolean;
@@ -172,8 +173,7 @@ export type EventShopItem = {
   cost: number;
   costItemId: string;
   bundleSize?: number;
-  rarity?: string;
-  showRarity?: boolean;
+  rarityOverride?: string;
   maxQty?: number;
   goalGroup?: "silver" | "gold";
   goalKey?: string;

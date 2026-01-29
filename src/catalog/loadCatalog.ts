@@ -421,8 +421,7 @@ function parseShop(eventEl: Element): EventShop | undefined {
       cost: getAttrInt(itemEl, "cost"),
       costItemId: getAttr(itemEl, "cost_item"),
       bundleSize: itemEl.getAttribute("bundle") ? getAttrInt(itemEl, "bundle") : undefined,
-      rarity: itemEl.getAttribute("rarity") ?? undefined,
-      showRarity: itemEl.getAttribute("show_rarity") === "true" ? true : undefined,
+      rarityOverride: itemEl.getAttribute("rarity_override") ?? undefined,
       maxQty: itemEl.getAttribute("max_qty") ? getAttrInt(itemEl, "max_qty") : undefined,
       goalGroup: (itemEl.getAttribute("goal_group") as "silver" | "gold" | null) ?? undefined,
       goalKey: itemEl.getAttribute("goal_key") ?? undefined,
@@ -544,6 +543,7 @@ export async function loadSharedItems(sharedPaths: string[]): Promise<Record<str
       const fallbackLabel = itemEl.getAttribute("fallback_label") ?? undefined;
       const shortLabel = itemEl.getAttribute("short_label") ?? undefined;
       const rarity = itemEl.getAttribute("rarity") ?? undefined;
+      const showRarity = itemEl.getAttribute("show_rarity") === "true" ? true : undefined;
       const link = itemEl.getAttribute("link") ?? undefined;
       const linkEnabledAttr = itemEl.getAttribute("link_enabled");
       const linkEnabled = linkEnabledAttr === null ? undefined : linkEnabledAttr !== "false";
@@ -554,7 +554,18 @@ export async function loadSharedItems(sharedPaths: string[]): Promise<Record<str
             .filter((alias) => alias.length > 0)
         : undefined;
 
-      const item: SharedItem = { itemId, label, icon, fallbackLabel, shortLabel, rarity, aliases, link, linkEnabled };
+      const item: SharedItem = {
+        itemId,
+        label,
+        icon,
+        fallbackLabel,
+        shortLabel,
+        rarity,
+        showRarity,
+        aliases,
+        link,
+        linkEnabled,
+      };
       items[itemId] = item;
       if (aliases) {
         for (const alias of aliases) {

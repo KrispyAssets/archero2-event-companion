@@ -1984,8 +1984,8 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
                       const shortLabel = shared?.shortLabel ?? fallbackLabel?.slice(0, 1) ?? label.slice(0, 1);
                       const costFallbackLabel = costShared?.fallbackLabel ?? costShared?.label ?? item.costItemId;
                       const costShortLabel = costShared?.shortLabel ?? costFallbackLabel.slice(0, 1);
-                      const rarity = item.rarity ?? shared?.rarity;
-                      const showRarity = item.showRarity ?? false;
+                      const rarity = item.rarityOverride ?? shared?.rarity;
+                      const showRarity = shared?.showRarity ?? false;
                       const displayLabel =
                         showRarity && rarity && baseLabel && !baseLabel.toLowerCase().startsWith(rarity.toLowerCase())
                           ? `${rarity} ${baseLabel}`
