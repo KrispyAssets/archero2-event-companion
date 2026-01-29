@@ -16,7 +16,7 @@
     <!-- Add tasks here -->
     <!--
     <task
-      task_id="login_days_total_tier_1"
+      task_id="example_event_login_days_total_tier_1"
       display_order="100"
       requirement_action="login"
       requirement_object="days"
