@@ -144,6 +144,7 @@ export type EventCatalogItemFull = {
   tier?: "primary" | "secondary";
   sections: EventSectionSummary;
   taskCosts?: TaskCostItem[];
+  taskRewards?: TaskRewardItem[];
 };
 
 /** Full (used for Event Detail) */
@@ -160,6 +161,12 @@ export type EventCatalogFull = EventCatalogItemFull & {
 };
 
 export type TaskCostItem = {
+  key: string;
+  label: string;
+  amount: number;
+};
+
+export type TaskRewardItem = {
   key: string;
   label: string;
   amount: number;

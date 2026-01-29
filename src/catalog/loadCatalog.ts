@@ -14,6 +14,7 @@ import type {
   ToolRef,
   ToolStaticText,
   TaskCostItem,
+  TaskRewardItem,
   RewardAsset,
   SharedItem,
   EventShop,
@@ -365,6 +366,22 @@ function computeTaskCosts(tasks: TaskDefinition[]): TaskCostItem[] {
   }));
 }
 
+function computeTaskRewards(tasks: TaskDefinition[]): TaskRewardItem[] {
+  const totals = new Map<string, number>();
+  for (const task of tasks) {
+    const key = task.rewardType;
+    if (!key) continue;
+    if (task.rewardAmount <= 0) continue;
+    totals.set(key, (totals.get(key) ?? 0) + task.rewardAmount);
+  }
+  const orderedKeys = [...totals.keys()].sort();
+  return orderedKeys.map((key) => ({
+    key,
+    label: formatLabel(key),
+    amount: totals.get(key) ?? 0,
+  }));
+}
+
 function parseTaskDefinition(el: Element): TaskDefinition {
   return {
     taskId: getAttr(el, "task_id"),
@@ -452,6 +469,7 @@ function parseEventDocument(doc: Document, relPath?: string): EventCatalogFull {
   const taskNodes = tasksEl ? Array.from(tasksEl.getElementsByTagName("task")) : [];
   const tasks: TaskDefinition[] = taskNodes.map((t) => parseTaskDefinition(t)).sort((a, b) => a.displayOrder - b.displayOrder);
   const taskCosts = computeTaskCosts(tasks);
+  const taskRewards = computeTaskRewards(tasks);
   const taskGroupLabels = parseTaskGroupLabels(eventEl);
   const rewardAssets = parseRewardAssets(eventEl);
   const shop = parseShop(eventEl);
@@ -490,6 +508,7 @@ function parseEventDocument(doc: Document, relPath?: string): EventCatalogFull {
       toolCount,
     },
     taskCosts,
+    taskRewards,
     tasks,
     guideSections,
     dataSections,
@@ -606,9 +625,9 @@ export async function loadEventSummaries(eventPaths: string[]): Promise<EventCat
 
     const taskNodes = tasksEl ? Array.from(tasksEl.getElementsByTagName("task")) : [];
     const taskCount = taskNodes.length;
-    const taskCosts = taskNodes.length
-      ? computeTaskCosts(taskNodes.map((node) => parseTaskDefinition(node)))
-      : [];
+    const taskSummaries = taskNodes.map((node) => parseTaskDefinition(node));
+    const taskCosts = taskSummaries.length ? computeTaskCosts(taskSummaries) : [];
+    const taskRewards = taskSummaries.length ? computeTaskRewards(taskSummaries) : [];
     const guideSectionCount = guideEl ? getDirectChildElements(guideEl, "section").length : 0;
     const dataSectionCount = dataEl ? getDirectChildElements(dataEl, "section").length : 0;
     const faqCount = faqEl ? faqEl.getElementsByTagName("item").length : 0;
@@ -625,6 +644,7 @@ export async function loadEventSummaries(eventPaths: string[]): Promise<EventCat
       tier: (eventEl.getAttribute("tier") as "primary" | "secondary" | null) ?? undefined,
       sections: { taskCount, guideSectionCount, dataSectionCount, faqCount, toolCount },
       taskCosts,
+      taskRewards,
     };
     const scheduleEntriesForEvent = scheduleByEvent.get(summary.eventId) ?? [];
     const selected = selectScheduleEntry(scheduleEntriesForEvent, nowUtcMs);
