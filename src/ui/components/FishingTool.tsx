@@ -122,7 +122,6 @@ type ToolState = {
   goalPreset: "silver-heavy" | "gold-efficient" | "custom";
   currentSilverTickets: number | null;
   targetSilverTickets: number | null;
-  silverEstimateLakeId: string | null;
   currentGoldTickets: number | null;
   currentLures: number | null;
   purchasedLures: number | null;
@@ -383,7 +382,6 @@ export default function FishingToolView({
       goalPreset: stored?.goalPreset ?? "custom",
       currentSilverTickets: stored?.currentSilverTickets ?? null,
       targetSilverTickets: stored?.targetSilverTickets ?? null,
-      silverEstimateLakeId: stored?.silverEstimateLakeId ?? data.lastLakeId ?? baseSet.lakes[0]?.lakeId ?? null,
       currentGoldTickets: stored?.currentGoldTickets ?? null,
       currentLures: stored?.currentLures ?? null,
       purchasedLures: stored?.purchasedLures ?? null,
@@ -427,7 +425,6 @@ export default function FishingToolView({
     nextState.goalPreset = stored?.goalPreset ?? "custom";
     nextState.currentSilverTickets = stored?.currentSilverTickets ?? null;
     nextState.targetSilverTickets = stored?.targetSilverTickets ?? null;
-    nextState.silverEstimateLakeId = stored?.silverEstimateLakeId ?? data.lastLakeId ?? baseSet.lakes[0]?.lakeId ?? null;
     nextState.currentGoldTickets = stored?.currentGoldTickets ?? null;
     nextState.currentLures = stored?.currentLures ?? null;
     nextState.purchasedLures = stored?.purchasedLures ?? null;
@@ -676,87 +673,165 @@ export default function FishingToolView({
     const legendaryTypeId = getLegendaryTypeId(data);
     const goldCurrent = toolState.currentGoldTickets ?? null;
     const goldRemaining = goldCurrent !== null && goldTarget !== null ? Math.max(0, goldTarget - goldCurrent) : null;
-    if (!goldRemaining) return null;
     const lakeStates = toolState.lakeStates;
     const silverCurrent = toolState.currentSilverTickets ?? null;
     const silverTarget = effectiveSilverTarget;
     const silverRemaining = silverCurrent !== null && silverTarget !== null ? Math.max(0, silverTarget - silverCurrent) : null;
-    const silverGoalBaselineRaw = silverTarget ?? baselineDefault;
-    const silverGoalBaseline = clampNumber(silverGoalBaselineRaw, baselineMin, baselineMax);
-    const silverWeight = silverRemaining && silverGoalBaseline > 0 ? Math.min(1, Math.max(0.25, silverRemaining / silverGoalBaseline)) : 0;
+    if ((!goldRemaining || goldRemaining === 0) && (!silverRemaining || silverRemaining === 0)) return null;
 
-    const maxAvgTickets = Math.max(...set.lakes.map((entry) => getAvgTicketsPerFish(data, entry.lakeId) ?? 0));
+    const lakes = set.lakes;
 
-    const quickThreshold = 10;
-    let quickPick: { lakeId: string; remainingFish: number } | null = null;
-    for (const entry of set.lakes) {
-      const state = toolState.lakeStates[entry.lakeId];
-      if (!state) continue;
-      const remainingFish = sumCounts(state.remainingByTypeId);
-      const remainingLegendary = state.remainingByTypeId[legendaryTypeId] ?? 0;
-      if (remainingLegendary > 0 && remainingFish <= quickThreshold) {
-        if (!quickPick || remainingFish < quickPick.remainingFish) {
-          quickPick = { lakeId: entry.lakeId, remainingFish };
+    function bestSilverLake() {
+      let best: { lakeId: string; avgTicketsPerFish: number; lakeIndex: number } | null = null;
+      for (const [index, entry] of lakes.entries()) {
+        const avg = getAvgTicketsPerFish(data, entry.lakeId);
+        if (!avg) continue;
+        if (!best || avg > best.avgTicketsPerFish + 0.01 || (Math.abs(avg - best.avgTicketsPerFish) < 0.01 && index > best.lakeIndex)) {
+          best = { lakeId: entry.lakeId, avgTicketsPerFish: avg, lakeIndex: index };
         }
       }
+      return best;
     }
 
-    function scoreLake(lakeId: string, goal: number) {
-      const estimate = getLegendaryRangeForLake(lakeId, goal, data, lakeStates, legendaryTypeId);
-      if (!estimate) return null;
-      const avgTicketsPerFish = getAvgTicketsPerFish(data, lakeId);
-      const expectedFish = estimate.expected;
-      const fishEquivalent = avgTicketsPerFish && maxAvgTickets > 0 ? (expectedFish * avgTicketsPerFish) / maxAvgTickets : 0;
-      const riskAdjusted = expectedFish + estimate.worst * 0.5 + estimate.best * 0.25;
-      const score = riskAdjusted - fishEquivalent * silverWeight;
-      return { lakeId, avgTicketsPerFish, score };
-    }
-
-    if (quickPick && goldRemaining > 0) {
-      const remainingGoal = Math.max(0, goldRemaining - 1);
-      let bestRest: { lakeId: string; avgTicketsPerFish: number | null; score: number } | null = null;
-      if (remainingGoal > 0) {
-        for (const entry of set.lakes) {
-          if (entry.lakeId === quickPick.lakeId) continue;
-          const scored = scoreLake(entry.lakeId, remainingGoal);
-          if (!scored) continue;
-          if (!bestRest || scored.score < bestRest.score - 0.01) {
-            bestRest = scored;
-          }
+    function bestGoldLake(remainingGold: number) {
+      let best: { lakeId: string; expectedGoldLures: number; avgTicketsPerFish: number | null; lakeIndex: number } | null = null;
+      for (const [index, entry] of lakes.entries()) {
+        const estimate = getLegendaryRangeForLake(entry.lakeId, remainingGold, data, lakeStates, legendaryTypeId);
+        if (!estimate) continue;
+        const expectedGoldLures = estimate.expected;
+        const avgTicketsPerFish = getAvgTicketsPerFish(data, entry.lakeId);
+        if (
+          !best ||
+          expectedGoldLures < best.expectedGoldLures - 0.01 ||
+          (Math.abs(expectedGoldLures - best.expectedGoldLures) < 0.01 && (avgTicketsPerFish ?? 0) > (best.avgTicketsPerFish ?? 0) + 0.01) ||
+          (Math.abs(expectedGoldLures - best.expectedGoldLures) < 0.01 && (avgTicketsPerFish ?? 0) === (best.avgTicketsPerFish ?? 0) && index > best.lakeIndex)
+        ) {
+          best = { lakeId: entry.lakeId, expectedGoldLures, avgTicketsPerFish, lakeIndex: index };
         }
       }
-      return {
-        lakeId: quickPick.lakeId,
-        avgTicketsPerFish: getAvgTicketsPerFish(data, quickPick.lakeId),
-        score: -Infinity,
-        silverWeight,
-        quickPick: true,
-        restLakeId: bestRest?.lakeId ?? null,
+      return best;
+    }
+
+    const silverLake = bestSilverLake();
+    const goldLake = goldRemaining ? bestGoldLake(goldRemaining) : null;
+    if (goldRemaining && !goldLake) return null;
+
+    type Recommendation = {
+      lakeId: string;
+      avgTicketsPerFish: number | null;
+      combinedLures: number;
+      expectedGoldLures: number;
+      luresForSilver: number;
+      steps: { lakeId: string; lures: number }[];
+      expectedSilverGain: number;
+    };
+
+    const goldLures = goldLake?.expectedGoldLures ?? 0;
+    const silverLures = silverRemaining && silverLake ? Math.ceil(silverRemaining / silverLake.avgTicketsPerFish) : 0;
+    const driverIsSilver = silverLures > goldLures;
+
+    let recommendation: Recommendation;
+    if (!goldRemaining || goldRemaining === 0) {
+      recommendation = {
+        lakeId: silverLake?.lakeId ?? lakes[0].lakeId,
+        avgTicketsPerFish: silverLake?.avgTicketsPerFish ?? null,
+        combinedLures: silverLures,
+        expectedGoldLures: 0,
+        luresForSilver: silverLures,
+        steps: silverLake ? [{ lakeId: silverLake.lakeId, lures: silverLures }] : [],
+        expectedSilverGain: silverLake ? silverLures * silverLake.avgTicketsPerFish : 0,
+      };
+    } else if (driverIsSilver && silverLake && goldLake) {
+      recommendation = {
+        lakeId: silverLake.lakeId,
+        avgTicketsPerFish: silverLake.avgTicketsPerFish,
+        combinedLures: silverLures + goldLures,
+        expectedGoldLures: goldLures,
+        luresForSilver: silverLures,
+        steps: [
+          { lakeId: silverLake.lakeId, lures: silverLures },
+          { lakeId: goldLake.lakeId, lures: goldLures },
+        ],
+        expectedSilverGain: silverLures * silverLake.avgTicketsPerFish + goldLures * (goldLake.avgTicketsPerFish ?? 0),
+      };
+    } else if (goldLake) {
+      const silverAfterGold =
+        silverRemaining !== null && (goldLake.avgTicketsPerFish ?? 0) > 0
+          ? Math.max(0, silverRemaining - goldLures * (goldLake.avgTicketsPerFish ?? 0))
+          : silverRemaining ?? 0;
+      const silverLuresAfterGold =
+        silverLake && silverAfterGold > 0 ? Math.ceil(silverAfterGold / silverLake.avgTicketsPerFish) : 0;
+      recommendation = {
+        lakeId: goldLake.lakeId,
+        avgTicketsPerFish: goldLake.avgTicketsPerFish,
+        combinedLures: goldLures + silverLuresAfterGold,
+        expectedGoldLures: goldLures,
+        luresForSilver: silverLuresAfterGold,
+        steps: [
+          { lakeId: goldLake.lakeId, lures: goldLures },
+          ...(silverLuresAfterGold > 0 && silverLake ? [{ lakeId: silverLake.lakeId, lures: silverLuresAfterGold }] : []),
+        ],
+        expectedSilverGain: goldLures * (goldLake.avgTicketsPerFish ?? 0) + silverLuresAfterGold * (silverLake?.avgTicketsPerFish ?? 0),
+      };
+    } else {
+      recommendation = {
+        lakeId: silverLake?.lakeId ?? lakes[0].lakeId,
+        avgTicketsPerFish: silverLake?.avgTicketsPerFish ?? null,
+        combinedLures: silverLures,
+        expectedGoldLures: 0,
+        luresForSilver: silverLures,
+        steps: silverLake ? [{ lakeId: silverLake.lakeId, lures: silverLures }] : [],
+        expectedSilverGain: silverLake ? silverLures * silverLake.avgTicketsPerFish : 0,
       };
     }
 
-    let best: {
-      lakeId: string;
-      avgTicketsPerFish: number | null;
-      score: number;
-      silverWeight: number;
-      quickPick?: boolean;
-      restLakeId?: string | null;
-    } | null = null;
-    for (const entry of set.lakes) {
-      const scored = scoreLake(entry.lakeId, goldRemaining);
-      if (!scored) continue;
-      const { avgTicketsPerFish, score } = scored;
-      if (!best || score < best.score - 0.01) {
-        best = {
-          lakeId: entry.lakeId,
-          avgTicketsPerFish,
-          score,
-          silverWeight,
-        };
+    const quickThreshold = 10;
+    if (goldRemaining && goldRemaining > 0) {
+      for (const entry of set.lakes) {
+        const state = toolState.lakeStates[entry.lakeId];
+        if (!state) continue;
+        const remainingFish = sumCounts(state.remainingByTypeId);
+        const remainingLegendary = state.remainingByTypeId[legendaryTypeId] ?? 0;
+        if (remainingLegendary <= 0 || remainingFish > quickThreshold) continue;
+        const quickRange = getLegendaryRangeForLake(entry.lakeId, 1, data, lakeStates, legendaryTypeId);
+        if (!quickRange) continue;
+        const quickLures = quickRange.expected;
+        const quickAvgTickets = getAvgTicketsPerFish(data, entry.lakeId) ?? 0;
+        const silverAfterQuick = silverRemaining !== null ? Math.max(0, silverRemaining - quickLures * quickAvgTickets) : null;
+        const remainingGold = Math.max(0, goldRemaining - 1);
+        const followGoldLake = remainingGold > 0 ? bestGoldLake(remainingGold) : null;
+        const followSilverLake = bestSilverLake();
+        if (!followGoldLake && !followSilverLake) continue;
+        const followGoldLures = followGoldLake?.expectedGoldLures ?? 0;
+        const followSilverLures =
+          silverAfterQuick !== null && followSilverLake ? Math.ceil(silverAfterQuick / followSilverLake.avgTicketsPerFish) : 0;
+        const followTotal = followGoldLures + followSilverLures;
+        const totalLures = quickLures + followTotal;
+        const totalSilverGain =
+          quickLures * quickAvgTickets +
+          followGoldLures * (followGoldLake?.avgTicketsPerFish ?? 0) +
+          followSilverLures * (followSilverLake?.avgTicketsPerFish ?? 0);
+        const improve = totalLures + 1 < recommendation.combinedLures;
+        const nearTie = Math.abs(totalLures - recommendation.combinedLures) <= 3;
+        if (improve || nearTie) {
+          recommendation = {
+            lakeId: (followSilverLake ?? followGoldLake)?.lakeId ?? entry.lakeId,
+            avgTicketsPerFish: followSilverLake?.avgTicketsPerFish ?? followGoldLake?.avgTicketsPerFish ?? null,
+            combinedLures: totalLures,
+            expectedGoldLures: followGoldLures,
+            luresForSilver: followSilverLures,
+            steps: [
+              { lakeId: entry.lakeId, lures: quickLures },
+              ...(followGoldLures > 0 && followGoldLake ? [{ lakeId: followGoldLake.lakeId, lures: followGoldLures }] : []),
+              ...(followSilverLures > 0 && followSilverLake ? [{ lakeId: followSilverLake.lakeId, lures: followSilverLures }] : []),
+            ],
+            expectedSilverGain: totalSilverGain,
+          };
+        }
       }
     }
-    return best;
+
+    return recommendation;
   }, [dataState, toolState, goldTarget, effectiveSilverTarget]);
 
   const goldRange = useMemo(() => {
@@ -766,19 +841,13 @@ export default function FishingToolView({
     const goldCurrent = toolState.currentGoldTickets ?? null;
     const goldRemaining = goldCurrent !== null && goldTarget !== null ? Math.max(0, goldTarget - goldCurrent) : null;
     if (!goldRemaining || !lakeRecommendations) return null;
-    if (lakeRecommendations.quickPick && lakeRecommendations.restLakeId && goldRemaining > 1) {
-      const first = getLegendaryRangeForLake(lakeRecommendations.lakeId, 1, data, toolState.lakeStates, legendaryTypeId);
-      const rest = getLegendaryRangeForLake(lakeRecommendations.restLakeId, goldRemaining - 1, data, toolState.lakeStates, legendaryTypeId);
-      if (!first || !rest) return null;
-      return {
-        best: first.best + rest.best,
-        expected: first.expected + rest.expected,
-        worst: first.worst + rest.worst,
-        expectedOne: first.expectedOne,
-      };
-    }
     return getLegendaryRangeForLake(lakeRecommendations.lakeId, goldRemaining, data, toolState.lakeStates, legendaryTypeId);
   }, [dataState, toolState, lakeRecommendations, goldTarget]);
+
+  const combinedLuresNeeded = useMemo(() => {
+    if (!lakeRecommendations) return null;
+    return lakeRecommendations.combinedLures ?? null;
+  }, [lakeRecommendations]);
 
   const guidedStepData = useMemo(() => {
     if (!toolState || !guidedOption || guidedState.status !== "ready") return null;
@@ -1003,12 +1072,11 @@ export default function FishingToolView({
       }, 0)
     : null;
 
-  const silverEstimateLakeId = toolState.silverEstimateLakeId ?? data.lastLakeId;
-  const avgTicketsPerFishSilver = silverEstimateLakeId ? getAvgTicketsPerFish(data, silverEstimateLakeId) : null;
 
   const silverCurrent = toolState.currentSilverTickets ?? null;
   const silverTarget = effectiveSilverTarget;
   const silverRemaining = silverCurrent !== null && silverTarget !== null ? Math.max(0, silverTarget - silverCurrent) : null;
+  const avgTicketsPerFishSilver = lakeRecommendations?.avgTicketsPerFish ?? null;
   const silverFishNeeded = silverRemaining !== null && avgTicketsPerFishSilver ? Math.ceil(silverRemaining / avgTicketsPerFishSilver) : null;
   const luresRemainingFromTasks = taskTotals?.remaining ?? null;
   const currentLures = toolState.currentLures ?? null;
@@ -1321,13 +1389,6 @@ export default function FishingToolView({
         brokenLines: next,
       };
     });
-  }
-
-  function setSilverEstimateLake(lakeId: string) {
-    updateToolState((prev) => ({
-      ...prev,
-      silverEstimateLakeId: lakeId,
-    }));
   }
 
   function setTicketValue(key: "currentSilverTickets" | "targetSilverTickets" | "currentGoldTickets", value: number | null) {
@@ -2203,15 +2264,6 @@ export default function FishingToolView({
                   />
                 </label>
               </div>
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
-                <label style={{ fontSize: 12, color: "var(--text-muted)" }}>Estimate lake</label>
-                <DropdownButton
-                  valueLabel={set.lakes.find((entry) => entry.lakeId === (silverEstimateLakeId ?? ""))?.label ?? "Select lake"}
-                  options={set.lakes.map((entry) => ({ value: entry.lakeId, label: entry.label }))}
-                  onSelect={setSilverEstimateLake}
-                  minWidth={160}
-                />
-              </div>
             </div>
 
             <div
@@ -2228,60 +2280,86 @@ export default function FishingToolView({
               <div style={{ fontSize: 13, color: "var(--text-muted)" }}>
                 {goldRemaining === null
                   ? "Select gold purchases and enter your current golden tickets."
-                  : goldRemaining === 0
+                  : goldRemaining === 0 && (silverRemaining === null || silverRemaining === 0)
                     ? "Goal reached."
-                    : lakeRecommendations?.quickPick && lakeRecommendations.restLakeId
-                      ? `Quick legendary in ${set.lakes.find((entry) => entry.lakeId === lakeRecommendations.lakeId)?.label ?? lakeRecommendations.lakeId}, then switch to ${set.lakes.find((entry) => entry.lakeId === lakeRecommendations.restLakeId)?.label ?? lakeRecommendations.restLakeId}.`
-                      : lakeRecommendations
-                        ? `Recommended lake: ${set.lakes.find((entry) => entry.lakeId === lakeRecommendations.lakeId)?.label ?? lakeRecommendations.lakeId}.`
-                        : "Add a goal to see a recommended lake."}
+                    : lakeRecommendations
+                      ? (() => {
+                          const stepLabels = lakeRecommendations.steps
+                            .map((step) => {
+                              const label = set?.lakes.find((entry) => entry.lakeId === step.lakeId)?.label ?? step.lakeId;
+                              return `${label} (~${formatNumber(Math.ceil(step.lures))} lures)`;
+                            })
+                            .join(" → ");
+                          const combinedLures = formatNumber(Math.ceil(lakeRecommendations.combinedLures));
+                          const silverGain = formatNumber(lakeRecommendations.expectedSilverGain, 0);
+                          return `Recommended path: ${stepLabels}. Total lures needed: ${combinedLures}. Estimated silver gain: ${silverGain}.`;
+                        })()
+                      : "Add a goal to see a recommended lake."}
               </div>
-              {goldRemaining && goldRange ? (
-                <div style={{ display: "grid", gap: 6, fontSize: 13 }}>
-                  <div>
-                    Estimated fish needed (best / expected / worst):{" "}
-                    <b>
-                      {formatNumber(Math.ceil(goldRange.best))} / {formatNumber(Math.ceil(goldRange.expected))} /{" "}
-                      {formatNumber(Math.ceil(goldRange.worst))}
-                    </b>
-                  </div>
-                  <div>
-                    Estimated gem cost (expected): <b>{formatNumber(Math.ceil(goldRange.expected) * 150)}</b>
-                  </div>
-                  <div>
-                    Lures available (now + tasks + bought): <b>{totalAvailableLures !== null ? formatNumber(totalAvailableLures) : "—"}</b>
-                  </div>
-                  <div>
-                    Max possible lures (incl. gems): <b>{maxPossibleLures !== null ? formatNumber(maxPossibleLures) : "—"}</b>
-                  </div>
-                  <div>
-                    Estimated silver tickets gained (expected):{" "}
-                    <b>
-                      {lakeRecommendations?.avgTicketsPerFish ? formatNumber(goldRange.expected * lakeRecommendations.avgTicketsPerFish, 0) : "—"}
-                    </b>
-                  </div>
-                  {silverRemaining !== null ? (
-                    <>
+              {(goldRange || silverRemaining !== null) ? (
+                <div style={{ display: "grid", gap: 10, fontSize: 13 }}>
+                  <div style={{ display: "grid", gap: 6, padding: 10, borderRadius: 10, border: "1px solid var(--border)", background: "var(--surface)" }}>
+                    <div style={{ fontWeight: 700 }}>Goal Requirements</div>
+                    <div>
+                      Silver tickets needed (goal):{" "}
+                      <b style={{ color: silverRemaining !== null && silverRemaining > 0 ? "var(--danger)" : "var(--success)" }}>
+                        {silverRemaining !== null ? formatNumber(silverRemaining) : "—"}
+                      </b>
+                    </div>
+                    <div>
+                      Golden tickets needed (goal):{" "}
+                      <b style={{ color: goldRemaining !== null && goldRemaining > 0 ? "var(--danger)" : "var(--success)" }}>
+                        {goldRemaining !== null ? formatNumber(goldRemaining) : "—"}
+                      </b>
+                    </div>
+                    <div>
+                      Estimated lures needed: <b>{combinedLuresNeeded !== null ? formatNumber(Math.ceil(combinedLuresNeeded)) : "—"}</b>
+                    </div>
+                    {silverRemaining !== null ? (
                       <div>
-                        Estimated fish needed for purchase gap: <b>{silverFishNeeded !== null ? formatNumber(silverFishNeeded) : "—"}</b>
+                        Estimated lures needed for silver goal: <b>{silverFishNeeded !== null ? formatNumber(silverFishNeeded) : "—"}</b>
                       </div>
+                    ) : null}
+                  </div>
+
+                  <div style={{ display: "grid", gap: 6, padding: 10, borderRadius: 10, border: "1px solid var(--border)", background: "var(--surface)" }}>
+                    <div style={{ fontWeight: 700 }}>Costs</div>
+                    <div>
+                      Estimated gem cost: <b>{goldRange ? formatNumber(Math.ceil(goldRange.expected) * 150) : "—"}</b>
+                    </div>
+                    <div>
+                      Expected Lure Cost: <b>{goldGemCost !== null ? formatNumber(goldGemCost) : "—"}</b>
+                    </div>
+                    {silverRemaining !== null ? (
                       <div>
-                        Lure shortfall (purchase gap): <b>{silverLureShortfall !== null ? formatNumber(silverLureShortfall) : "—"}</b>
+                        Estimated gem cost (silver goal): <b>{silverGemCost !== null ? formatNumber(silverGemCost) : "—"}</b>
                       </div>
-                      <div>
-                        Estimated gem cost (purchase gap): <b>{silverGemCost !== null ? formatNumber(silverGemCost) : "—"}</b>
-                      </div>
-                    </>
-                  ) : null}
-                  {currentGems !== null && goldGemCost !== null && currentGems < goldGemCost ? (
-                    <div style={{ color: "var(--danger)" }}>Not enough gems for the golden goal with current lures.</div>
-                  ) : null}
-                  {currentGems !== null && silverGemCost !== null && currentGems < silverGemCost ? (
-                    <div style={{ color: "var(--danger)" }}>Not enough gems for the purchase gap with current lures.</div>
-                  ) : null}
-                  <div style={{ color: "var(--text-muted)" }}>
-                    Weighted by silver value (weight {formatNumber(lakeRecommendations?.silverWeight ?? 0, 2)} using baseline{" "}
-                    {formatNumber(silverGoalBaseline)}). Best-case assumes full pools between legendaries.
+                    ) : null}
+                    {currentGems !== null && goldGemCost !== null && currentGems < goldGemCost ? (
+                      <div style={{ color: "var(--danger)" }}>Not enough gems to reach golden ticket goal with current lures.</div>
+                    ) : null}
+                    {currentGems !== null && silverGemCost !== null && currentGems < silverGemCost ? (
+                      <div style={{ color: "var(--danger)" }}>Not enough gems to reach silver ticket goal with current lures.</div>
+                    ) : null}
+                  </div>
+
+                  <div style={{ display: "grid", gap: 6, padding: 10, borderRadius: 10, border: "1px solid var(--border)", background: "var(--surface)" }}>
+                    <div style={{ fontWeight: 700 }}>Gains</div>
+                    <div>
+                      Lures available (now + tasks + bought): <b>{totalAvailableLures !== null ? formatNumber(totalAvailableLures) : "—"}</b>
+                    </div>
+                    <div>
+                      Estimated silver tickets gained:{" "}
+                      <b>
+                        {lakeRecommendations ? formatNumber(lakeRecommendations.expectedSilverGain, 0) : "—"}
+                      </b>
+                    </div>
+                    <div>
+                      Estimated weight gained: <b>{formatNumber(totalWeightCaught, 1)} kg</b>
+                    </div>
+                    <div style={{ color: "var(--text-muted)" }}>
+                      Weighted by silver value (baseline {formatNumber(silverGoalBaseline)}). Best-case assumes full pools between legendaries.
+                    </div>
                   </div>
                 </div>
               ) : null}
