@@ -713,7 +713,36 @@ export default function FishingToolView({
     }
 
     const silverLake = bestSilverLake();
-    const goldLake = goldRemaining ? bestGoldLake(goldRemaining) : null;
+    let goldLake = goldRemaining ? bestGoldLake(goldRemaining) : null;
+    const silverPriorityLureSlack = 15;
+    const silverOverrideGoldSave = 50;
+    if (goldRemaining && silverRemaining && goldLake && silverLake) {
+      const silverGoldEstimate = getLegendaryRangeForLake(silverLake.lakeId, goldRemaining, data, lakeStates, legendaryTypeId);
+      if (
+        silverGoldEstimate &&
+        silverGoldEstimate.expected <= goldLake.expectedGoldLures + silverPriorityLureSlack
+      ) {
+        goldLake = {
+          lakeId: silverLake.lakeId,
+          expectedGoldLures: silverGoldEstimate.expected,
+          avgTicketsPerFish: silverLake.avgTicketsPerFish,
+          lakeIndex: silverLake.lakeIndex,
+        };
+      }
+    }
+    if (goldRemaining && goldLake && silverLake) {
+      const silverGoldEstimate = getLegendaryRangeForLake(silverLake.lakeId, goldRemaining, data, lakeStates, legendaryTypeId);
+      if (silverGoldEstimate && goldRemaining >= 3) {
+        if (goldLake.expectedGoldLures + silverOverrideGoldSave >= silverGoldEstimate.expected) {
+          goldLake = {
+            lakeId: silverLake.lakeId,
+            expectedGoldLures: silverGoldEstimate.expected,
+            avgTicketsPerFish: silverLake.avgTicketsPerFish,
+            lakeIndex: silverLake.lakeIndex,
+          };
+        }
+      }
+    }
     if (goldRemaining && !goldLake) return null;
 
     type Recommendation = {
