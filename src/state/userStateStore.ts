@@ -12,6 +12,7 @@ export type EventProgressState = {
   eventId: string;
   eventVersion: number;
   tasks: Record<string, TaskState>; // taskId -> state
+  shopQuantities?: Record<string, number>;
 };
 
 const STORAGE_KEY = "archero2_event_companion_user_state_v1";
@@ -98,7 +99,15 @@ function normalizeEventState(key: string, raw: unknown): EventProgressState | nu
     }
   }
 
-  return { eventId, eventVersion, tasks };
+  const shopQuantities: Record<string, number> = {};
+  if ((candidate as EventProgressState).shopQuantities && typeof (candidate as EventProgressState).shopQuantities === "object") {
+    for (const [shopItemId, qtyRaw] of Object.entries((candidate as EventProgressState).shopQuantities ?? {})) {
+      if (typeof qtyRaw !== "number" || !Number.isFinite(qtyRaw)) continue;
+      shopQuantities[shopItemId] = Math.max(0, Math.floor(qtyRaw));
+    }
+  }
+
+  return { eventId, eventVersion, tasks, shopQuantities };
 }
 
 export function exportSaveCode(): string {
@@ -155,6 +164,7 @@ export function getEventProgressState(eventId: string, eventVersion: number): Ev
     eventId,
     eventVersion,
     tasks: {},
+    shopQuantities: {},
   };
 
   root.events[key] = created;
@@ -182,4 +192,40 @@ export function upsertTaskState(eventId: string, eventVersion: number, taskId: s
 
   saveRootState(root);
   return next;
+}
+
+export function getEventShopQuantities(eventId: string, eventVersion: number): Record<string, number> {
+  const root = loadRootState();
+  const key = makeEventKey(eventId, eventVersion);
+  return root.events[key]?.shopQuantities ?? {};
+}
+
+export function setEventShopQuantity(
+  eventId: string,
+  eventVersion: number,
+  shopItemId: string,
+  qty: number
+): Record<string, number> {
+  const root = loadRootState();
+  const key = makeEventKey(eventId, eventVersion);
+
+  const ev =
+    root.events[key] ??
+    ({
+      eventId,
+      eventVersion,
+      tasks: {},
+      shopQuantities: {},
+    } as EventProgressState);
+
+  const nextQty = Math.max(0, Math.floor(qty));
+  ev.shopQuantities = { ...(ev.shopQuantities ?? {}) };
+  if (nextQty === 0) {
+    delete ev.shopQuantities[shopItemId];
+  } else {
+    ev.shopQuantities[shopItemId] = nextQty;
+  }
+  root.events[key] = ev;
+  saveRootState(root);
+  return ev.shopQuantities;
 }

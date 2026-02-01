@@ -759,6 +759,13 @@ export default function FishingToolView({
     const silverLures = silverRemaining && silverLake ? Math.ceil(silverRemaining / silverLake.avgTicketsPerFish) : 0;
     const driverIsSilver = silverLures > goldLures;
 
+    function expectedLegendariesForLures(lakeId: string, lures: number) {
+      if (lures <= 0) return 0;
+      const estimateOne = getLegendaryRangeForLake(lakeId, 1, data, lakeStates, legendaryTypeId);
+      if (!estimateOne || !estimateOne.expectedOne) return 0;
+      return Math.max(0, Math.floor(lures / estimateOne.expectedOne));
+    }
+
     let recommendation: Recommendation;
     if (!goldRemaining || goldRemaining === 0) {
       recommendation = {
@@ -771,17 +778,21 @@ export default function FishingToolView({
         expectedSilverGain: silverLake ? silverLures * silverLake.avgTicketsPerFish : 0,
       };
     } else if (driverIsSilver && silverLake && goldLake) {
+      const goldAfterSilver = Math.max(0, goldRemaining - expectedLegendariesForLures(silverLake.lakeId, silverLures));
+      const goldLakeAfterSilver = goldAfterSilver > 0 ? bestGoldLake(goldAfterSilver) : null;
+      const goldLuresAfterSilver = goldLakeAfterSilver?.expectedGoldLures ?? 0;
       recommendation = {
         lakeId: silverLake.lakeId,
         avgTicketsPerFish: silverLake.avgTicketsPerFish,
-        combinedLures: silverLures + goldLures,
-        expectedGoldLures: goldLures,
+        combinedLures: silverLures + goldLuresAfterSilver,
+        expectedGoldLures: goldLuresAfterSilver,
         luresForSilver: silverLures,
         steps: [
           { lakeId: silverLake.lakeId, lures: silverLures },
-          { lakeId: goldLake.lakeId, lures: goldLures },
+          ...(goldLuresAfterSilver > 0 && goldLakeAfterSilver ? [{ lakeId: goldLakeAfterSilver.lakeId, lures: goldLuresAfterSilver }] : []),
         ],
-        expectedSilverGain: silverLures * silverLake.avgTicketsPerFish + goldLures * (goldLake.avgTicketsPerFish ?? 0),
+        expectedSilverGain:
+          silverLures * silverLake.avgTicketsPerFish + goldLuresAfterSilver * (goldLakeAfterSilver?.avgTicketsPerFish ?? 0),
       };
     } else if (goldLake) {
       const silverAfterGold =
@@ -2313,15 +2324,29 @@ export default function FishingToolView({
                     ? "Goal reached."
                     : lakeRecommendations
                       ? (() => {
-                          const stepLabels = lakeRecommendations.steps
-                            .map((step) => {
-                              const label = set?.lakes.find((entry) => entry.lakeId === step.lakeId)?.label ?? step.lakeId;
-                              return `${label} (~${formatNumber(Math.ceil(step.lures))} lures)`;
-                            })
-                            .join(" → ");
+                          const stepLines = lakeRecommendations.steps.map((step) => {
+                            const label = set?.lakes.find((entry) => entry.lakeId === step.lakeId)?.label ?? step.lakeId;
+                            const avgTickets = getAvgTicketsPerFish(data, step.lakeId) ?? 0;
+                            const silverGain = avgTickets ? formatNumber(step.lures * avgTickets, 0) : "—";
+                            const estimateOne = getLegendaryRangeForLake(step.lakeId, 1, data, toolState.lakeStates, legendaryTypeId);
+                            const expectedLegendaries =
+                              estimateOne?.expectedOne ? Math.max(0, Math.floor(step.lures / estimateOne.expectedOne)) : 0;
+                            const legendText = expectedLegendaries > 0 ? `, ~${expectedLegendaries} legendary` : "";
+                            const silverText = avgTickets ? `, ~${silverGain} silver` : "";
+                            return `${label} (~${formatNumber(Math.ceil(step.lures))} lures${legendText}${silverText})`;
+                          });
                           const combinedLures = formatNumber(Math.ceil(lakeRecommendations.combinedLures));
                           const silverGain = formatNumber(lakeRecommendations.expectedSilverGain, 0);
-                          return `Recommended path: ${stepLabels}. Total lures needed: ${combinedLures}. Estimated silver gain: ${silverGain}.`;
+                          return (
+                            <div style={{ display: "grid", gap: 4 }}>
+                              <div>Recommended path:</div>
+                              {stepLines.map((line) => (
+                                <div key={line}>{line}</div>
+                              ))}
+                              <div>Total lures needed: {combinedLures}.</div>
+                              <div>Estimated silver gain: {silverGain}.</div>
+                            </div>
+                          );
                         })()
                       : "Add a goal to see a recommended lake."}
               </div>

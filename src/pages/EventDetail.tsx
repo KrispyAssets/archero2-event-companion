@@ -6,6 +6,7 @@ import Tabs from "../ui/Tabs";
 import TasksTracker from "../ui/components/TasksTracker";
 import ToolsHost from "../ui/components/ToolsHost";
 import { useEventCatalog } from "../catalog/useEventCatalog";
+import { getEventShopQuantities, setEventShopQuantity } from "../state/userStateStore";
 import { useSharedItems } from "../catalog/useSharedItems";
 import { useToolsCatalog } from "../catalog/useToolsCatalog";
 import type { DataSection, EventCatalogFull, FaqItem, GuideContentBlock, GuideSection } from "../catalog/types";
@@ -798,6 +799,13 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
   const scrollRetryRef = useRef<number | null>(null);
   const lastHandledAnchorRef = useRef<string>("");
 
+  useEffect(() => {
+    const saved = getEventShopQuantities(event.eventId, event.eventVersion);
+    if (Object.keys(saved).length) {
+      setShopQuantities(saved);
+    }
+  }, [event.eventId, event.eventVersion]);
+
   const urlTab = useMemo(() => new URLSearchParams(location.search).get("tab") ?? "", [location.search]);
   const isFreshEntry = navigationType === "PUSH" && !urlTab && !location.hash;
 
@@ -819,6 +827,7 @@ function EventDetailContent({ event }: { event: EventCatalogFull }) {
   function setShopQuantity(shopItemId: string, value: number) {
     const next = Math.max(0, value);
     setShopQuantities((prev) => ({ ...prev, [shopItemId]: next }));
+    setEventShopQuantity(event.eventId, event.eventVersion, shopItemId, next);
   }
 
   const shopTotals = useMemo(() => {
