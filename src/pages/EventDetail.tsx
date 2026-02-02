@@ -375,9 +375,32 @@ function renderGuideBlocks(
       );
     }
 
+    const isMilestoneRow = block.images.every((image) => image.src.includes("vv_milestones_"));
     return (
-      <div key={`row-${index}`} style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center", margin: "12px 0" }}>
-        {block.images.map((image, imageIndex) => (
+      <div
+        key={`row-${index}`}
+        style={{
+          display: "flex",
+          flexWrap: isMilestoneRow ? "nowrap" : "wrap",
+          gap: 12,
+          justifyContent: "center",
+          margin: "12px 0",
+          overflowX: isMilestoneRow ? "auto" : "visible",
+        }}
+      >
+        {block.images.map((image, imageIndex) => {
+          const isMilestone = image.src.includes("vv_milestones_");
+          const figureMaxWidth = isMilestone ? 160 : 240;
+          const imageStyle = {
+            width: "100%",
+            maxHeight: isMilestone ? 360 : 260,
+            objectFit: "contain" as const,
+            borderRadius: isMilestone ? 6 : 10,
+            border: isMilestone ? "none" : "1px solid var(--border)",
+            display: "block",
+            cursor: "zoom-in",
+          };
+          return (
           <figure
             key={`row-${index}-${image.src}-${imageIndex}`}
             style={{
@@ -386,27 +409,20 @@ function renderGuideBlocks(
               flexDirection: "column",
               alignItems: "center",
               textAlign: "center",
-              flex: "1 1 180px",
-              maxWidth: 240,
+              flex: `1 1 ${figureMaxWidth}px`,
+              maxWidth: figureMaxWidth,
             }}
           >
             <img
               src={resolveImageSrc(image.src)}
               alt={image.alt ?? ""}
-              style={{
-                width: "100%",
-                maxHeight: 260,
-                objectFit: "contain",
-                borderRadius: 10,
-                border: "1px solid var(--border)",
-                display: "block",
-                cursor: "zoom-in",
-              }}
+              style={imageStyle}
               data-zoom-src={resolveImageSrc(image.src)}
             />
             {image.caption ? <figcaption style={{ fontSize: 12, color: "var(--text-subtle)", marginTop: 6 }}>{image.caption}</figcaption> : null}
           </figure>
-        ))}
+        );
+        })}
       </div>
     );
   });

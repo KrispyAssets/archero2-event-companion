@@ -92,7 +92,7 @@
 
 .appMain {
   flex: 1;
-  padding: calc(16px + var(--app-header-height, 0px)) 0 32px;
+  padding: calc(8px + var(--app-header-height, 0px)) 0 32px;
 }
 
 .container {
@@ -116,6 +116,6 @@ p {
     font-size: 28px;
   }
   .appMain {
-    padding: 24px 0 40px;
+    padding: calc(12px + var(--app-header-height, 0px)) 0 40px;
   }
 }
