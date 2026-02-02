@@ -3,51 +3,55 @@
   "events": [
     {
       "eventId": "archero2.event.anglers_bounty.v1",
+      "accent": "#10b981",
       "start": "2026-01-10",
       "end": "2026-01-16"
     },
     {
       "eventId": "archero2.event.cave_rout.v1",
-      "accent": "#d97706",
+      "accent": "#f59e0b",
       "start": "2026-01-10",
       "end": "2026-01-16"
     },
     {
       "eventId": "archero2.event.summon_event.v1",
+      "accent": "#ec4899",
       "start": "2026-01-24",
       "end": "2026-01-30"
     },
     {
       "eventId": "archero2.event.campaign_rout.v1",
+      "accent": "#2563eb",
       "start": "2026-01-24",
       "end": "2026-01-30"
     },
     {
       "eventId": "archero2.event.vibrant_voyage.v1",
-      "accent": "#7c3aed",
+      "accent": "#8b5cf6",
       "start": "2026-01-31",
       "end": "2026-02-06"
     },
     {
       "eventId": "archero2.event.eternal_lode.v1",
+      "accent": "#7a4a1c",
       "start": "2026-01-31",
       "end": "2026-02-06"
     },
     {
       "eventId": "archero2.event.seal_rout.v1",
-      "accent": "#2563eb",
+      "accent": "#06b6d4",
       "start": "2026-02-07",
       "end": "2026-02-13"
     },
     {
       "eventId": "archero2.event.cave_rout.v1",
-      "accent": "#d97706",
+      "accent": "#f59e0b",
       "start": "2026-02-21",
       "end": "2026-02-27"
     },
     {
       "eventId": "archero2.event.godforge_genesis.v1",
-      "accent": "#d97706",
+      "accent": "#e11d48",
       "start": "2026-02-21",
       "end": "2026-02-27"
     }
