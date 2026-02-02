@@ -8,6 +8,7 @@
     },
     {
       "eventId": "archero2.event.cave_rout.v1",
+      "accent": "#d97706",
       "start": "2026-01-10",
       "end": "2026-01-16"
     },
@@ -17,7 +18,13 @@
       "end": "2026-01-30"
     },
     {
+      "eventId": "archero2.event.campaign_rout.v1",
+      "start": "2026-01-24",
+      "end": "2026-01-30"
+    },
+    {
       "eventId": "archero2.event.vibrant_voyage.v1",
+      "accent": "#7c3aed",
       "start": "2026-01-31",
       "end": "2026-02-06"
     },
@@ -27,9 +34,22 @@
       "end": "2026-02-06"
     },
     {
-      "eventId": "archero2.event.campaign_rout.v1",
-      "start": "2026-01-24",
-      "end": "2026-01-30"
+      "eventId": "archero2.event.seal_rout.v1",
+      "accent": "#2563eb",
+      "start": "2026-02-07",
+      "end": "2026-02-13"
+    },
+    {
+      "eventId": "archero2.event.cave_rout.v1",
+      "accent": "#d97706",
+      "start": "2026-02-21",
+      "end": "2026-02-27"
+    },
+    {
+      "eventId": "archero2.event.godforge_genesis.v1",
+      "accent": "#d97706",
+      "start": "2026-02-21",
+      "end": "2026-02-27"
     }
   ]
 }

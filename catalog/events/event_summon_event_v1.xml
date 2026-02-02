@@ -78,7 +78,7 @@
 
   <guide>
     <section section_id="general_guide" title="General Guide">
-      <p>• Play Trial Battle ([Lv4](image:catalog/shared/summon_event/Trial_Lvl_4.png|preview)).</p>
+      <p>• Play Trial Battle ([Lv4](image:catalog/shared/summon_event/media/misc/Trial_Lvl_4.png|preview)).</p>
       <p>• Complete All Tasks.</p>
       <p>• Use Tickets to gain Event Currency.</p>
       <p>• Spend Event Currency in the Event Shop.</p>
@@ -129,7 +129,7 @@
     <item faq_id="faq_pack_value" question="What packs give the most value?">
       <answer>
         <p>The Fund is considered the best value per ticket.</p>
-        <p>![Summon event pack value comparison](catalog/shared/summon_event/Prices.png "Pack value comparison for Summon Event.")</p>
+        <p>![Summon event pack value comparison](catalog/shared/summon_event/media/misc/Prices.png "Pack value comparison for Summon Event.")</p>
       </answer>
     </item>
     <item faq_id="progress_carry_over" question="Does progress save between events?">
