@@ -46,6 +46,15 @@ function LinkIcon() {
   );
 }
 
+function isSafeExternalHref(href: string): boolean {
+  try {
+    const url = new URL(href, window.location.origin);
+    return url.protocol === "http:" || url.protocol === "https:" || url.protocol === "mailto:";
+  } catch {
+    return false;
+  }
+}
+
 function getTabForAnchor(anchorId: string): string | null {
   if (anchorId.startsWith("guide-")) return "guide";
   if (anchorId.startsWith("data-")) return "data";
@@ -130,11 +139,15 @@ function renderTextSegmentWithAnchors(
               </a>
             );
           } else {
-            nodes.push(
-              <a key={`${keyPrefix}-token-${index}-${tokenIndex}`} href={link} target="_blank" rel="noreferrer">
-                {label}
-              </a>
-            );
+            if (isSafeExternalHref(link)) {
+              nodes.push(
+                <a key={`${keyPrefix}-token-${index}-${tokenIndex}`} href={link} target="_blank" rel="noreferrer">
+                  {label}
+                </a>
+              );
+            } else {
+              nodes.push(<span key={`${keyPrefix}-token-${index}-${tokenIndex}`}>{label}</span>);
+            }
           }
         } else {
           nodes.push(<span key={`${keyPrefix}-token-${index}-${tokenIndex}`}>{label}</span>);
@@ -212,11 +225,15 @@ function renderParagraphWithLinks(
         </a>
       );
     } else {
-      nodes.push(
-        <a key={`${keyPrefix}-link-${start}`} href={href} target="_blank" rel="noopener noreferrer">
-          {label}
-        </a>
-      );
+      if (isSafeExternalHref(href)) {
+        nodes.push(
+          <a key={`${keyPrefix}-link-${start}`} href={href} target="_blank" rel="noopener noreferrer">
+            {label}
+          </a>
+        );
+      } else {
+        nodes.push(<span key={`${keyPrefix}-link-${start}`}>{label}</span>);
+      }
     }
 
     cursor = start + full.length;

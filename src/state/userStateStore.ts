@@ -11,7 +11,7 @@ export type TaskState = {
 export type EventProgressState = {
   eventId: string;
   eventVersion: number;
-  tasks: Record<string, TaskState>; // taskId -> state
+  tasks: Record<string, TaskState>; // taskGroupId -> state
   shopQuantities?: Record<string, number>;
 };
 
@@ -172,7 +172,12 @@ export function getEventProgressState(eventId: string, eventVersion: number): Ev
   return created;
 }
 
-export function upsertTaskState(eventId: string, eventVersion: number, taskId: string, updater: (prev: TaskState) => TaskState): TaskState {
+export function upsertTaskState(
+  eventId: string,
+  eventVersion: number,
+  taskGroupId: string,
+  updater: (prev: TaskState) => TaskState
+): TaskState {
   const root = loadRootState();
   const key = makeEventKey(eventId, eventVersion);
 
@@ -184,10 +189,10 @@ export function upsertTaskState(eventId: string, eventVersion: number, taskId: s
       tasks: {},
     } as EventProgressState);
 
-  const prev: TaskState = ev.tasks[taskId] ?? { progressValue: 0, flags: { isCompleted: false, isClaimed: false } };
+  const prev: TaskState = ev.tasks[taskGroupId] ?? { progressValue: 0, flags: { isCompleted: false, isClaimed: false } };
 
   const next = updater(prev);
-  ev.tasks[taskId] = next;
+  ev.tasks[taskGroupId] = next;
   root.events[key] = ev;
 
   saveRootState(root);
