@@ -240,10 +240,11 @@ export default function EventSchedule() {
   const now = new Date();
   const [monthCursor, setMonthCursor] = useState(() => new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)));
 
+  const catalogEvents = catalog.status === "ready" ? catalog.events : [];
   const eventTitleById = useMemo(() => {
-    if (catalog.status !== "ready") return new Map<string, string>();
-    return new Map(catalog.events.map((ev) => [ev.eventId, ev.title]));
-  }, [catalog]);
+    if (!catalogEvents.length) return new Map<string, string>();
+    return new Map(catalogEvents.map((ev) => [ev.eventId, ev.title]));
+  }, [catalogEvents]);
 
   const scheduleEntries = useMemo<ScheduleEntryView[]>(() => {
     if (scheduleState.status !== "ready") return [];
@@ -327,7 +328,7 @@ export default function EventSchedule() {
         return a.localeCompare(b);
       })
       .map(([key, amount]) => ({ key, amount }));
-  }, [catalog.status, catalog.events, scheduleEntries, monthStartMs, monthEndMs, scheduleState.status]);
+  }, [catalog.status, catalogEvents, scheduleEntries, monthStartMs, monthEndMs, scheduleState.status]);
 
   const history = useMemo(() => {
     const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0);
@@ -351,7 +352,8 @@ export default function EventSchedule() {
       <div style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 14, color: "var(--text-muted)" }}>
         <span>{monthCursor.toLocaleString(undefined, { month: "long", year: "numeric", timeZone: "UTC" })}</span>
         {monthCostTotals.length ? (
-          <span style={{ display: "inline-flex", flexWrap: "wrap", gap: 6, justifyContent: "flex-start" }}>
+          <span style={{ display: "inline-flex", flexWrap: "wrap", gap: 6, alignItems: "center", justifyContent: "flex-start" }}>
+            <span style={{ fontSize: 11, color: "var(--text-subtle)", fontWeight: 600 }}>Costs</span>
             {monthCostTotals.map((cost) => (
               <span
                 key={cost.key}

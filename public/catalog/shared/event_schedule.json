@@ -44,6 +44,12 @@
       "accent": "#d97706",
       "start": "2026-02-21",
       "end": "2026-02-27"
+    },
+    {
+      "eventId": "archero2.event.godforge_genesis.v1",
+      "accent": "#d97706",
+      "start": "2026-02-21",
+      "end": "2026-02-27"
     }
   ]
 }
