@@ -284,7 +284,7 @@ function renderParagraphOrImage(
             width: "100%",
             objectFit: "contain",
             borderRadius: 10,
-            border: "1px solid var(--border)",
+            border: "none",
             display: "block",
             cursor: "zoom-in",
           }}
@@ -364,7 +364,7 @@ function renderGuideBlocks(
             width: "100%",
             objectFit: "contain",
             borderRadius: 10,
-            border: "1px solid var(--border)",
+            border: "none",
             display: "block",
             cursor: "zoom-in",
           }}
@@ -396,7 +396,7 @@ function renderGuideBlocks(
             maxHeight: isMilestone ? 360 : 260,
             objectFit: "contain" as const,
             borderRadius: isMilestone ? 6 : 10,
-            border: isMilestone ? "none" : "1px solid var(--border)",
+            border: "none",
             display: "block",
             cursor: "zoom-in",
           };
