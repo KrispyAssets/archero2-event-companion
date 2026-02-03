@@ -89,42 +89,62 @@
     <task task_id="vibrant_voyage_use_gems_total_tier_5" display_order="1140" requirement_action="use" requirement_object="gems" requirement_scope="total" requirement_target_value="5000" reward_type="tickets" reward_amount="2" />
   </tasks>
   <guide>
-    <section section_id="general_guide" title="General Guide">
-      <p>• Complete all tasks.</p>
-      <p>• Use Goldwind Tickets to draw (long press; results are RNG).</p>
-      <p>• A jackpot triggers if you get all 3 balloon tickets on one board. It does not carry to the next board.</p>
-      <p>• Spend currency in the shop (keys recommended).</p>
+    <section section_id="overview" title="Overview">
+      <p>Vibrant Voyage is a late-game gem spend event with strong returns once you have three etched rune slots and partial chaotic gear.</p>
+      <p>If you are not there yet, stop at the 125-ticket milestone for consistent value.</p>
+    </section>
+    <section section_id="milestones" title="Gem Spending Milestones">
+      <p>Everyone should target the 125-ticket milestone. The keys from this milestone plus marks from tickets typically exceed the gem cost.</p>
+      <p>On average you will buy around 30 tickets (about 8,400 gems) and gain roughly 4,500 to 5,500 wayfarer marks.</p>
+      <p>If you plan to go past 125, choose a later milestone (200 or 300 are common stops). The 300 milestone yields around 11,000 to 14,000 marks.</p>
+      <p>All relevant milestones shown below, after 1000 you gain the same reward for every 500 tickets spent.</p>
+      <image_row>
+        <image src="catalog/shared/vibrant_voyage_event/media/misc/vv_milestones_1.png" alt="Milestones 75–200 tickets" />
+        <image src="catalog/shared/vibrant_voyage_event/media/misc/vv_milestones_2.png" alt="Milestones 300–1000 tickets" />
+      </image_row>
+    </section>
+    <section section_id="shop_priorities" title="What To Buy">
+      <p>If you still need chaotic gear, prioritize keys and stop at 125.</p>
+      <p>Discount S-tier gear can be worth it if you do not need fodder. Discount gear is about 32 keys, non-discount gear is about 65 keys, and weapons are 100+ keys.</p>
+      <p>When you are ready to spend more, tidal star cores or mythic artifacts are ideal.</p>
+      <p>Best first mythic artifact: Voidblade. After that, focus on artifacts that buff your main damage type.</p>
+      <p>Character skins: follow the Character and Skin Choice Guide. Weapon skins are mostly cosmetic.</p>
     </section>
   </guide>
   <faq>
-    <item faq_id="row_prize" question="How do I get a prize?">
+    <item faq_id="why_125" question="Why is the 125-ticket milestone recommended?">
       <answer>
-        <p>Complete any line of 5 to get the reward at the end of that line (horizontal, vertical, or diagonal).</p>
+        <p>The keys plus marks at 125 typically return more value than the gem cost, even at average luck.</p>
       </answer>
     </item>
-    <item faq_id="board_clear" question="What clears a board?">
+    <item faq_id="when_go_beyond" question="When should I go past 125 tickets?">
       <answer>
-        <p>Completing 3 lines (five in a row) clears the board.</p>
+        <p>Only after you have three etched rune slots and partial chaotic gear. Otherwise the 125 stop is the best value.</p>
       </answer>
     </item>
-    <item faq_id="grand_prize" question="How do I trigger the Grand Prize?">
+    <item faq_id="best_shop_buys" question="What are the best shop purchases?">
       <answer>
-        <p>Getting 3 balloon tickets in a row triggers the Grand Prize.</p>
+        <p>Keys if you still need chaotic gear. Later, tidal star cores or mythic artifacts. Voidblade is the best first mythic artifact.</p>
       </answer>
     </item>
-    <item faq_id="buy_tickets_with_gems" question="Can I buy tickets with gems?">
+    <item faq_id="weapon_skins" question="Are weapon skins worth it?">
       <answer>
-        <p>Yes. Extra tickets cost 150 gems each.</p>
+        <p>They are mostly cosmetic. Buy them for looks, not for power.</p>
       </answer>
     </item>
-    <item faq_id="worth_buying_tickets" question="Is it worth buying extra tickets?">
+    <item faq_id="marks_per_ticket" question="How many wayfarer marks per ticket?">
       <answer>
-        <p>It is generally worth buying extra tickets up to the 125 ticket reward for the extra keys, or if you are close to a major purchase (e.g., Starcores).</p>
+        <p>About 40 to 43 marks per ticket on average.</p>
       </answer>
     </item>
-    <item faq_id="balloon_pity" question="Is there a pity system for balloon rides?">
+    <item faq_id="balloon_rate" question="How often do balloon rides happen?">
       <answer>
-        <p>Yes, there appears to be a hidden pity system. You are guaranteed at least one ride.</p>
+        <p>Roughly 1 ride per 100 tickets on average, plus the guaranteed ride.</p>
+      </answer>
+    </item>
+    <item faq_id="f2p_tickets" question="How many tickets can free-to-play players get?">
+      <answer>
+        <p>After the 7 ad tickets, about 95 total tickets without buying any directly.</p>
       </answer>
     </item>
   </faq>
